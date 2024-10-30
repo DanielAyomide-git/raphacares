@@ -1,0 +1,127 @@
+
+
+
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, ImageBackground, Image, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
+import { useRouter } from 'expo-router'; // Import expo-router for navigation
+
+const App = () => {
+  const [isSplashVisible, setIsSplashVisible] = useState(true); // State for showing splash screen
+  const router = useRouter(); // useRouter to handle navigation
+  const slideAnim = useRef(new Animated.Value(1000)).current; // Start off-screen (1000 pixels to the right)
+
+  // Use useEffect to show the splash screen for 5 seconds, then start the slide animation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsSplashVisible(false); // Hide splash screen after 5 seconds
+
+      // Start the sliding animation when splash screen is hidden
+      Animated.timing(slideAnim, {
+        toValue: 0, // Slide to its final position (0 offset)
+        duration: 800, // Duration of the animation
+        easing: Easing.ease, // Easing function for smooth animation
+        useNativeDriver: true, // Use native driver for better performance
+      }).start();
+    }, 5000);
+
+    return () => clearTimeout(timer); // Cleanup the timer on unmount
+  }, [slideAnim]);
+
+  // Splash screen with company logo
+  if (isSplashVisible) {
+    return (
+      <View style={styles.splashContainer}>
+        <Image
+          source={require('../assets/logo.png')} // Replace with the path to your company logo
+          style={styles.logo}
+        />
+      </View>
+    );
+  }
+
+  // Index page with background and navigation buttons with slide-in animation
+  return (
+    <Animated.View style={[styles.animatedContainer, { transform: [{ translateX: slideAnim }] }]}>
+      <ImageBackground 
+        source={require('../assets/indexbg.jpeg')} // Add correct path to your image
+        style={styles.background}
+      >
+        <View style={styles.overlay}>
+          <Text style={styles.text}>Are you a health worker?</Text>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity 
+              style={styles.button}
+              onPress={() => router.push('/healthWorker')} // Navigate to healthWorker.tsx
+            >
+              <Text style={styles.buttonText}>Yes</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.button}
+              onPress={() => router.push('/register')} // Navigate to Register.tsx
+            >
+              <Text style={styles.buttonText}>No</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ImageBackground>
+    </Animated.View>
+  );
+};
+
+const styles = StyleSheet.create({
+  splashContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff', // Optional: customize background color for the splash screen
+  },
+  logo: {
+    width: 200, // Adjust logo size
+    height: 200,
+    resizeMode: 'contain', // Ensure the logo fits well within the container
+  },
+  animatedContainer: {
+    flex: 1, // Animated container for sliding effect
+    width: '100%',
+  },
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'flex-end', // Move content to the bottom
+    alignItems: 'center',
+  },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent overlay for better text readability
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 50, // Adjust bottom margin to give space from the screen edge
+  },
+  text: {
+    fontSize: 24,
+    color: 'white',
+    marginBottom: 20,
+    fontWeight: 'normal', // Use regular font
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: 200,
+  },
+  button: {
+    backgroundColor: '#00CDF9', // Button color (customize as needed)
+    paddingVertical: 10, // Padding on top and bottom
+    paddingHorizontal: 20, // Padding on left and right
+    borderRadius: 30, // Rounded corners
+    marginHorizontal: 10, // Space between buttons
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+});
+
+export default App;
