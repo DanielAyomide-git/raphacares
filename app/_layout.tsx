@@ -4,11 +4,11 @@ export default function RootLayout() {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ title: '' }} />
-      <Stack.Screen name="login" options={{ title: '' }} />
-      <Stack.Screen name="register" options={{ title: '' }} />
-      <Stack.Screen name="healthWorker" options={{ title: '' }} />
-      <Stack.Screen name="loginHealth" options={{ title: '' }} />
-      <Stack.Screen name="registerHealth" options={{ title: '' }} />
+      <Stack.Screen name="patient/login" options={{ title: '' }} />
+      <Stack.Screen name="patient/register" options={{ title: '' }} />
+      <Stack.Screen name="healthworker/healthWorker" options={{ title: '' }} />
+      <Stack.Screen name="heathworker/loginHealth" options={{ title: '' }} />
+      <Stack.Screen name="healthworker/registerHealth" options={{ title: '' }} />
 
     </Stack>
   );

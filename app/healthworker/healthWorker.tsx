@@ -33,7 +33,7 @@ export default function OnboardingPage() {
     return (
       <View style={styles.logoContainer}>
         <Image
-          source={require('../assets/logo.png')} // Replace with your logo path
+          source={require('../assets/logo.png')} 
           style={styles.logo}
           resizeMode="contain"
         />
@@ -41,7 +41,7 @@ export default function OnboardingPage() {
     );
   }
 
-  // Main onboarding page with sliding animation
+  // Main onboarding page with sliding animation 
   return (
     <Animated.View style={[styles.container, { transform: [{ translateX: slideAnim }] }]}>
       <Text style={styles.title}>Login </Text>
@@ -51,7 +51,7 @@ export default function OnboardingPage() {
         <View style={styles.card}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => router.push('/loginHealth')}
+            onPress={() => router.push('/healthworker/loginHealth')}
           >
             <MaterialIcons name="person" size={40} color="white" style={styles.icon} />
             <Text style={styles.buttonText}>Doctor</Text>
@@ -62,7 +62,7 @@ export default function OnboardingPage() {
         <View style={styles.card}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => router.push('/loginHealth')}
+            onPress={() => router.push('/healthworker/loginHealth')}
           >
             <MaterialIcons name="local-hospital" size={40} color="white" style={styles.icon} />
             <Text style={styles.buttonText}>Nurse</Text>
@@ -73,7 +73,7 @@ export default function OnboardingPage() {
         <View style={styles.card}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => router.push('/loginHealth')}
+            onPress={() => router.push('/healthworker/loginHealth')}
           >
             <MaterialIcons name="admin-panel-settings" size={40} color="white" style={styles.icon} />
             <Text style={styles.buttonText}>Community</Text>
@@ -84,7 +84,7 @@ export default function OnboardingPage() {
         <View style={styles.card}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => router.push('/registerHealth')}
+            onPress={() => router.push('/healthworker/registerHealth')}
           >
             <MaterialIcons name="how-to-reg" size={40} color="white" style={styles.icon} />
             <Text style={styles.buttonText}>Register</Text>

@@ -74,7 +74,7 @@ const App = () => {
 
           {/* Image of Doctors */}
           <Image 
-            source={require('../assets/logo.png')} // Add correct path to your image
+            source={require('../assets/logo.png')} 
             style={styles.doctorImage} 
           />
 
@@ -85,14 +85,14 @@ const App = () => {
             <View style={styles.buttonRow}>
               <TouchableOpacity 
                 style={styles.buttonYes}
-                onPress={() => router.push('/loginHealth')} // Navigate to healthWorker.tsx
+                onPress={() => router.push('/healthworker/loginHealth')} // Navigate to healthWorker.tsx
               >
                 <Text style={styles.buttonText}>Yes</Text>
               </TouchableOpacity>
 
               <TouchableOpacity 
                 style={styles.buttonNo}
-                onPress={() => router.push('/login')} // Navigate to Register.tsx
+                onPress={() => router.push('/patient/login')} // Navigate to Register.tsx
               >
                 <Text style={styles.buttonText}>No</Text>
               </TouchableOpacity>

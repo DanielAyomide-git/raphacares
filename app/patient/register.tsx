@@ -101,7 +101,7 @@ export default function RegisterPage() {
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.loginContainer}>
-            <Text onPress={() => router.push('/login')} style={styles.loginText}>
+            <Text onPress={() => router.push('/patient/login')} style={styles.loginText}>
               Already a user? Login
             </Text>
       </TouchableOpacity>
