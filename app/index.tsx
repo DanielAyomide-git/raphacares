@@ -1,7 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, ImageBackground, StyleSheet, TouchableOpacity, Animated, Easing, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router'; // Import expo-router for navigation
-import * as Font from 'expo-font'; // Import the font module
+import React, { useState, useEffect, useRef } from "react";
+import {
+  View,
+  Text,
+  Image,
+  ImageBackground,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+  Easing,
+  ActivityIndicator,
+} from "react-native";
+import { useRouter } from "expo-router"; // Import expo-router for navigation
+import * as Font from "expo-font"; // Import the font module
 
 const App = () => {
   const [isSplashVisible, setIsSplashVisible] = useState(true); // State for showing splash screen
@@ -13,9 +23,9 @@ const App = () => {
   useEffect(() => {
     const loadFonts = async () => {
       await Font.loadAsync({
-        'poppins': require('../assets/fonts/Poppins-Regular.ttf'), 
-        'poppins-bold': require('../assets/fonts/Poppins-Bold.ttf'),// Adjust path to your Poppins font
-        'poppins-Extrabold': require('../assets/fonts/Poppins-ExtraBold.ttf'),// Adjust path to your Poppins font
+        poppins: require("../assets/fonts/Poppins-Regular.ttf"),
+        "poppins-bold": require("../assets/fonts/Poppins-Bold.ttf"), // Adjust path to your Poppins font
+        "poppins-Extrabold": require("../assets/fonts/Poppins-ExtraBold.ttf"), // Adjust path to your Poppins font
       });
       setFontsLoaded(true); // Update state once fonts are loaded
     };
@@ -43,7 +53,8 @@ const App = () => {
   if (!fontsLoaded) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#00CDF9" /> {/* Loading spinner */}
+        <ActivityIndicator size="large" color="#00CDF9" />{" "}
+        {/* Loading spinner */}
       </View>
     );
   }
@@ -53,7 +64,7 @@ const App = () => {
     return (
       <View style={styles.splashContainer}>
         <Image
-          source={require('../assets/RaphaCares-04.png')} // Replace with the path to your company logo
+          source={require("../assets/RaphaCares-04.png")} // Replace with the path to your company logo
           style={styles.logo}
         />
       </View>
@@ -62,9 +73,14 @@ const App = () => {
 
   // Index page with background and navigation buttons with slide-in animation
   return (
-    <Animated.View style={[styles.animatedContainer, { transform: [{ translateX: slideAnim }] }]}>
-      <ImageBackground 
-        source={require('../assets/indexbg.jpeg')} // Add correct path to your image
+    <Animated.View
+      style={[
+        styles.animatedContainer,
+        { transform: [{ translateX: slideAnim }] },
+      ]}
+    >
+      <ImageBackground
+        source={require("../assets/indexbg.jpeg")} // Add correct path to your image
         style={styles.background}
         imageStyle={{ opacity: 1.5 }}
       >
@@ -73,9 +89,9 @@ const App = () => {
           {/* <Text style={styles.welcomeText}>WELCOME</Text> */}
 
           {/* Image of Doctors */}
-          <Image 
-            source={require('../assets/logo.png')} 
-            style={styles.doctorImage} 
+          <Image
+            source={require("../assets/logo.png")}
+            style={styles.doctorImage}
           />
 
           {/* Question Section */}
@@ -83,16 +99,16 @@ const App = () => {
             <Text style={styles.questionText}>Are you a health worker?</Text>
 
             <View style={styles.buttonRow}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.buttonYes}
-                onPress={() => router.push('/healthworker/loginHealth')} // Navigate to healthWorker.tsx
+                onPress={() => router.push("/healthworker/loginHealth")} // Navigate to healthWorker.tsx
               >
                 <Text style={styles.buttonText}>Yes</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.buttonNo}
-                onPress={() => router.push('/patient/login')} // Navigate to Register.tsx
+                onPress={() => router.push("/patient/login")} // Navigate to Register.tsx
               >
                 <Text style={styles.buttonText}>No</Text>
               </TouchableOpacity>
@@ -107,94 +123,94 @@ const App = () => {
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'transparent', // Background color while loading
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent", // Background color while loading
   },
   splashContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'transparent', // Optional: customize background color for the splash screen
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent", // Optional: customize background color for the splash screen
   },
   logo: {
     width: 200, // Adjust logo size
     height: 200,
-    resizeMode: 'contain', // Ensure the logo fits well within the container
+    resizeMode: "contain", // Ensure the logo fits well within the container
   },
   background: {
     flex: 1,
-    width: '100%',
-    height: '100%',
-    justifyContent: 'flex-end', // Move content to the bottom
-    alignItems: 'center',
+    width: "100%",
+    height: "100%",
+    justifyContent: "flex-end", // Move content to the bottom
+    alignItems: "center",
   },
   animatedContainer: {
     flex: 1, // Animated container for sliding effect
-    width: '100%',
+    width: "100%",
   },
   container: {
     flex: 1,
     padding: 20,
-    alignItems: 'center',
-    backgroundColor: 'transparent',
+    alignItems: "center",
+    backgroundColor: "transparent",
   },
   welcomeText: {
     fontSize: 15,
-    fontFamily: 'poppins', // Use Poppins font
-    color: '#00CDF9',  // Changed the text color to blue
+    fontFamily: "poppins", // Use Poppins font
+    color: "#00CDF9", // Changed the text color to blue
     marginVertical: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   doctorImage: {
-    width: '65%',
+    width: "65%",
     height: 200,
-    resizeMode: 'contain',
+    resizeMode: "contain",
     marginBottom: 100,
     marginTop: 50,
     borderRadius: 15, // Make corners rounded
-    overflow: 'hidden', // Ensure content respects the borderRadius
+    overflow: "hidden", // Ensure content respects the borderRadius
   },
   questionContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0.3)', // Make the container transparent
+    backgroundColor: "rgba(0, 0, 0, 0.3)", // Make the container transparent
     padding: 20,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 5, // Adjust bottom margin to give space from the screen edge
   },
   questionText: {
     fontSize: 20,
-    fontFamily: 'poppins-extrabold', // Use Poppins font
-    color: 'white',
+    fontFamily: "poppins-extrabold", // Use Poppins font
+    color: "white",
     marginBottom: 20,
   },
   buttonRow: {
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    width: '80%',
+    flexDirection: "column",
+    justifyContent: "space-between",
+    width: "80%",
   },
   buttonYes: {
-    backgroundColor: '#00CDF9', // Changed button color to #00CDF9
+    backgroundColor: "#00CDF9", // Changed button color to #00CDF9
     paddingVertical: 30, // Increased vertical padding
     paddingHorizontal: 70, // Increased horizontal padding
-    borderRadius: 40,  // Rounded edges
+    borderRadius: 40, // Rounded edges
     marginHorizontal: 10,
     marginBottom: 10, // Add margin between buttons
   },
   buttonNo: {
-    backgroundColor: '#FFB815', // Changed button color to #00CDF9
+    backgroundColor: "#FFB815", // Changed button color to #00CDF9
     paddingVertical: 30, // Increased vertical padding
     paddingHorizontal: 70, // Increased horizontal padding
-    borderRadius: 40,  // Rounded edges
+    borderRadius: 40, // Rounded edges
     marginHorizontal: 10,
     marginBottom: 10, // Add margin between buttons
   },
   buttonText: {
     fontSize: 20,
-    fontFamily: 'poppins', // Use Poppins font
-    color: 'white', // Keep button text white for contrast
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontFamily: "poppins", // Use Poppins font
+    color: "white", // Keep button text white for contrast
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
 
