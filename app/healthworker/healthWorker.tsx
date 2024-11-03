@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Image, Animated } from 'react
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 
+
 export default function OnboardingPage() {
   const [showLogo, setShowLogo] = useState(true); // State to show the logo
   const router = useRouter();
