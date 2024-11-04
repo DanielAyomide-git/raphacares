@@ -8,13 +8,11 @@ import {
   FlatList,
   Image,
 } from "react-native";
-import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
-import { useRouter } from "expo-router";
 
 export default function DoctorDashboard() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const loadFonts = async () => {
@@ -113,27 +111,6 @@ export default function DoctorDashboard() {
           )}
         />
       </View>
-
-      {/* Footer Navigation */}
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={() => router.push("/healthworker/home")}>
-          <FontAwesome5 name="home" size={24} color="black" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/healthworker/User")}>
-          <FontAwesome5 name="user-alt" size={24} color="#9F9F9F" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => router.push("/healthworker/Notification")}
-        >
-          <Ionicons name="notifications-outline" size={24} color="#9F9F9F" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/healthworker/Message")}>
-          <MaterialIcons name="message" size={24} color="#9F9F9F" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/healthworker/Mail")}>
-          <MaterialIcons name="mail-outline" size={24} color="#9F9F9F" />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
@@ -144,7 +121,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     paddingTop: 40,
     paddingHorizontal: 20,
-    justifyContent: "space-between",
   },
   header: {
     flexDirection: "row",
@@ -233,13 +209,6 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins",
     fontSize: 10,
     color: "#A0A0A0",
-  },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: "transparent",
-    paddingVertical: 20,
-    paddingHorizontal: 20,
   },
   avatar: {
     width: 40,
