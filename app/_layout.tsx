@@ -16,6 +16,7 @@ export default function RootLayout() {
       <Stack.Screen name="healthworker/User" options={{ title: '' }} />
       <Stack.Screen name="healthworker/profile" options={{ title: '' }} />
       <Stack.Screen name="healthworker/app" options={{ title: '' }} />
+      <Stack.Screen name="healthworker/bio" options={{ title: '' }} />
 
     </Stack>
   );

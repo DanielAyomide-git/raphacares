@@ -60,7 +60,7 @@ export default function DoctorDashboard() {
           <Text style={styles.doctorText}>Dr. Jameson</Text>
         </View>
         <Ionicons
-          name="settings-outline"
+          name="notifications-outline"
           size={24}
           color="black"
           style={styles.settingsIcon}

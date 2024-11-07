@@ -52,24 +52,7 @@ const EditProfile = () => {
       {/* Update Profile Button */}
       <Button title="Update Profile" buttonStyle={styles.button} />
 
-      {/* Footer Navigation */}
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={() => router.push("/healthworker/home")}>
-          <FontAwesome5 name="home" size={24} color="black" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/healthworker/user")}>
-          <FontAwesome5 name="user-alt" size={24} color="#9F9F9F" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/healthworker/notification")}>
-          <Ionicons name="notifications-outline" size={24} color="#9F9F9F" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/healthworker/message")}>
-          <MaterialIcons name="message" size={24} color="#9F9F9F" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/healthworker/mail")}>
-          <MaterialIcons name="mail-outline" size={24} color="#9F9F9F" />
-        </TouchableOpacity>
-      </View>
+      
     </View>
   );
 };

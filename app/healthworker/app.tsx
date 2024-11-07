@@ -1,14 +1,17 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Ionicons from 'react-native-vector-icons/Ionicons'; // Import Ionicons
+import { createStackNavigator } from '@react-navigation/stack';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import DoctorDashboard from './home';
 import MessagesScreen from './message';
 import SettingsScreen from './setting';
 import NotificationsScreen from './notification';
 import ProfilePage from './profile';
+import BioPage from './bio';
 import { StyleSheet } from 'react-native';
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 function MyTabs() {
   return (
@@ -17,29 +20,22 @@ function MyTabs() {
         tabBarIcon: ({ color, size }) => {
           let iconName;
 
-          // Set icon based on route name
           if (route.name === 'Home') {
-            iconName = 'home-outline'; 
+            iconName = 'home-outline';
           } else if (route.name === 'Messages') {
-            iconName = 'chatbox-ellipses'; 
-          }
-          else if (route.name === 'Messages') {
-            iconName = 'chatbox-ellipses'; 
-          }
-          else if (route.name === 'Profile') {
-            iconName = 'person'; 
-          }
-          else if (route.name === 'Notification') {
-            iconName = 'notifications'; 
+            iconName = 'chatbox-ellipses';
+          } else if (route.name === 'Profile') {
+            iconName = 'person';
+          } else if (route.name === 'Notification') {
+            iconName = 'notifications';
           }
 
-          // Return icon component
           return <Ionicons name={iconName ?? 'home-outline'} size={size} color={color} />;
         },
-        tabBarActiveTintColor: 'black', // Active icon color set to black
-        tabBarInactiveTintColor: 'grey', // Inactive icon color set to grey
-        headerShown: false, // Hide header for the tab navigator
-        tabBarStyle: styles.tabBar, // Apply custom styles to the tab bar
+        tabBarActiveTintColor: 'white',
+        tabBarInactiveTintColor: 'grey',
+        headerShown: false,
+        tabBarStyle: styles.tabBar,
       })}
     >
       <Tab.Screen name="Home" component={DoctorDashboard} />
@@ -50,15 +46,27 @@ function MyTabs() {
   );
 }
 
-// Styles for the tab container
+function AppNavigator() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Tabs" component={MyTabs} />
+      <Stack.Screen name="Bio" component={BioPage} />
+    </Stack.Navigator>
+  );
+}
+
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: 'transparent', // Background color of the tab bar set to transparent
-    borderTopWidth: 0, // Remove the border at the top
-    height: 60, // Height of the tab bar
-    paddingBottom: 5, // Padding for bottom of the tab bar
-    elevation: 0, // Remove elevation for Android shadow
+    backgroundColor: 'black',
+    borderRadius: 20,
+    borderTopWidth: 0,
+    height: 60,
+    paddingBottom: 5,
+    marginLeft: 10,
+    marginRight: 10,
+    marginBottom: 4, 
+    
   },
 });
 
-export default MyTabs;
+export default AppNavigator;
