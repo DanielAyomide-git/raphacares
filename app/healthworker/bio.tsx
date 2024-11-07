@@ -71,7 +71,7 @@ export default function BioPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#00CDF9',
+    backgroundColor: 'black',
     paddingHorizontal: 20,
     paddingTop: 30,
   },
@@ -101,11 +101,11 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: 'black',
+    color: 'white',
   },
   roleText: {
     fontSize: 14,
-    color: 'black',
+    color: 'white',
   },
   editIcon: {
     position: 'absolute',
@@ -142,11 +142,14 @@ const styles = StyleSheet.create({
   socialContainer: {
     marginTop: 20,
     paddingHorizontal: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
   },
   socialIcons: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 10,
+    color: "white",
   },
   socialIcon: {
     marginHorizontal: 5,

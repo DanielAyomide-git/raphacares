@@ -101,7 +101,7 @@ const App = () => {
             <View style={styles.buttonRow}>
               <TouchableOpacity
                 style={styles.buttonYes}
-                onPress={() => router.push("/healthworker/loginHealth")} // Navigate to healthWorker.tsx
+                onPress={() => router.push("/healthworker/healthWorker")} // Navigate to healthWorker.tsx
               >
                 <Text style={styles.buttonText}>Yes</Text>
               </TouchableOpacity>
