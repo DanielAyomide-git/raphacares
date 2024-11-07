@@ -9,14 +9,7 @@ export default function BioPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <Ionicons 
-          name="arrow-back" 
-          size={24} 
-          color="black" 
-          style={styles.backIcon} 
-          onPress={() => navigation.goBack()} // Add onPress to go back
-        />
+      
         <View style={styles.profileContainer}>
           <Image 
             source={{ uri: 'https://bit.ly/dan-abramov' }}
@@ -30,7 +23,7 @@ export default function BioPage() {
           </View>
           <Ionicons name="pencil-outline" size={20} color="black" style={styles.editIcon} />
         </View>
-      </View>
+     
 
       {/* Profile Details */}
       <View style={styles.detailsContainer}>

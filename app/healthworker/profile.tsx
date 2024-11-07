@@ -1,11 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-
+import { useRouter } from 'expo-router';
 
 export default function ProfilePage() {
-  const navigation = useNavigation();
+  const router = useRouter();
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -26,31 +25,23 @@ export default function ProfilePage() {
         <View style={styles.statusContainer}>
           <View style={styles.statusIndicator} />
           <Text style={styles.statusText}>Active</Text>
-          <Ionicons name="chevron-down" size={18} color="black" />
+          {/* <Ionicons name="chevron-down" size={18} color="black" /> */}
         </View>
         
         <TouchableOpacity 
           style={styles.menuItem} 
-          onPress={() => navigation.navigate('Bio')}  
+          onPress={() => router.push('/healthworker/bio')}  
         >
           <Ionicons name="person-outline" size={24} color="black" />
           <Text style={styles.menuText}>My Bio</Text>
           <Ionicons name="chevron-forward" size={18} color="black" />
         </TouchableOpacity>
 
+       
 
-        <TouchableOpacity 
-          style={styles.menuItem} 
-          onPress={() => navigation.navigate('Messages')}
-        >
-          <Ionicons name="mail-outline" size={24} color="black" />
-          <Text style={styles.menuText}>Messages</Text>
-          <View style={styles.notificationBadge}>
-            <Text style={styles.notificationText}>3</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem}
+         onPress={() => router.push('/healthworker/verification')} 
+         >
           <Ionicons name="briefcase-outline" size={24} color="black" />
           <Text style={styles.menuText}>Verification</Text>
           <Ionicons name="chevron-forward" size={18} color="black" />
@@ -62,7 +53,9 @@ export default function ProfilePage() {
           <Ionicons name="chevron-forward" size={18} color="black" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem}
+         onPress={() => router.push('/healthworker/loginHealth')} 
+         >
           <Ionicons name="log-out-outline" size={24} color="black" />
           <Text style={styles.menuText}>Logout</Text>
           <Ionicons name="chevron-forward" size={18} color="black" />
@@ -75,12 +68,12 @@ export default function ProfilePage() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#00CDF9',
+    backgroundColor: 'black',
     alignItems: 'center',
     paddingTop: 20,
   },
   header: {
-    backgroundColor: '#00A6B9',
+    backgroundColor: 'black',
     width: '100%',
     alignItems: 'center',
     paddingBottom: 30,
@@ -146,7 +139,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   menuText: {
-    flex: 1,
+    flex: 1, 
     fontSize: 16,
     color: 'black',
     marginLeft: 10,
