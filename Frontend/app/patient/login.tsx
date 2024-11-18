@@ -86,9 +86,14 @@ export default function LoginPage() {
           </TouchableOpacity>
         </View>
 
-      <TouchableOpacity style={styles.signInButton} onPress={handleLogin}>
+
+        <TouchableOpacity
+        onPress={() => router.push("/patient/app")}
+        style={styles.signInButton}
+      >
         <Text style={styles.signInText}>Login</Text>
       </TouchableOpacity>
+      
       {/* Register Link */}
       <TouchableOpacity onPress={() => router.push('/patient/register')} style={styles.registerLink}>
         <Text style={styles.registerText}>Register as New User</Text>
