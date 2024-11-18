@@ -34,13 +34,11 @@ export default function DoctorDashboard() {
     {
       id: "1",
       name: "Moses Aubrey",
-      text: "Love the experience, great job guys",
       date: "20/04/24",
     },
     {
       id: "2",
       name: "Keith K. John",
-      text: "Love the experience, great job guys",
       date: "29/03/24",
     },
   ];
@@ -84,17 +82,15 @@ export default function DoctorDashboard() {
 
       {/* Appointments Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>APPOINTMENTS</Text>
+        <Text style={styles.sectionTitle}>Paid Appointments</Text>
         <View style={styles.appointmentBox}></View>
       </View>
 
       {/* Recent Comments Section */}
       <View style={styles.section}>
         <View style={styles.commentsHeader}>
-          <Text style={styles.sectionTitle}>Most Recent Comments</Text>
-          <TouchableOpacity>
-            <Text style={styles.readMoreText}>Read Old Comments</Text>
-          </TouchableOpacity>
+          <Text style={styles.sectionTitle}>Most Recent Appointments</Text>
+          
         </View>
         <FlatList
           data={comments}
@@ -104,7 +100,6 @@ export default function DoctorDashboard() {
               <View style={styles.commentAvatar}></View>
               <View style={styles.commentTextContainer}>
                 <Text style={styles.commentName}>{item.name}</Text>
-                <Text style={styles.commentText}>{item.text}</Text>
                 <Text style={styles.commentDate}>{item.date}</Text>
               </View>
             </View>
