@@ -40,7 +40,7 @@ export default function ProfilePage() {
          onPress={() => router.push('/healthworker/verification')} 
          >
           <Ionicons name="briefcase-outline" size={24} color="black" />
-          <Text style={styles.menuText}>Verification</Text>
+          <Text style={styles.menuText}>Change password</Text>
           <Ionicons name="chevron-forward" size={18} color="black" />
         </TouchableOpacity>
 
