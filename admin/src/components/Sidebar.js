@@ -15,7 +15,19 @@ const Sidebar = () => {
 
   return (
     <div style={{ width: "250px", background: "#f5f5f5", height: "100vh", padding: "20px" }}>
-      <h2>Raphacares Admin Dashboard</h2>
+      {/* Center logo and title */}
+      <div style={{ textAlign: "center", marginBottom: "20px" }}>
+        <img 
+          src={`${process.env.PUBLIC_URL}/logo.png`} 
+          alt="Raphacares Logo" 
+          style={{ width: "80px", height: "80px", marginBottom: "10px" }} 
+        />
+        <h2 style={{ fontSize: "16px", color: "#333", marginBottom: 40 }}>
+          Raphacares Admin Dashboard
+        </h2>
+      </div>
+      
+      {/* Sidebar menu */}
       <List>
         {menuItems.map((item, index) => (
           <ListItem button key={index}>
