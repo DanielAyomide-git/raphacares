@@ -1,8 +1,8 @@
 To start admin dashboard
 
-1.  cd to myadmin/admin
-2. run mpx install
-3. run npx start
+1.  cd to admin
+2. run npm install
+3. run npm start
 
 
 To start app 
