@@ -1,8 +1,8 @@
 To start admin dashboard
 
-1.  cd to admin
-2. run yarn install
-3. run yarn start
+1.  cd to myadmin/admin
+2. run mpx install
+3. run npx start
 
 
 To start app 
