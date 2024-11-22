@@ -6,11 +6,13 @@ npm-debug.*
 *.p8
 *.p12
 *.key
-*.env
 *.mobileprovision
 *.orig.*
 web-build/
 
+
+.env 
+key.py
 # macOS
 .DS_Store
 
@@ -19,6 +21,3 @@ web-build/
 
 expo-env.d.ts
 # @end expo-cli
-
-key.py
-.env
