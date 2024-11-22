@@ -16,9 +16,9 @@ app.add_middleware(
 )
 
 # MongoDB connection
-MONGO_URL = "mongodb+srv://Daniel:Toshit007@cluster0.4n6hc.mongodb.net/raphacare?retryWrites=true&w=majority&appName=Cluster0"
+MONGO_URL = os.getenv("MONGODB_URI")
 client = AsyncIOMotorClient(MONGO_URL)
-db = client["raphacare"]
+db = client[os.getenv("DATABASE_NAME")]
 collection = db["users"]
 
 # Password context
