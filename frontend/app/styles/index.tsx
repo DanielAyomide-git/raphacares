@@ -70,7 +70,7 @@ const indexStyles = StyleSheet.create({
     width: "80%",
   },
   buttonYes: {
-    backgroundColor: "#00CDF9",
+    backgroundColor: "#FFB815",
     paddingVertical: 30,
     paddingHorizontal: 70,
     borderRadius: 40,
@@ -78,7 +78,7 @@ const indexStyles = StyleSheet.create({
     marginBottom: 10,
   },
   buttonNo: {
-    backgroundColor: "#FFB815",
+    backgroundColor: "#00CDF9",
     paddingVertical: 30,
     paddingHorizontal: 70,
     borderRadius: 40,

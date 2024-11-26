@@ -3,32 +3,31 @@ import {
   View,
   Text,
   TextInput,
-  StyleSheet,
   Alert,
   Animated,
   TouchableOpacity,
-  Image,
   ActivityIndicator,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient"; // Import LinearGradient
+import { LinearGradient } from "expo-linear-gradient";
 import * as Font from "expo-font";
 import { useRouter } from "expo-router";
-import axios from "axios";
+import { Picker } from "@react-native-picker/picker";
+import { register, RegisterRequest } from "@/app/api/register"; // Ensure correct import path
+import { styles } from "@/app/styles/healthworker/register";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [firstname, setFirstName] = useState("");
-  const [lastname, setLastName] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [category, setCategory] = useState(""); // State for selected category
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [category, setCategory] = useState(""); // For practitioner type
+  const [loading, setLoading] = useState(false);
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [loading, setLoading] = useState(false); // Track loading state
+
   const router = useRouter();
   const slideAnim = useRef(new Animated.Value(500)).current;
 
-  // Load Poppins font
   useEffect(() => {
     const loadFonts = async () => {
       await Font.loadAsync({
@@ -39,7 +38,6 @@ export default function RegisterPage() {
     };
     loadFonts();
 
-    // Slide animation
     Animated.timing(slideAnim, {
       toValue: 0,
       duration: 500,
@@ -52,84 +50,82 @@ export default function RegisterPage() {
   }
 
   const handleRegister = async () => {
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
+    if (!category) {
+      Alert.alert("Error", "Please select a category");
       return;
     }
 
-    setLoading(true); // Show loader
-
-    const userData = {
-      firstname: firstname,
-      lastname: lastname,
-      email: email,
-      password: password,
-      category: category,
+    const userData: RegisterRequest = {
+      auth_details: {
+        email,
+        password,
+        user_type: "medical_practitioner",
+        auth_type: "local",
+      },
+      profile_details: {
+        first_name: firstName,
+        last_name: lastName,
+        phone_number: phoneNumber,
+        practitioner_type: category,
+        is_verified: false,
+        is_available: true,
+        user_type: "medical_practitioner",
+      },
     };
 
-    try {
-      // Make a POST request to the backend /register endpoint
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/v1/auth/register",
-        userData
-      );
+    setLoading(true);
 
-      // Handle the response
-      if (response.data.message === "User registered successfully") {
+    try {
+      const response = await register(userData);
+      if (response.message === "User registered successfully") {
         Alert.alert("Success", "Registration successful");
-        router.push("./healthworker/app"); // Redirect to login page
+        router.push("./app");
       } else {
-        Alert.alert("Error", "Email already exists");
+        Alert.alert("Error", response.message || "An error occurred");
       }
-    } catch (error) {
-      // Handle error from backend
-      console.error(error);
-      Alert.alert("Error", "Registration failed. Please try again.");
+    } catch (error: any) {
+      Alert.alert("Error", error.message || "Registration failed. Please try again.");
     } finally {
-      setLoading(false); // Hide loader
+      setLoading(false);
     }
   };
 
   return (
     <LinearGradient
-      colors={["#00CDF9", "#FFFFFF"]} // Blue to White gradient
-      start={{ x: 0.5, y: 0 }}        // Start at the top-center
-      end={{ x: 0.5, y: 1 }}          // End at the bottom-center
+      colors={["#FFB815", "#FFFFFF"]}
+      start={{ x: 0.5, y: 0 }}
+      end={{ x: 0.5, y: 1 }}
       style={styles.gradientContainer}
     >
-      <Animated.View
-        style={[styles.container, { transform: [{ translateX: slideAnim }] }]}
-      >
+      <Animated.View style={[styles.container, { transform: [{ translateX: slideAnim }] }]}>
         <Text style={styles.title}>Sign up as Health Worker</Text>
 
-        {/* Social Media Icons */}
-        <View style={styles.socialIcons}>
-          <Image
-            source={require("../../assets/facebook.png")}
-            style={styles.icon}
-          />
-          <Image
-            source={require("../../assets/google.png")}
-            style={styles.icon}
-          />
-          <Image
-            source={require("../../assets/apple.png")}
-            style={styles.icon}
-          />
+        {/* Category Dropdown */}
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={category}
+            onValueChange={(itemValue) => setCategory(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Select Category" value="" />
+            <Picker.Item label="Doctor" value="doctor" />
+            <Picker.Item label="Nurse" value="nurse" />
+            <Picker.Item label="Community Health Worker" value="community_health_worker" />
+          </Picker>
         </View>
 
         {/* Input Fields */}
         <TextInput
           style={styles.input}
           placeholder="Enter your First Name"
-          value={firstname}
+          value={firstName}
           onChangeText={setFirstName}
           placeholderTextColor="#706d6d"
         />
         <TextInput
           style={styles.input}
           placeholder="Enter your Last Name"
-          value={lastname}
+          value={lastName}
           onChangeText={setLastName}
           placeholderTextColor="#706d6d"
         />
@@ -152,21 +148,18 @@ export default function RegisterPage() {
         />
         <TextInput
           style={styles.input}
-          placeholder="Confirm Password"
-          secureTextEntry
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
+          placeholder="Enter your Phone Number"
+          value={phoneNumber}
+          onChangeText={setPhoneNumber}
+          keyboardType="phone-pad"
           placeholderTextColor="#706d6d"
         />
 
         {/* Sign Up Button */}
         <TouchableOpacity
-          style={[
-            styles.signUpButton,
-            loading && { backgroundColor: "#E0E0E0" }, // Change background when loading
-          ]}
+          style={[styles.signUpButton, loading && { backgroundColor: "#E0E0E0" }]}
           onPress={handleRegister}
-          disabled={loading} // Disable button while loading
+          disabled={loading}
         >
           {loading ? (
             <ActivityIndicator size="small" color="#5c5a5a" />
@@ -176,10 +169,7 @@ export default function RegisterPage() {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.loginContainer}>
-          <Text
-            onPress={() => router.push("./healthWorker")}
-            style={styles.loginText}
-          >
+          <Text onPress={() => router.push("./healthWorker")} style={styles.loginText}>
             Already a user? Login
           </Text>
         </TouchableOpacity>
@@ -191,72 +181,3 @@ export default function RegisterPage() {
     </LinearGradient>
   );
 }
-
-const styles = StyleSheet.create({
-  gradientContainer: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  title: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 24,
-    color: "#FFFFFF", // Text color for better contrast
-    marginBottom: 30,
-    textAlign: "center",
-  },
-  socialIcons: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "80%",
-    marginBottom: 20,
-  },
-  icon: {
-    width: 40,
-    height: 40,
-  },
-  input: {
-    width: "80%",
-    paddingHorizontal: 0,
-    paddingVertical: 10,
-    backgroundColor: "#E0E0E0",
-    borderRadius: 25,
-    marginBottom: 20,
-    textAlign: "center",
-    fontSize: 16,
-    fontFamily: "Poppins",
-  },
-  loginText: {
-    fontFamily: "Poppins",
-    color: "black",
-    fontSize: 14,
-    textDecorationLine: "underline",
-  },
-  loginContainer: {
-    marginTop: 30,
-  },
-  signUpButton: {
-    backgroundColor: "#FAD02E",
-    paddingVertical: 15,
-    paddingHorizontal: 50,
-    borderRadius: 25,
-    marginTop: 15,
-    alignItems: "center",
-  },
-  signUpText: {
-    fontFamily: "Poppins-Bold",
-    color: "#5c5a5a",
-    fontSize: 18,
-    textAlign: "center",
-  },
-  terms: {
-    color: "black",
-    fontSize: 12,
-    textAlign: "center",
-    marginTop: 20,
-  },
-});

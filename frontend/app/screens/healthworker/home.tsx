@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  TouchableOpacity,
   FlatList,
   Image,
   Animated, // Import Animated API
@@ -14,9 +13,11 @@ import * as Font from "expo-font";
 
 export default function DoctorDashboard() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true); // State to control Welcome message visibility
 
   // Create animated value for sliding
   const slideAnim = useRef(new Animated.Value(500)).current; // Start from off-screen right
+  const welcomeSlideAnim = useRef(new Animated.Value(500)).current; // Animated value for welcome message
 
   useEffect(() => {
     // Load fonts
@@ -24,18 +25,35 @@ export default function DoctorDashboard() {
       await Font.loadAsync({
         Poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
         "Poppins-Bold": require("../../assets/fonts/Poppins-Bold.ttf"),
+        "poppins-Semibold": require("../../assets/fonts/Poppins-SemiBold.ttf"),
+
       });
       setFontsLoaded(true);
     };
     loadFonts();
 
-    // Trigger slide-in animation
-    Animated.timing(slideAnim, {
+    // Trigger slide-in animation for the "Welcome to Raphacares" message
+    Animated.timing(welcomeSlideAnim, {
       toValue: 0, // Slide to original position
-      duration: 1000, // Animation duration in milliseconds
+      duration: 1000, // Animation duration in milliseconds (4 seconds)
       useNativeDriver: true, // Use native driver for better performance
     }).start();
-  }, [slideAnim]);
+
+    // Trigger slide-in animation for the dashboard
+    Animated.timing(slideAnim, {
+      toValue: 0, // Slide to original position
+      duration: 5000, // Animation duration in milliseconds 
+      useNativeDriver: true, // Use native driver for better performance
+    }).start();
+
+    // Set timeout to hide the welcome message 
+    const timer = setTimeout(() => {
+      setShowWelcome(false); // Hide Welcome message 
+    }, 3000);
+
+    // Clean up timeout on unmount
+    return () => clearTimeout(timer);
+  }, [slideAnim, welcomeSlideAnim]);
 
   if (!fontsLoaded) {
     return null; // Show a loading screen if fonts aren't loaded yet
@@ -56,70 +74,88 @@ export default function DoctorDashboard() {
   ];
 
   return (
-    <Animated.View // Use Animated.View instead of View
-      style={[styles.container, { transform: [{ translateX: slideAnim }] }]} // Apply sliding animation
-    >
-      {/* Header */}
-      <View style={styles.header}>
-        <Image
-          source={{ uri: "https://bit.ly/dan-abramov" }}
-          style={styles.avatar}
-          accessible={true}
-          accessibilityLabel="Doctor's avatar"
-        />
-        <View>
-          <Text style={styles.welcomeText}>Welcome</Text>
-          <Text style={styles.doctorText}>Dr. Jameson</Text>
-        </View>
-        <Ionicons
-          name="notifications-outline"
-          size={24}
-          color="black"
-          style={styles.settingsIcon}
-        />
-      </View>
-
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search for Clients/Appointments"
-          placeholderTextColor="#B0B0B0"
-        />
-        <Ionicons
-          name="search"
-          size={20}
-          color="#B0B0B0"
-          style={styles.searchIcon}
-        />
-      </View>
-
-      {/* Appointments Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Paid Appointments</Text>
-        <View style={styles.appointmentBox}></View>
-      </View>
-
-      {/* Recent Comments Section */}
-      <View style={styles.section}>
-        <View style={styles.commentsHeader}>
-          <Text style={styles.sectionTitle}>Most Recent Appointments</Text>
-        </View>
-        <FlatList
-          data={comments}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.commentItem}>
-              <View style={styles.commentAvatar}></View>
-              <View style={styles.commentTextContainer}>
-                <Text style={styles.commentName}>{item.name}</Text>
-                <Text style={styles.commentDate}>{item.date}</Text>
-              </View>
+    <View style={styles.container}>
+      {/* Show "Welcome to Raphacares" for 3 seconds */}
+      {showWelcome ? (
+        <Animated.View
+          style={[
+            styles.welcomeContainer,
+            { transform: [{ translateX: welcomeSlideAnim }] }, // Apply sliding effect to the welcome message
+          ]}
+        >
+          <Text style={styles.welcomeText1}>Welcome to Raphacares</Text>
+        </Animated.View>
+      ) : (
+        // Main Dashboard
+        <Animated.View
+          style={[
+            styles.dashboardContainer,
+            { transform: [{ translateY: slideAnim }] }, // Apply sliding effect to the dashboard
+          ]}
+        >
+          {/* Header */}
+          <View style={styles.header}>
+            <Image
+              source={{ uri: "https://bit.ly/dan-abramov" }}
+              style={styles.avatar}
+              accessible={true}
+              accessibilityLabel="Doctor's avatar"
+            />
+            <View>
+              <Text style={styles.welcomeText}>Welcome</Text>
+              <Text style={styles.doctorText}>Dr. Jameson</Text>
             </View>
-          )}
-        />
-      </View>
-    </Animated.View>
+            <Ionicons
+              name="notifications-outline"
+              size={24}
+              color="black"
+              style={styles.settingsIcon}
+            />
+          </View>
+
+          {/* Search Bar */}
+          <View style={styles.searchContainer}>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search for Clients/Appointments"
+              placeholderTextColor="#B0B0B0"
+            />
+            <Ionicons
+              name="search"
+              size={20}
+              color="#B0B0B0"
+              style={styles.searchIcon}
+            />
+          </View>
+
+          {/* Appointments Section */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Paid Appointments</Text>
+            <View style={styles.appointmentBox}></View>
+          </View>
+
+          {/* Recent Comments Section */}
+          <View style={styles.section}>
+            <View style={styles.commentsHeader}>
+              <Text style={styles.sectionTitle}>Most Recent Appointments</Text>
+            </View>
+            <FlatList
+              data={comments}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <View style={styles.commentItem}>
+                  <View style={styles.commentAvatar}></View>
+                  <View style={styles.commentTextContainer}>
+                    <Text style={styles.commentName}>{item.name}</Text>
+                    <Text style={styles.commentDate}>{item.date}</Text>
+                  </View>
+                </View>
+              )}
+            />
+          </View>
+        </Animated.View>
+      )}
+    </View>
   );
 }
 
@@ -130,20 +166,37 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingHorizontal: 20,
   },
+  welcomeContainer: {
+    flex: 1,
+    justifyContent: "center",
+    backgroundColor: "white",
+    alignItems: "center",
+  },
+  welcomeText1: {
+    fontFamily: "Poppins",
+    fontSize: 50,
+    color: "#0041F9",
+    textAlign: "center",
+  },
+  welcomeText: {
+    fontFamily: "Poppins",
+    fontSize: 24,
+    color: "#0041F9",
+    textAlign: "center",
+  },
+  dashboardContainer: {
+    flex: 1,
+    backgroundColor: "white",
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",
   },
-  welcomeText: {
-    fontFamily: "Poppins",
-    fontSize: 20,
-    color: "black",
-    marginLeft: 10,
-  },
   doctorText: {
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     color: "#0041F9",
     marginLeft: 10,
+    marginBottom: 20,
   },
   settingsIcon: {
     marginLeft: "auto",
@@ -169,7 +222,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sectionTitle: {
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     color: "#0041F9",
     fontSize: 16,
     marginBottom: 10,
@@ -183,11 +236,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-  },
-  readMoreText: {
-    fontFamily: "Poppins",
-    color: "#0041F9",
-    fontSize: 12,
   },
   commentItem: {
     flexDirection: "row",
@@ -208,11 +256,6 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Bold",
     fontSize: 14,
   },
-  commentText: {
-    fontFamily: "Poppins",
-    fontSize: 12,
-    color: "#6B6B6B",
-  },
   commentDate: {
     fontFamily: "Poppins",
     fontSize: 10,
@@ -222,6 +265,8 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    marginLeft: 10,
+    marginLeft: 2,
+    marginRight:10,
+    marginBottom:18,
   },
 });
