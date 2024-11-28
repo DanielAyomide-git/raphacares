@@ -38,7 +38,7 @@ const loginStyles = StyleSheet.create({
     width: '80%',
     paddingHorizontal: 0,
     paddingVertical: 10,
-    backgroundColor: '#E0E0E0',
+    backgroundColor: 'white',
     borderRadius: 25,
     marginBottom: 20,
     textAlign: 'center',
@@ -80,6 +80,17 @@ const loginStyles = StyleSheet.create({
     fontSize: 16,
     textDecorationLine: 'underline',
     fontFamily: 'poppins',
+
+  },
+  resetPassword: {
+    marginTop: 10,
+  },
+  resetPasswordText: {
+    color: 'blue',
+    fontSize: 13,
+    textDecorationLine: 'underline',
+    fontFamily: 'poppins',
+    
   },
   terms: {
     color: 'black',

@@ -1,4 +1,3 @@
-// DoctorDashboard.tsx
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -12,6 +11,13 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withDelay,
+} from "react-native-reanimated";
+import styles from "../../styles/patient/home"
 
 // Define navigation types
 type RootStackParamList = {
@@ -28,9 +34,20 @@ type Service = {
   color: string;
 };
 
-export default function DoctorDashboard() {
+export default function PatientDashboard() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
   const navigation = useNavigation<NavigationProp>();
+
+  const welcomeX = useSharedValue(300); // Welcome text starts off-screen to the right
+  const pageY = useSharedValue(300); // Page content starts off-screen at the bottom
+
+  const servicesX = [
+    useSharedValue(-300), // "Hospitals" slides in from the left
+    useSharedValue(300), // "Drug refill" slides in from the right
+    useSharedValue(-300), // "Ambulance" slides in from the left
+    useSharedValue(300), // "Consultation" slides in from the right
+  ];
 
   useEffect(() => {
     const loadFonts = async () => {
@@ -43,12 +60,49 @@ export default function DoctorDashboard() {
     loadFonts();
   }, []);
 
+  // Show the welcome message for 2 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowWelcome(false);
+      pageY.value = withTiming(0, { duration: 500 });
+      servicesX.forEach((sharedValue, index) => {
+        sharedValue.value = withDelay(index * 200, withTiming(0, { duration: 800 }));
+      });
+    }, 2000);
+
+    welcomeX.value = withTiming(0, { duration: 1000 });
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const welcomeStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: welcomeX.value }],
+  }));
+
+  const pageStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: pageY.value }],
+  }));
+
+  const serviceStyles = servicesX.map((sharedValue) =>
+    useAnimatedStyle(() => ({
+      transform: [{ translateX: sharedValue.value }],
+    }))
+  );
+
   if (!fontsLoaded) {
     return (
       <View style={styles.container}>
         <Text>Loading...</Text>
       </View>
     ); // Fallback view while fonts load
+  }
+
+  if (showWelcome) {
+    return (
+      <Animated.View style={[styles.welcomeContainer, welcomeStyle]}>
+        <Text style={styles.welcomeTitle}>Welcome to Raphacare</Text>
+      </Animated.View>
+    );
   }
 
   const services: Service[] = [
@@ -59,7 +113,7 @@ export default function DoctorDashboard() {
   ];
 
   return (
-    <ScrollView style={styles.container}>
+    <Animated.ScrollView style={[styles.container, pageStyle]}>
       {/* Header */}
       <View style={styles.header}>
         <View>
@@ -85,15 +139,18 @@ export default function DoctorDashboard() {
       {/* Services */}
       <Text style={styles.sectionTitle}>Our Services</Text>
       <View style={styles.servicesContainer}>
-        {services.map((service) => (
-          <TouchableOpacity
+        {services.map((service, index) => (
+          <Animated.View
             key={service.id}
-            style={[styles.serviceBox, { backgroundColor: service.color }]}
-            onPress={() => navigation.navigate("Services", { service })}
+            style={[styles.serviceBox, { backgroundColor: service.color }, serviceStyles[index]]}
           >
-            <Ionicons name={service.icon} size={40} color="white" />
-            <Text style={styles.serviceText}>{service.name}</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Services", { service })}
+            >
+              <Ionicons name={service.icon} size={40} color="white" />
+              <Text style={styles.serviceText}>{service.name}</Text>
+            </TouchableOpacity>
+          </Animated.View>
         ))}
       </View>
 
@@ -110,125 +167,7 @@ export default function DoctorDashboard() {
           <Text style={styles.doctorName}>dr Indah Kusumaningrum</Text>
         </View>
       </View>
-    </ScrollView>
+    </Animated.ScrollView>
   );
 }
 
-// Styles unchanged
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-    padding: 20,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  welcomeText: {
-    fontSize: 18,
-    fontFamily: "Poppins",
-    color: "#333",
-  },
-  nameText: {
-    fontSize: 22,
-    fontFamily: "Poppins-Bold",
-    color: "#007BFF",
-  },
-  profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-  consultationCard: {
-    backgroundColor: "#E9F7FF",
-    padding: 20,
-    borderRadius: 15,
-    marginBottom: 20,
-    alignItems: "center",
-  },
-  consultationText: {
-    fontSize: 16,
-    fontFamily: "Poppins",
-    color: "#007BFF",
-    marginBottom: 10,
-  },
-  consultButton: {
-    backgroundColor: "#007BFF",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-  },
-  consultButtonText: {
-    fontSize: 14,
-    fontFamily: "Poppins-Bold",
-    color: "white",
-  },
-  sectionTitle: {
-    fontSize: 15,
-    fontFamily: "Poppins-Bold",
-    color: "#333",
-    marginBottom: 10,
-  },
-  servicesContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  serviceBox: {
-    width: "40%",
-    aspectRatio: 1,
-    borderRadius: 15,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 15,
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  },
-  serviceText: {
-    fontSize: 14,
-    fontFamily: "Poppins-Bold",
-    color: "white",
-    marginTop: 8,
-    textAlign: "center",
-  },
-  appointmentCard: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 15,
-    elevation: 5,
-  },
-  appointmentTime: {
-    fontSize: 16,
-    fontFamily: "Poppins-Bold",
-    color: "#007BFF",
-    marginBottom: 5,
-  },
-  appointmentDate: {
-    fontSize: 14,
-    fontFamily: "Poppins",
-    color: "#555",
-    marginBottom: 10,
-  },
-  doctorInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  doctorImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 10,
-  },
-  doctorName: {
-    fontSize: 14,
-    fontFamily: "Poppins-Bold",
-    color: "#333",
-  },
-});

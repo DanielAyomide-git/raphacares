@@ -50,17 +50,17 @@ export const styles = StyleSheet.create({
   picker: {
     height: 50,
     width: "100%",
-    backgroundColor: "#00CDF9",
+    backgroundColor: "white",
     borderRadius: 25,
     textAlign: "center",
     fontFamily: "Poppins",
-    color: "#706d6d",
+    color: "black",
   },
   input: {
     width: "80%",
     paddingHorizontal: 0,
     paddingVertical: 10,
-    backgroundColor: "#E0E0E0",
+    backgroundColor: "white",
     borderRadius: 25,
     marginBottom: 20,
     textAlign: "center",
@@ -101,10 +101,21 @@ export const styles = StyleSheet.create({
     textDecorationLine: "underline",
     fontFamily: "poppins",
   },
+  resetPassword: {
+    marginTop: 10,
+  },
+  resetPasswordText: {
+    color: 'blue',
+    fontSize: 13,
+    textDecorationLine: 'underline',
+    fontFamily: 'poppins',
+    
+  },
   terms: {
     color: "black",
     fontSize: 12,
     textAlign: "center",
     marginTop: 30,
   },
+  
 });

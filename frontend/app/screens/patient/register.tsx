@@ -112,7 +112,7 @@ export default function RegisterPage() {
             value={firstName}
             onChangeText={setFirstName}
             keyboardType="email-address"
-            placeholderTextColor="#706d6d"
+            placeholderTextColor="#c9cacd"
           />
 
           <TextInput
@@ -121,7 +121,7 @@ export default function RegisterPage() {
             value={lastName}
             onChangeText={setLastName}
             keyboardType="email-address"
-            placeholderTextColor="#706d6d"
+            placeholderTextColor="#c9cacd"
           />
 
           <TextInput
@@ -131,7 +131,7 @@ export default function RegisterPage() {
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
-            placeholderTextColor="#706d6d"
+            placeholderTextColor="#c9cacd"
           />
 
           <TextInput
@@ -140,7 +140,7 @@ export default function RegisterPage() {
             secureTextEntry
             value={password}
             onChangeText={setPassword}
-            placeholderTextColor="#706d6d"
+            placeholderTextColor="#c9cacd"
           />
 
           <TextInput
@@ -149,7 +149,7 @@ export default function RegisterPage() {
             value={phoneNumber}
             onChangeText={setPhoneNumber}
             keyboardType="phone-pad"
-            placeholderTextColor="#706d6d"
+            placeholderTextColor="#c9cacd"
           />
 
           {/* Error Message */}

@@ -96,7 +96,7 @@ export default function LoginPage() {
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
-            placeholderTextColor="#706d6d"
+            placeholderTextColor="#c9cacd"
           />
 
           <TextInput
@@ -105,7 +105,7 @@ export default function LoginPage() {
             secureTextEntry
             value={password}
             onChangeText={setPassword}
-            placeholderTextColor="#706d6d"
+            placeholderTextColor="#c9cacd"
           />
 
           <View style={loginStyles.row}>
@@ -130,6 +130,12 @@ export default function LoginPage() {
             style={loginStyles.registerLink}
           >
             <Text style={loginStyles.registerText}>Register as New User</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.push('./resetPassword')}
+            style={loginStyles.resetPassword}
+          >
+            <Text style={loginStyles.resetPasswordText}>Reset Password</Text>
           </TouchableOpacity>
 
           <Text style={loginStyles.terms}>

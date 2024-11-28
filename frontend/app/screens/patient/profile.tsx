@@ -37,7 +37,7 @@ export default function ProfilePage() {
        
 
         <TouchableOpacity style={styles.menuItem}
-         onPress={() => router.push('./verification')} 
+         onPress={() => router.push('./setting')} 
          >
           <Ionicons name="briefcase-outline" size={24} color="black" />
           <Text style={styles.menuText}>Change password</Text>
@@ -51,7 +51,7 @@ export default function ProfilePage() {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.menuItem}
-         onPress={() => router.push('./index')} 
+         onPress={() => router.push('./login')} 
          >
           <Ionicons name="log-out-outline" size={24} color="black" />
           <Text style={styles.menuText}>Logout</Text>
@@ -65,12 +65,12 @@ export default function ProfilePage() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: 'grey',
+    backgroundColor: 'white',
     alignItems: 'center',
     paddingTop: 20,
   },
   header: {
-    backgroundColor: 'white',
+    backgroundColor: 'grey',
     width: '100%',
     alignItems: 'center',
     paddingBottom: 30,
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 15,
     paddingHorizontal: 20,
-    backgroundColor: 'black',
+    backgroundColor: 'grey',
     borderRadius: 10,
     marginBottom: 10,
   },

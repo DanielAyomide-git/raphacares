@@ -120,14 +120,14 @@ export default function RegisterPage() {
           placeholder="Enter your First Name"
           value={firstName}
           onChangeText={setFirstName}
-          placeholderTextColor="#706d6d"
+          placeholderTextColor="#c9cacd"
         />
         <TextInput
           style={styles.input}
           placeholder="Enter your Last Name"
           value={lastName}
           onChangeText={setLastName}
-          placeholderTextColor="#706d6d"
+          placeholderTextColor="#c9cacd"
         />
         <TextInput
           style={styles.input}
@@ -136,7 +136,7 @@ export default function RegisterPage() {
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
-          placeholderTextColor="#706d6d"
+          placeholderTextColor="#c9cacd"
         />
         <TextInput
           style={styles.input}
@@ -144,7 +144,7 @@ export default function RegisterPage() {
           secureTextEntry
           value={password}
           onChangeText={setPassword}
-          placeholderTextColor="#706d6d"
+          placeholderTextColor="#c9cacd"
         />
         <TextInput
           style={styles.input}
@@ -152,7 +152,7 @@ export default function RegisterPage() {
           value={phoneNumber}
           onChangeText={setPhoneNumber}
           keyboardType="phone-pad"
-          placeholderTextColor="#706d6d"
+          placeholderTextColor="#c9cacd"
         />
 
         {/* Sign Up Button */}

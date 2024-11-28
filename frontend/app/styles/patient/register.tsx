@@ -35,8 +35,8 @@ const registerStyles = StyleSheet.create({
   input: {
     width: '80%',
     paddingHorizontal: 0,
-    paddingVertical: 10,
-    backgroundColor: '#E0E0E0',
+    paddingVertical: 7,
+    backgroundColor: 'white',
     borderRadius: 25,
     marginBottom: 20,
     textAlign: 'center',
