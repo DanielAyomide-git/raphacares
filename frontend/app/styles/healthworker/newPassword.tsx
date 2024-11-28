@@ -1,5 +1,16 @@
 import { StyleSheet } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
+export const GradientBackground: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <LinearGradient
+      colors={["#FFB815", "white"]} // From yellow to white
+      style={styles.container} // Apply the container styles for layout
+    >
+      {children}
+    </LinearGradient>
+  );
+};
 
 export const styles = StyleSheet.create({
   container: {
@@ -48,6 +59,8 @@ export const styles = StyleSheet.create({
   },
   loader: {
     marginTop: 20,
+    color:"#FFB815",
+
   },
   errorText: {
     color: "red",

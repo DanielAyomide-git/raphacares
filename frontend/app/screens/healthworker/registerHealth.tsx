@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TextInput,
-  Alert,
   Animated,
   TouchableOpacity,
   ActivityIndicator,
@@ -25,6 +24,7 @@ export default function RegisterPage() {
   const [category, setCategory] = useState(""); // For practitioner type
   const [loading, setLoading] = useState(false);
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [errorText, setErrorText] = useState(""); // State for error messages
 
   const router = useRouter();
   const slideAnim = useRef(new Animated.Value(500)).current;
@@ -51,8 +51,10 @@ export default function RegisterPage() {
   }
 
   const handleRegister = async () => {
+    setErrorText(""); // Clear previous errors
+
     if (!category) {
-      Alert.alert("Error", "Please select a category");
+      setErrorText("Please select a category");
       return;
     }
 
@@ -78,16 +80,13 @@ export default function RegisterPage() {
 
     try {
       const response = await register(userData);
-      if (response.message === "User registered successfully") {
-        Alert.alert("Success", "Registration successful");
-        router.push("./app");
-      } else {
-        Alert.alert("Error", response.message || "An error occurred");
-      }
+      console.log("Registration successful:", response.message);
+      setLoading(false); // Stop loading
+      router.push("./app"); // Navigate to the app after successful registration
     } catch (error: any) {
-      Alert.alert("Error", error.message || "Registration failed. Please try again.");
-    } finally {
-      setLoading(false);
+      console.error("Registration failed:", error.message);
+      setLoading(false); // Stop loading
+      setErrorText(error.message || "Something went wrong!"); // Show error message on failure
     }
   };
 
@@ -172,6 +171,11 @@ export default function RegisterPage() {
               <Text style={styles.signUpText}>Sign Up</Text>
             )}
           </TouchableOpacity>
+
+          {/* Error Message */}
+          {errorText ? (
+            <Text style={styles.errorText}>{errorText}</Text>
+          ) : null}
 
           <TouchableOpacity style={styles.loginContainer}>
             <Text onPress={() => router.push("./healthWorker")} style={styles.loginText}>

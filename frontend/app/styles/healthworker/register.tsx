@@ -75,6 +75,12 @@ export const styles = StyleSheet.create({
     fontFamily: "Poppins",
     color: "black",
   },
+  errorText: {
+    color: 'red',
+    fontSize: 14,
+    marginTop: 10,
+    textAlign: 'center',
+  },
   signUpButton: {
     backgroundColor: "#FAD02E",
     paddingVertical: 15,

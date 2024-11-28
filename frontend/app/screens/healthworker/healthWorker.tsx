@@ -7,22 +7,22 @@ import {
   Image,
   ActivityIndicator,
   Animated,
-  Alert,
-  ScrollView, // Import ScrollView
+  ScrollView,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import * as Font from "expo-font";
 import { styles } from "@/app/styles/healthworker/login";
 import { Picker } from "@react-native-picker/picker";
-import { loginApi } from "@/app/api/login"; // Import login API function
+import { loginApi } from "@/app/api/login";
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [practitionerType, setPractitionerType] = useState<string>(""); // State for user type selection
+  const [practitionerType, setPractitionerType] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [fontsLoaded, setFontsLoaded] = useState<boolean>(false);
+  const [error, setError] = useState<string>(""); // Error state for messages
   const router = useRouter();
   const slideAnim = useRef(new Animated.Value(500)).current;
 
@@ -50,34 +50,31 @@ export default function LoginPage() {
 
   // Handle Login
   const handleLogin = async () => {
+    setError(""); // Clear previous errors
+
     if (!email || !password) {
-      Alert.alert("Error", "Please enter both email and password.");
+      setError("Please enter both email and password.");
       return;
     }
 
     if (!practitionerType) {
-      Alert.alert("Error", "Please select your user type.");
+      setError("Please select your user type.");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      // Call login API function
       const response = await loginApi(email, password, practitionerType);
 
-      // Check if response status is 200 OK
       if (response?.status === 200) {
-        Alert.alert("Success", "Login successful!");
-        router.push("./app"); // Navigate to the app
+        router.push("./app");
       } else {
-        Alert.alert("Error", response?.data?.message || "Invalid credentials.");
+        setError(response?.data?.message || "Invalid credentials.");
       }
     } catch (error: any) {
-      console.error("Login error:", error);
-      Alert.alert(
-        "Error",
-        error instanceof Error ? error.message : "Error logging in. Please try again."
+      setError(
+        error instanceof Error ? error.message : "Invalid credentials"
       );
     } finally {
       setIsLoading(false);
@@ -112,7 +109,6 @@ export default function LoginPage() {
             />
           </View>
 
-          {/* User Type Dropdown */}
           <View style={styles.pickerContainer}>
             <Picker
               selectedValue={practitionerType}
@@ -155,7 +151,9 @@ export default function LoginPage() {
             )}
           </TouchableOpacity>
 
-          {/* Register Link */}
+          {/* Error Message */}
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
           <TouchableOpacity
             onPress={() => router.push("./registerHealth")}
             style={styles.registerLink}

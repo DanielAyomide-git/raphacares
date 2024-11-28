@@ -4,7 +4,7 @@ import { LinearGradient } from "expo-linear-gradient";
 export const GradientBackground: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <LinearGradient
-      colors={["#FFB815", "white"]} // From yellow to white
+      colors={["#00CDF9", "white"]} // From yellow to white
       style={styles.container} // Apply the container styles for layout
     >
       {children}
@@ -15,12 +15,13 @@ export const GradientBackground: React.FC<{ children: React.ReactNode }> = ({ ch
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#f9f9f9",
   },
   scrollContent: {
-    flexGrow: 1, // Allow the content to grow and scroll if needed
-    justifyContent: "center", // Center the content vertically when there's space
+    flexGrow: 1, // Ensures the content can stretch and scroll
+    justifyContent: "center", // Centers vertically
     alignItems: "center",
-    paddingVertical: 20,
+    paddingVertical: 20, // Adds padding around the scrollable content
   },
   card: {
     width: "90%",
@@ -38,12 +39,6 @@ export const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 20,
     textAlign: "center",
   },
   input: {
@@ -65,6 +60,7 @@ export const styles = StyleSheet.create({
   loader: {
     marginTop: 20,
     color:"#FFB815",
+
   },
   errorText: {
     color: "red",
@@ -72,3 +68,4 @@ export const styles = StyleSheet.create({
     marginBottom: 20,
   },
 });
+

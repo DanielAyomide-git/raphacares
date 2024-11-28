@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
-import { styles } from "@/app/styles/healthworker/resetPassword"; // Assuming styles are defined here
+import {GradientBackground, styles } from "@/app/styles/patient/resetPassword"; // Assuming styles are defined here
 import { requestResetToken } from "../../api/resetPassword"; // Import the API call
 
 const ResetPassword = () => {
@@ -49,6 +49,8 @@ const ResetPassword = () => {
 
   return (
     <View style={styles.container}>
+                <GradientBackground>
+
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <Animated.View style={[styles.card, animatedStyle]}>
           <Text style={styles.title}>Forgot Password?</Text>
@@ -71,6 +73,8 @@ const ResetPassword = () => {
           )}
         </Animated.View>
       </ScrollView>
+      </GradientBackground>
+
     </View>
   );
 };

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
-import { styles } from "@/app/styles/healthworker/resetPassword"; // Assuming styles are defined here
+import { GradientBackground, styles } from "@/app/styles/healthworker/resetPassword"; // Assuming styles are defined here
 import { resetPassword } from "../../api/newPassword"; // Import the resetPassword API function
 
 // Type for the error
@@ -52,7 +52,7 @@ const ResetPassword: React.FC = () => {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError("Something went wrong. Please try again.");
+        setError("Invalid OTP or Password too short");
       }
     } finally {
       setLoading(false); // Stop loading after the API request is complete
@@ -61,6 +61,8 @@ const ResetPassword: React.FC = () => {
 
   return (
     <View style={styles.container}>
+          <GradientBackground>
+
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <Animated.View style={[styles.card, animatedStyle]}>
           <Text style={styles.title}>Enter OTP</Text>
@@ -89,6 +91,8 @@ const ResetPassword: React.FC = () => {
           {loading && <ActivityIndicator size="large" color="blue" style={styles.loader} />}
         </Animated.View>
       </ScrollView>
+      </GradientBackground>
+
     </View>
   );
 };

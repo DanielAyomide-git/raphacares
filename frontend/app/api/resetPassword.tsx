@@ -13,7 +13,7 @@ export const requestResetToken = async (email: string) => {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || "Something went wrong. Please try again.");
+      throw new Error(data.message || "Email does not exists");
     }
 
     return data; // Return response data if the request is successful

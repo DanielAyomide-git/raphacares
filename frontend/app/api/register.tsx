@@ -44,6 +44,6 @@ export const register = async (userData: RegisterRequest): Promise<RegisterRespo
     return response.data;
   } catch (error: any) {
     console.error("Error during registration:", error.response?.data || error);
-    throw new Error(error.response?.data?.message || "Registration failed");
+    throw new Error(error.response?.data?.message || "Enter all entries correctly");
   }
 };

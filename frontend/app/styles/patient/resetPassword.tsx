@@ -4,7 +4,7 @@ import { LinearGradient } from "expo-linear-gradient";
 export const GradientBackground: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <LinearGradient
-      colors={["#FFB815", "white"]} // From yellow to white
+      colors={["#00CDF9", "white"]} // From yellow to white
       style={styles.container} // Apply the container styles for layout
     >
       {children}

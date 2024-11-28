@@ -24,7 +24,14 @@ const indexStyles = StyleSheet.create({
     height: "100%",
     justifyContent: "flex-end",
     alignItems: "center",
+
   },
+  animatedBackground: {
+    position: "absolute",
+    width: "100%",
+    height: "50%",
+  },
+ 
   animatedContainer: {
     flex: 1,
     width: "100%",
@@ -52,12 +59,12 @@ const indexStyles = StyleSheet.create({
     overflow: "hidden",
   },
   questionContainer: {
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
     marginBottom: 20,
-    marginTop: 40,
+    marginTop: 370,
   },
   questionText: {
     fontSize: 20,

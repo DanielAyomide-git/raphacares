@@ -13,9 +13,10 @@ const styles = StyleSheet.create({
       backgroundColor: "white",
     },
     welcomeTitle: {
-      fontSize: 24,
-      fontFamily: "Poppins-Bold",
-      color: "#007BFF",
+      fontFamily: "Poppins",
+      fontSize: 50,
+      color: "#0041F9",
+      textAlign: "center",
     },
     header: {
       flexDirection: "row",
