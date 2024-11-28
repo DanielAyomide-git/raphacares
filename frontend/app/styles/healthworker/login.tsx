@@ -45,7 +45,13 @@ export const styles = StyleSheet.create({
     marginBottom: 5,
     textAlign: "center",
   },
-
+  scrollViewContainer: {
+    flexGrow: 1, // Ensures the content grows to take up available space
+    justifyContent: "center", // Vertically centers the content
+    alignItems: "center", // Horizontally centers the content
+    paddingHorizontal: 20, // Adds padding on the left and right for better spacing
+    paddingBottom: 20, // Adds padding at the bottom to ensure buttons are not cut off
+  },
   
   picker: {
     height: 50,

@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Animated,
   Alert,
+  ScrollView, // Import ScrollView
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -90,88 +91,90 @@ export default function LoginPage() {
       end={{ x: 1, y: 1 }}
       style={styles.gradientContainer}
     >
-      <Animated.View
-        style={[styles.container, { transform: [{ translateX: slideAnim }] }]}
-      >
-        <Text style={styles.title}>Login as Health Worker</Text>
+      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        <Animated.View
+          style={[styles.container, { transform: [{ translateX: slideAnim }] }]}
+        >
+          <Text style={styles.title}>Login as Health Worker</Text>
 
-        <View style={styles.socialIcons}>
-          <Image
-            source={require("../../assets/facebook.png")}
-            style={styles.icon}
-          />
-          <Image
-            source={require("../../assets/google.png")}
-            style={styles.icon}
-          />
-          <Image
-            source={require("../../assets/apple.png")}
-            style={styles.icon}
-          />
-        </View>
-
-        {/* User Type Dropdown */}
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={practitionerType}
-            onValueChange={(itemValue) => setPractitionerType(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="Select Category" value="" />
-            <Picker.Item label="Doctor" value="doctor" />
-            <Picker.Item label="Nurse" value="nurse" />
-            <Picker.Item
-              label="Community Health Worker"
-              value="community_health"
+          <View style={styles.socialIcons}>
+            <Image
+              source={require("../../assets/facebook.png")}
+              style={styles.icon}
             />
-          </Picker>
-        </View>
+            <Image
+              source={require("../../assets/google.png")}
+              style={styles.icon}
+            />
+            <Image
+              source={require("../../assets/apple.png")}
+              style={styles.icon}
+            />
+          </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          placeholderTextColor="#c9cacd"
-        />
+          {/* User Type Dropdown */}
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={practitionerType}
+              onValueChange={(itemValue) => setPractitionerType(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select Category" value="" />
+              <Picker.Item label="Doctor" value="doctor" />
+              <Picker.Item label="Nurse" value="nurse" />
+              <Picker.Item
+                label="Community Health Worker"
+                value="community_health"
+              />
+            </Picker>
+          </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your Password"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-          placeholderTextColor="#c9cacd"
-        />
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your Email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            placeholderTextColor="#c9cacd"
+          />
 
-        <TouchableOpacity onPress={handleLogin} style={styles.signInButton}>
-          {isLoading ? (
-            <ActivityIndicator size="small" color="#000" />
-          ) : (
-            <Text style={styles.signInText}>Login</Text>
-          )}
-        </TouchableOpacity>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your Password"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+            placeholderTextColor="#c9cacd"
+          />
 
-        {/* Register Link */}
-        <TouchableOpacity
-          onPress={() => router.push("./registerHealth")}
-          style={styles.registerLink}
-        >
-          <Text style={styles.registerText}>Register as New User</Text>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={handleLogin} style={styles.signInButton}>
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#000" />
+            ) : (
+              <Text style={styles.signInText}>Login</Text>
+            )}
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => router.push("./resetPassword")}
-          style={styles.resetPassword}
-        >
-          <Text style={styles.resetPasswordText}>Reset Password</Text>
-        </TouchableOpacity>
+          {/* Register Link */}
+          <TouchableOpacity
+            onPress={() => router.push("./registerHealth")}
+            style={styles.registerLink}
+          >
+            <Text style={styles.registerText}>Register as New User</Text>
+          </TouchableOpacity>
 
-        <Text style={styles.terms}>
-          By Using This App, You Agree To The App's Terms And Conditions.
-        </Text>
-      </Animated.View>
+          <TouchableOpacity
+            onPress={() => router.push("./resetPassword")}
+            style={styles.resetPassword}
+          >
+            <Text style={styles.resetPasswordText}>Reset Password</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.terms}>
+            By Using This App, You Agree To The App's Terms And Conditions.
+          </Text>
+        </Animated.View>
+      </ScrollView>
     </LinearGradient>
   );
 }

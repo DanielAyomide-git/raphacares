@@ -7,6 +7,7 @@ import {
   Animated,
   TouchableOpacity,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Font from "expo-font";
@@ -97,87 +98,92 @@ export default function RegisterPage() {
       end={{ x: 0.5, y: 1 }}
       style={styles.gradientContainer}
     >
-      <Animated.View style={[styles.container, { transform: [{ translateX: slideAnim }] }]}>
-        <Text style={styles.title}>Sign up as Health Worker</Text>
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContainer} // Add this to style the scrollable content
+        keyboardShouldPersistTaps="handled"
+      >
+        <Animated.View style={[styles.container, { transform: [{ translateX: slideAnim }] }]}>
+          <Text style={styles.title}>Sign up as Health Worker</Text>
 
-        {/* Category Dropdown */}
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={category}
-            onValueChange={(itemValue) => setCategory(itemValue)}
-            style={styles.picker}
+          {/* Category Dropdown */}
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={category}
+              onValueChange={(itemValue) => setCategory(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select Category" value="" />
+              <Picker.Item label="Doctor" value="doctor" />
+              <Picker.Item label="Nurse" value="nurse" />
+              <Picker.Item label="Community Health Worker" value="community_health_worker" />
+            </Picker>
+          </View>
+
+          {/* Input Fields */}
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your First Name"
+            value={firstName}
+            onChangeText={setFirstName}
+            placeholderTextColor="#c9cacd"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your Last Name"
+            value={lastName}
+            onChangeText={setLastName}
+            placeholderTextColor="#c9cacd"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your Email Address"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            placeholderTextColor="#c9cacd"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your Password"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+            placeholderTextColor="#c9cacd"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your Phone Number"
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+            keyboardType="phone-pad"
+            placeholderTextColor="#c9cacd"
+          />
+
+          {/* Sign Up Button */}
+          <TouchableOpacity
+            style={[styles.signUpButton, loading && { backgroundColor: "#E0E0E0" }]}
+            onPress={handleRegister}
+            disabled={loading}
           >
-            <Picker.Item label="Select Category" value="" />
-            <Picker.Item label="Doctor" value="doctor" />
-            <Picker.Item label="Nurse" value="nurse" />
-            <Picker.Item label="Community Health Worker" value="community_health_worker" />
-          </Picker>
-        </View>
+            {loading ? (
+              <ActivityIndicator size="small" color="#5c5a5a" />
+            ) : (
+              <Text style={styles.signUpText}>Sign Up</Text>
+            )}
+          </TouchableOpacity>
 
-        {/* Input Fields */}
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your First Name"
-          value={firstName}
-          onChangeText={setFirstName}
-          placeholderTextColor="#c9cacd"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your Last Name"
-          value={lastName}
-          onChangeText={setLastName}
-          placeholderTextColor="#c9cacd"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your Email Address"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          placeholderTextColor="#c9cacd"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your Password"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-          placeholderTextColor="#c9cacd"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your Phone Number"
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-          keyboardType="phone-pad"
-          placeholderTextColor="#c9cacd"
-        />
+          <TouchableOpacity style={styles.loginContainer}>
+            <Text onPress={() => router.push("./healthWorker")} style={styles.loginText}>
+              Already a user? Login
+            </Text>
+          </TouchableOpacity>
 
-        {/* Sign Up Button */}
-        <TouchableOpacity
-          style={[styles.signUpButton, loading && { backgroundColor: "#E0E0E0" }]}
-          onPress={handleRegister}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator size="small" color="#5c5a5a" />
-          ) : (
-            <Text style={styles.signUpText}>Sign Up</Text>
-          )}
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.loginContainer}>
-          <Text onPress={() => router.push("./healthWorker")} style={styles.loginText}>
-            Already a user? Login
+          <Text style={styles.terms}>
+            By Using This App, You Agree To The App's Terms And Conditions.
           </Text>
-        </TouchableOpacity>
-
-        <Text style={styles.terms}>
-          By Using This App, You Agree To The App's Terms And Conditions.
-        </Text>
-      </Animated.View>
+        </Animated.View>
+      </ScrollView>
     </LinearGradient>
   );
 }
