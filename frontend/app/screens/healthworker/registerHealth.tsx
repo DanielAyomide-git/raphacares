@@ -14,6 +14,8 @@ import { useRouter } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
 import { register, RegisterRequest } from "@/app/api/register"; // Ensure correct import path
 import { styles } from "@/app/styles/healthworker/register";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -50,45 +52,51 @@ export default function RegisterPage() {
     return null;
   }
 
-  const handleRegister = async () => {
-    setErrorText(""); // Clear previous errors
 
-    if (!category) {
-      setErrorText("Please select a category");
-      return;
-    }
+const handleRegister = async () => {
+  setErrorText(""); // Clear previous errors
 
-    const userData: RegisterRequest = {
-      auth_details: {
-        email,
-        password,
-        user_type: "medical_practitioner",
-        auth_type: "local",
-      },
-      profile_details: {
-        first_name: firstName,
-        last_name: lastName,
-        phone_number: phoneNumber,
-        practitioner_type: category,
-        is_verified: false,
-        is_available: true,
-        user_type: "medical_practitioner",
-      },
-    };
+  if (!category) {
+    setErrorText("Please select a category");
+    return;
+  }
 
-    setLoading(true);
-
-    try {
-      const response = await register(userData);
-      console.log("Registration successful:", response.message);
-      setLoading(false); // Stop loading
-      router.push("./app"); // Navigate to the app after successful registration
-    } catch (error: any) {
-      console.error("Registration failed:", error.message);
-      setLoading(false); // Stop loading
-      setErrorText(error.message || "Something went wrong!"); // Show error message on failure
-    }
+  const userData: RegisterRequest = {
+    auth_details: {
+      email,
+      password,
+      user_type: "medical_practitioner",
+      auth_type: "local",
+    },
+    profile_details: {
+      first_name: firstName,
+      last_name: lastName,
+      phone_number: phoneNumber,
+      practitioner_type: category,
+      is_verified: false,
+      is_available: true,
+      user_type: "medical_practitioner",
+    },
   };
+
+  setLoading(true);
+
+  try {
+    const response = await register(userData);
+    console.log("Registration successful:", response.message);
+
+    // Save user data in AsyncStorage
+    await AsyncStorage.setItem("userData", JSON.stringify(userData));
+
+    setLoading(false); // Stop loading
+    router.push("./otp"); // Navigate to the OTP page after successful registration
+  } catch (error: any) {
+    console.error("Registration failed:", error.message);
+    setLoading(false); // Stop loading
+    setErrorText(error.message || "Something went wrong!"); // Show error message on failure
+  }
+};
+
 
   return (
     <LinearGradient

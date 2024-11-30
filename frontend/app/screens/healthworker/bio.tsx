@@ -21,7 +21,7 @@ export default function BioPage() {
           <View style={styles.nameContainer}>
             <Text style={styles.roleText}>Doctor</Text>
           </View>
-          <Ionicons name="pencil-outline" size={20} color="black" style={styles.editIcon} />
+          <Ionicons name="pencil-outline" size={20} color="white" style={styles.editIcon} />
         </View>
      
 
@@ -30,8 +30,8 @@ export default function BioPage() {
         <Text style={styles.sectionTitle}>PROFILE</Text>
         <View style={styles.infoRow}>
           <Ionicons name="person-outline" size={24} color="black" />
-          <Text style={styles.infoLabel}>Username</Text>
-          <Text style={styles.infoText}>MorganJamesDesigner</Text>
+          <Text style={styles.infoLabel}>Full name</Text>
+          <Text style={styles.infoText}>FirstName LastName</Text>
         </View>
 
         <View style={styles.infoRow}>
@@ -44,6 +44,11 @@ export default function BioPage() {
           <Ionicons name="mail-outline" size={24} color="black" />
           <Text style={styles.infoLabel}>Email</Text>
           <Text style={styles.infoText}>mjdesigner@gmail.com</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Ionicons name="medkit-outline" size={24} color="black" />
+          <Text style={styles.infoLabel}>Specialization</Text>
+          <Text style={styles.infoText}>Specialization</Text>
         </View>
       </View>
 

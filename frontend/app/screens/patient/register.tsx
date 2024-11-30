@@ -66,7 +66,7 @@ export default function RegisterPage() {
         first_name: firstName,
         last_name: lastName,
         phone_number: phoneNumber,
-        practitioner_type: 'general', // Modify as needed
+        practitioner_type: '', // Modify as needed
         is_verified: false, // Set default value or modify as needed
         is_available: true, // Set default value or modify as needed
         user_type: 'patient',
@@ -77,7 +77,7 @@ export default function RegisterPage() {
       const response = await register(userData);
       console.log('Registration successful:', response.message);
       setLoading(false); // Stop loading
-      router.push('./app'); // Navigate to the app after successful registration
+      router.push('./login'); // Navigate to the app after successful registration
     } catch (error: any) {
       console.error('Registration failed:', error.message);
       setLoading(false); // Stop loading

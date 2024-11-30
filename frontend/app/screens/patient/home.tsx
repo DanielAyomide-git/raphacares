@@ -17,7 +17,10 @@ import Animated, {
   withTiming,
   withDelay,
 } from "react-native-reanimated";
-import styles from "../../styles/patient/home"
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_BASE_URL } from "../../api/config"; // Assuming this is your API base URL
+import {jwtDecode} from "jwt-decode";
+import styles from "../../styles/patient/home";
 
 // Define navigation types
 type RootStackParamList = {
@@ -37,6 +40,9 @@ type Service = {
 export default function PatientDashboard() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
+  const [patientName, setPatientName] = useState<string>("");
+  const [patientAvatar, setPatientAvatar] = useState<string>("");
+
   const navigation = useNavigation<NavigationProp>();
 
   const welcomeX = useSharedValue(300); // Welcome text starts off-screen to the right
@@ -73,6 +79,45 @@ export default function PatientDashboard() {
     welcomeX.value = withTiming(0, { duration: 1000 });
 
     return () => clearTimeout(timer);
+  }, []);
+
+  const fetchPatientData = async () => {
+    try {
+      const token = await AsyncStorage.getItem("access_token");
+      if (!token) {
+        throw new Error("Token not found");
+      }
+
+      // Decode the token (Assume JWT format for decoding)
+      const decodedToken = jwtDecode(token) as { profile_id: string };
+      const { profile_id } = decodedToken;
+
+      const response = await fetch(`${API_BASE_URL}/patients/${profile_id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch patient data");
+      }
+
+      const data = await response.json();
+      if (data.status === "success" && data.data) {
+        // Combine first_name and last_name into a full name
+        const fullName = `${data.data.first_name} ${data.data.last_name}`;
+        setPatientName(fullName);
+        setPatientAvatar(data.data.avatar_url); // Assuming avatar URL is in the response
+      } else {
+        throw new Error("Patient data not found");
+      }
+    } catch (error) {
+      console.error("Error fetching patient data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPatientData();
   }, []);
 
   const welcomeStyle = useAnimatedStyle(() => ({
@@ -118,10 +163,10 @@ export default function PatientDashboard() {
       <View style={styles.header}>
         <View>
           <Text style={styles.welcomeText}>Welcome</Text>
-          <Text style={styles.nameText}>Donna Troy</Text>
+          <Text style={styles.nameText}>{patientName || "Loading..."}</Text>
         </View>
         <Image
-          source={{ uri: "https://i.pravatar.cc/300?u=po" }}
+          source={{ uri: patientAvatar || "https://i.pravatar.cc/300?u=po" }}
           style={styles.profileImage}
         />
       </View>
@@ -164,10 +209,9 @@ export default function PatientDashboard() {
             source={{ uri: "https://bit.ly/dan-abramov" }}
             style={styles.doctorImage}
           />
-          <Text style={styles.doctorName}>dr Indah Kusumaningrum</Text>
+          <Text style={styles.doctorName}>Dr. Indah Kusumaningrum</Text>
         </View>
       </View>
     </Animated.ScrollView>
   );
 }
-

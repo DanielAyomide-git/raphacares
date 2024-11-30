@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,8 @@ import {
   Animated,
   ScrollView,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {jwtDecode} from "jwt-decode";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import * as Font from "expo-font";
@@ -22,11 +24,10 @@ export default function LoginPage() {
   const [practitionerType, setPractitionerType] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [fontsLoaded, setFontsLoaded] = useState<boolean>(false);
-  const [error, setError] = useState<string>(""); // Error state for messages
+  const [error, setError] = useState<string>("");
   const router = useRouter();
   const slideAnim = useRef(new Animated.Value(500)).current;
 
-  // Load fonts
   useEffect(() => {
     const loadFonts = async () => {
       await Font.loadAsync({
@@ -39,7 +40,6 @@ export default function LoginPage() {
     loadFonts();
   }, []);
 
-  // Slide animation
   useEffect(() => {
     Animated.timing(slideAnim, {
       toValue: 0,
@@ -48,38 +48,44 @@ export default function LoginPage() {
     }).start();
   }, []);
 
-  // Handle Login
   const handleLogin = async () => {
-    setError(""); // Clear previous errors
-
-    if (!email || !password) {
-      setError("Please enter both email and password.");
-      return;
-    }
-
-    if (!practitionerType) {
-      setError("Please select your user type.");
-      return;
-    }
-
+    setError("");
+  
+    // if (!email || !password || !practitionerType) {
+    //   setError("All fields are required.");
+    //   return;
+    // }
+  
     setIsLoading(true);
-
+  
     try {
       const response = await loginApi(email, password, practitionerType);
-
+  
       if (response?.status === 200) {
+        const { access_token } = response.data; // Extract the access_token
+        if (!access_token) {
+          throw new Error("Access token missing in API response.");
+        }
+  
+        // Save the access_token in AsyncStorage
+        await AsyncStorage.setItem("access_token", access_token);
+  
+        // Decode the access_token to extract user information
+        const decoded: { user_id: string } = jwtDecode(access_token);
+        await AsyncStorage.setItem("user_id", decoded.user_id);
+  
+        // Navigate to the app's dashboard
         router.push("./app");
       } else {
         setError(response?.data?.message || "Invalid credentials.");
       }
     } catch (error: any) {
-      setError(
-        error instanceof Error ? error.message : "Invalid credentials"
-      );
+      setError(error instanceof Error ? error.message : "An error occurred.");
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <LinearGradient
@@ -109,7 +115,7 @@ export default function LoginPage() {
             />
           </View>
 
-          <View style={styles.pickerContainer}>
+          {/* <View style={styles.pickerContainer}>
             <Picker
               selectedValue={practitionerType}
               onValueChange={(itemValue) => setPractitionerType(itemValue)}
@@ -123,7 +129,7 @@ export default function LoginPage() {
                 value="community_health"
               />
             </Picker>
-          </View>
+          </View> */}
 
           <TextInput
             style={styles.input}
@@ -151,7 +157,6 @@ export default function LoginPage() {
             )}
           </TouchableOpacity>
 
-          {/* Error Message */}
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
           <TouchableOpacity

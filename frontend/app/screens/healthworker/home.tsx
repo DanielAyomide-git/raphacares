@@ -1,23 +1,38 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  FlatList,
-  Image,
-  Animated, // Import Animated API
-} from "react-native";
+import { View, Text, TextInput, FlatList, Image, Animated, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {jwtDecode} from "jwt-decode";
+import { API_BASE_URL } from "../../api/config";
+import { styles } from "../../styles/healthworker/home";
 
-export default function DoctorDashboard() {
-  const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(true); // State to control Welcome message visibility
+// Define the type for the decoded JWT
+interface DecodedToken {
+  profile_id: string;
+  user_type: string;
+  user_id: string;
+  id: string;
+}
 
-  // Create animated value for sliding
-  const slideAnim = useRef(new Animated.Value(500)).current; // Start from off-screen right
-  const welcomeSlideAnim = useRef(new Animated.Value(500)).current; // Animated value for welcome message
+// Define the type for profile data fetched from the API
+interface Data {
+  first_name: string;
+  practitioner_type: string;
+}
+
+export default function Dashboard(): JSX.Element {
+  const [fontsLoaded, setFontsLoaded] = useState<boolean>(false);
+  const [showWelcome, setShowWelcome] = useState<boolean>(true); // State to control Welcome message visibility
+  const [userType, setUserType] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>(""); // State to store user's first name
+  const [initial, setInitial] = useState<string>(""); // State to store user's first name
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null); // For handling errors
+
+  // Create animated values for sliding effects
+  const slideAnim = useRef(new Animated.Value(500)).current; // Start from off-screen
+  const welcomeSlideAnim = useRef(new Animated.Value(500)).current;
 
   useEffect(() => {
     // Load fonts
@@ -25,39 +40,78 @@ export default function DoctorDashboard() {
       await Font.loadAsync({
         Poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
         "Poppins-Bold": require("../../assets/fonts/Poppins-Bold.ttf"),
-        "poppins-Semibold": require("../../assets/fonts/Poppins-SemiBold.ttf"),
-
+        "Poppins-Semibold": require("../../assets/fonts/Poppins-SemiBold.ttf"),
       });
       setFontsLoaded(true);
     };
-    loadFonts();
 
-    // Trigger slide-in animation for the "Welcome to Raphacares" message
+    loadFonts();
+    animateComponents();
+    fetchProfileData();
+  }, []);
+
+  const animateComponents = () => {
+    // Trigger slide-in animation for welcome message
     Animated.timing(welcomeSlideAnim, {
-      toValue: 0, // Slide to original position
-      duration: 1000, // Animation duration in milliseconds (4 seconds)
-      useNativeDriver: true, // Use native driver for better performance
+      toValue: 0,
+      duration: 1000,
+      useNativeDriver: true,
     }).start();
 
     // Trigger slide-in animation for the dashboard
     Animated.timing(slideAnim, {
-      toValue: 0, // Slide to original position
-      duration: 5000, // Animation duration in milliseconds 
-      useNativeDriver: true, // Use native driver for better performance
+      toValue: 0,
+      duration: 5000,
+      useNativeDriver: true,
     }).start();
 
-    // Set timeout to hide the welcome message 
-    const timer = setTimeout(() => {
-      setShowWelcome(false); // Hide Welcome message 
-    }, 3000);
+    // Hide the welcome message after 3 seconds
+    setTimeout(() => setShowWelcome(false), 3000);
+  };
 
-    // Clean up timeout on unmount
-    return () => clearTimeout(timer);
-  }, [slideAnim, welcomeSlideAnim]);
+  const fetchProfileData = async () => {
+    try {
+      // Get token from AsyncStorage
+      const token = await AsyncStorage.getItem("access_token");
+      if (!token) throw new Error("Access token not found. Please log in again.");
 
-  if (!fontsLoaded) {
-    return null; // Show a loading screen if fonts aren't loaded yet
-  }
+      // Decode the token to get user info
+      const decodedToken: DecodedToken = jwtDecode<DecodedToken>(token);
+      const { profile_id, user_type } = decodedToken;
+
+      if (!profile_id ) {
+        throw new Error("Invalid token. Profile ID is missing.");
+            }
+
+      // Save user type to state
+      setUserType(user_type);
+
+      // Build the API endpoint
+      const endpoint = `${API_BASE_URL}/medical_practitioners/${profile_id}`;
+
+      // Fetch user profile
+      const response = await fetch(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch profile. Status: ${response.status}`);
+      }
+
+      const data: { status: string; data: Data } = await response.json();
+
+      if (data.status === "success" && data.data) {
+        setFirstName(data.data.first_name);
+        setInitial(data.data.practitioner_type);
+      } else {
+        throw new Error("Failed to fetch profile data.");
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Sample data for recent comments
   const comments = [
@@ -73,6 +127,22 @@ export default function DoctorDashboard() {
     },
   ];
 
+  if (loading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#FFB815" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       {/* Show "Welcome to Raphacares" for 3 seconds */}
@@ -80,7 +150,7 @@ export default function DoctorDashboard() {
         <Animated.View
           style={[
             styles.welcomeContainer,
-            { transform: [{ translateX: welcomeSlideAnim }] }, // Apply sliding effect to the welcome message
+            { transform: [{ translateX: welcomeSlideAnim }] },
           ]}
         >
           <Text style={styles.welcomeText1}>Welcome to Raphacares</Text>
@@ -90,7 +160,7 @@ export default function DoctorDashboard() {
         <Animated.View
           style={[
             styles.dashboardContainer,
-            { transform: [{ translateY: slideAnim }] }, // Apply sliding effect to the dashboard
+            { transform: [{ translateY: slideAnim }] },
           ]}
         >
           {/* Header */}
@@ -99,11 +169,15 @@ export default function DoctorDashboard() {
               source={{ uri: "https://bit.ly/dan-abramov" }}
               style={styles.avatar}
               accessible={true}
-              accessibilityLabel="Doctor's avatar"
+              accessibilityLabel={`${userType}'s avatar`}
             />
             <View>
               <Text style={styles.welcomeText}>Welcome</Text>
-              <Text style={styles.doctorText}>Dr. Jameson</Text>
+              <Text style={styles.doctorText}>
+              {initial.charAt(17).toUpperCase() + initial.slice(18)} {firstName.charAt(0).toUpperCase() + firstName.slice(1)}
+
+                 
+              </Text>
             </View>
             <Ionicons
               name="notifications-outline"
@@ -158,115 +232,3 @@ export default function DoctorDashboard() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-    paddingTop: 40,
-    paddingHorizontal: 20,
-  },
-  welcomeContainer: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: "white",
-    alignItems: "center",
-  },
-  welcomeText1: {
-    fontFamily: "Poppins",
-    fontSize: 50,
-    color: "#0041F9",
-    textAlign: "center",
-  },
-  welcomeText: {
-    fontFamily: "Poppins",
-    fontSize: 24,
-    color: "#0041F9",
-    textAlign: "center",
-  },
-  dashboardContainer: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  doctorText: {
-    fontFamily: "Poppins-SemiBold",
-    color: "#0041F9",
-    marginLeft: 10,
-    marginBottom: 20,
-  },
-  settingsIcon: {
-    marginLeft: "auto",
-  },
-  searchContainer: {
-    flexDirection: "row",
-    backgroundColor: "#E0E0E0",
-    borderRadius: 25,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  searchInput: {
-    flex: 1,
-    fontFamily: "Poppins",
-    fontSize: 14,
-  },
-  searchIcon: {
-    marginLeft: 10,
-  },
-  section: {
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontFamily: "Poppins-SemiBold",
-    color: "#0041F9",
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  appointmentBox: {
-    height: 100,
-    backgroundColor: "#F2F2F2",
-    borderRadius: 15,
-  },
-  commentsHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  commentItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 15,
-  },
-  commentAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#A0A0A0",
-    marginRight: 10,
-  },
-  commentTextContainer: {
-    flex: 1,
-  },
-  commentName: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 14,
-  },
-  commentDate: {
-    fontFamily: "Poppins",
-    fontSize: 10,
-    color: "#A0A0A0",
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginLeft: 2,
-    marginRight:10,
-    marginBottom:18,
-  },
-});
