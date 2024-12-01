@@ -13,6 +13,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 20,
   },
+  successText: {
+    color: "green", // Green color to indicate success
+    fontSize: 14, // Adjust font size as needed
+    textAlign: "center", // Center the text
+    marginTop: 10, // Add some spacing from the other elements
+    fontWeight: "bold", // Make the text bold
+  },
+  
   card: {
     width: "90%",
     maxWidth: 400,

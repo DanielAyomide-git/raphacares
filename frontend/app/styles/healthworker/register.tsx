@@ -47,6 +47,13 @@ export const styles = StyleSheet.create({
   loginContainer: {
     marginTop: 10,
   },
+  successText: {
+    color: 'green',
+    fontSize: 16,
+    textAlign: 'center',
+    marginVertical: 10,
+  },
+  
   pickerContainer: {
     width: "80%",
     marginBottom: 10,

@@ -43,6 +43,13 @@ const registerStyles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Poppins',
   },
+  successText: {
+    color: 'green',
+    fontSize: 16,
+    textAlign: 'center',
+    marginVertical: 10,
+  },
+  
   loginContainer: {
     marginTop: 30,
     marginBottom: 10,

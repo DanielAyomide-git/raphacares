@@ -6,12 +6,13 @@ import {
   Animated,
   TouchableOpacity,
   Image,
-  ScrollView, // Import ScrollView
+  ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Font from 'expo-font';
 import { useRouter } from 'expo-router';
-import registerStyles from '@/app/styles/patient/register'; // Import the styles from registerStyles.ts
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import registerStyles from '@/app/styles/patient/register';
 import { register, RegisterRequest } from "@/app/api/registerPatient"; // Ensure correct import path
 
 export default function RegisterPage() {
@@ -20,13 +21,14 @@ export default function RegisterPage() {
   const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [loading, setLoading] = useState(false); // Loading state for the register button
+  const [loading, setLoading] = useState(false);
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [errorText, setErrorText] = useState(''); // State for error messages
+  const [errorText, setErrorText] = useState('');
+  const [successText, setSuccessText] = useState(''); // For success messages
   const router = useRouter();
   const slideAnim = useRef(new Animated.Value(500)).current;
 
-  // Load Poppins font
+  // Load Poppins font and apply slide animation
   useEffect(() => {
     const loadFonts = async () => {
       await Font.loadAsync({
@@ -37,7 +39,6 @@ export default function RegisterPage() {
     };
     loadFonts();
 
-    // Slide animation
     Animated.timing(slideAnim, {
       toValue: 0,
       duration: 500,
@@ -50,9 +51,16 @@ export default function RegisterPage() {
   }
 
   const handleRegister = async () => {
-    // Clear any previous error message
+    // Clear previous messages
     setErrorText('');
-    setLoading(true); // Start loading
+    setSuccessText('');
+    setLoading(true);
+
+    if (!email || !password || !firstName || !lastName || !phoneNumber) {
+      setLoading(false);
+      setErrorText('All fields are required.');
+      return;
+    }
 
     // Construct the user data for registration
     const userData: RegisterRequest = {
@@ -67,21 +75,36 @@ export default function RegisterPage() {
         last_name: lastName,
         phone_number: phoneNumber,
         practitioner_type: '', // Modify as needed
-        is_verified: false, // Set default value or modify as needed
-        is_available: true, // Set default value or modify as needed
+        is_verified: false,
+        is_available: true,
         user_type: 'patient',
       },
     };
 
     try {
       const response = await register(userData);
-      console.log('Registration successful:', response.message);
-      setLoading(false); // Stop loading
-      router.push('./login'); // Navigate to the app after successful registration
+
+      // Display success message
+      setSuccessText(response.message);
+
+      // Save user data and password in AsyncStorage
+      await AsyncStorage.multiSet([
+        ['userData', JSON.stringify(userData)],
+        ['user_pwd', password],
+      ]);
+
+      console.log('User data saved to AsyncStorage.');
+
+      setLoading(false);
+
+      // Redirect to OTP page after a brief delay
+      setTimeout(() => {
+        router.push('./otp');
+      }, 2000);
     } catch (error: any) {
+      setLoading(false);
       console.error('Registration failed:', error.message);
-      setLoading(false); // Stop loading
-      setErrorText(error.message || 'Something went wrong!'); // Show error message on failure
+      setErrorText('User exists' );
     }
   };
 
@@ -92,7 +115,7 @@ export default function RegisterPage() {
       end={{ x: 0.5, y: 1 }}
       style={registerStyles.gradientContainer}
     >
-      <ScrollView contentContainerStyle={registerStyles.scrollViewContainer}> {/* Wrap everything inside ScrollView */}
+      <ScrollView contentContainerStyle={registerStyles.scrollViewContainer}>
         <Animated.View
           style={[registerStyles.container, { transform: [{ translateX: slideAnim }] }]}
         >
@@ -111,7 +134,6 @@ export default function RegisterPage() {
             placeholder="Enter your first name"
             value={firstName}
             onChangeText={setFirstName}
-            keyboardType="email-address"
             placeholderTextColor="#c9cacd"
           />
 
@@ -120,7 +142,6 @@ export default function RegisterPage() {
             placeholder="Enter your last name"
             value={lastName}
             onChangeText={setLastName}
-            keyboardType="email-address"
             placeholderTextColor="#c9cacd"
           />
 
@@ -153,22 +174,26 @@ export default function RegisterPage() {
           />
 
           {/* Error Message */}
-          {errorText ? (
-            <Text style={registerStyles.errorText}>{errorText}</Text>
+          {errorText ? <Text style={registerStyles.errorText}>{errorText}</Text> : null}
+
+          {/* Success Message */}
+          {successText ? (
+            <Text style={registerStyles.successText}>Redirecting...</Text>
           ) : null}
 
           {/* Sign Up Button */}
-          <TouchableOpacity onPress={handleRegister} style={registerStyles.signUpButton}>
+          <TouchableOpacity
+            onPress={handleRegister}
+            style={[registerStyles.signUpButton, loading && { backgroundColor: '#E0E0E0' }]}
+            disabled={loading}
+          >
             <Text style={registerStyles.signUpText}>
               {loading ? 'Signing up...' : 'Sign Up'}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={registerStyles.loginContainer}>
-            <Text
-              onPress={() => router.push('./login')}
-              style={registerStyles.loginText}
-            >
+            <Text onPress={() => router.push('./login')} style={registerStyles.loginText}>
               Already a user? Login
             </Text>
           </TouchableOpacity>

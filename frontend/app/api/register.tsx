@@ -24,10 +24,6 @@ export interface RegisterRequest {
   profile_details: ProfileDetails;
 }
 
-export interface RegisterResponse {
-  message: string;
-}
-
 // Create Axios instance
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -37,13 +33,19 @@ const apiClient = axios.create({
   },
 });
 
-// Register function
-export const register = async (userData: RegisterRequest): Promise<RegisterResponse> => {
+// Updated register function
+export const register = async (userData: RegisterRequest): Promise<any> => {
   try {
-    const response = await apiClient.post<RegisterResponse>("/auth/register", userData);
-    return response.data;
+    const response = await apiClient.post("/auth/register", userData);
+    return response.data; // Return entire response body
   } catch (error: any) {
     console.error("Error during registration:", error.response?.data || error);
-    throw new Error(error.response?.data?.message || "Enter all entries correctly");
+
+    // Throw the entire response data for better handling
+    if (error.response) {
+      throw error.response.data; // Backend error response
+    } else {
+      throw new Error("Network error or no response from server");
+    }
   }
 };

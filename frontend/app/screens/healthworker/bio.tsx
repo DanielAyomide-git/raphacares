@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
@@ -7,27 +7,36 @@ export default function BioPage() {
   const navigation = useNavigation();
 
   return (
-    <View style={styles.container}>
+    <ScrollView 
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent} // Optional for content padding
+    >
+      {/* Back Button */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()} // Go back to the previous screen
+      >
+        <Ionicons name="arrow-back" size={24} color="white" />
+      </TouchableOpacity>
+
       {/* Header */}
-      
-        <View style={styles.profileContainer}>
-          <Image 
-            source={{ uri: 'https://bit.ly/dan-abramov' }}
-            style={styles.profileImage}
-          />
-          <View style={styles.nameContainer}>
-            <Text style={styles.nameText}>Morgan James</Text>
-          </View>
-          <View style={styles.nameContainer}>
-            <Text style={styles.roleText}>Doctor</Text>
-          </View>
-          <Ionicons name="pencil-outline" size={20} color="white" style={styles.editIcon} />
+      <View style={styles.profileContainer}>
+        <Image 
+          source={{ uri: 'https://bit.ly/dan-abramov' }}
+          style={styles.profileImage}
+        />
+        <View style={styles.nameContainer}>
+          <Text style={styles.nameText}>Morgan James</Text>
         </View>
-     
+        <View style={styles.nameContainer}>
+          <Text style={styles.roleText}>Doctor</Text>
+        </View>
+        <Ionicons name="pencil-outline" size={20} color="white" style={styles.editIcon} />
+      </View>
 
       {/* Profile Details */}
       <View style={styles.detailsContainer}>
-        <Text style={styles.sectionTitle}>PROFILE</Text>
+        <Text style={styles.sectionTitle}>Bio</Text>
         <View style={styles.infoRow}>
           <Ionicons name="person-outline" size={24} color="black" />
           <Text style={styles.infoLabel}>Full name</Text>
@@ -69,7 +78,7 @@ export default function BioPage() {
         <Text style={styles.helpText}>Help and Feedback</Text>
         <Ionicons name="chevron-forward" size={18} color="black" />
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -80,17 +89,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 30,
   },
-  header: {
-    alignItems: 'center',
-  },
-  backIcon: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
+  scrollContent: {
+    paddingBottom: 20, // Add extra padding for smoother scrolling
   },
   profileContainer: {
     alignItems: 'center',
     marginTop: 20,
+  },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 15,
+    color: "white"
   },
   profileImage: {
     width: 100,

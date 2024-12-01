@@ -16,7 +16,6 @@ import { register, RegisterRequest } from "@/app/api/register"; // Ensure correc
 import { styles } from "@/app/styles/healthworker/register";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,6 +26,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [errorText, setErrorText] = useState(""); // State for error messages
+  const [successText, setSuccessText] = useState(""); // State for success messages
 
   const router = useRouter();
   const slideAnim = useRef(new Animated.Value(500)).current;
@@ -52,12 +52,29 @@ export default function RegisterPage() {
     return null;
   }
 
-
-const handleRegister = async () => {
+  const handleRegister = async () => {
   setErrorText(""); // Clear previous errors
+  setSuccessText(""); // Clear previous success messages
 
   if (!category) {
     setErrorText("Please select a category");
+    return;
+  }
+  
+  if (!firstName) {
+    setErrorText("Please enter your first name");
+    return;
+  }
+  if (!lastName) {
+    setErrorText("Please enter your last namee select a category");
+    return;
+  }
+  if (!email) {
+    setErrorText("Please enter your email");
+    return;
+  }
+  if (!password) {
+    setErrorText("Please enter your Password");
     return;
   }
 
@@ -83,17 +100,33 @@ const handleRegister = async () => {
 
   try {
     const response = await register(userData);
-    console.log("Registration successful:", response.message);
 
-    // Save user data in AsyncStorage
-    await AsyncStorage.setItem("userData", JSON.stringify(userData));
+    // Use only the backend's success message
+    setSuccessText(response.message);
 
+    // Save user data and password separately in AsyncStorage
+    await AsyncStorage.multiSet([
+      ["userData", JSON.stringify(userData)],
+      ["user_pwd", password],
+    ]);
+
+    console.log("Saved user data and password successfully.");
     setLoading(false); // Stop loading
-    router.push("./otp"); // Navigate to the OTP page after successful registration
+
+    // Redirect to OTP page after 2 seconds
+    setTimeout(() => {
+      router.push("./otp");
+    }, 2000);
   } catch (error: any) {
-    console.error("Registration failed:", error.message);
-    setLoading(false); // Stop loading
-    setErrorText(error.message || "Something went wrong!"); // Show error message on failure
+    setLoading(false);
+
+    // Extract and display backend error message
+    const errorMessage =
+      error?.detail || // Use backend-provided error detail (if available)
+      error?.message || // Use a generic error message if provided
+      "An unknown error occurred"; // Fallback error message
+
+    setErrorText(errorMessage);
   }
 };
 
@@ -183,6 +216,11 @@ const handleRegister = async () => {
           {/* Error Message */}
           {errorText ? (
             <Text style={styles.errorText}>{errorText}</Text>
+          ) : null}
+
+          {/* Success Message */}
+          {successText ? (
+            <Text style={styles.successText}>Redirecting...</Text>
           ) : null}
 
           <TouchableOpacity style={styles.loginContainer}>

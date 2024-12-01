@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
@@ -7,23 +7,32 @@ export default function BioPage() {
   const navigation = useNavigation();
 
   return (
-    <View style={styles.container}>
+    <ScrollView 
+      style={styles.container} 
+      contentContainerStyle={styles.contentContainer}
+    >
+      {/* Back Button */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()} // Go back to the previous screen
+      >
+        <Ionicons name="arrow-back" size={24} color="white" />
+      </TouchableOpacity>
+
       {/* Header */}
-      
-        <View style={styles.profileContainer}>
-          <Image 
-            source={{ uri: 'https://i.pravatar.cc/300?u=po' }}
-            style={styles.profileImage}
-          />
-          <View style={styles.nameContainer}>
-            <Text style={styles.nameText}>Jane Doe</Text>
-          </View>
-          <View style={styles.nameContainer}>
-            <Text style={styles.roleText}>Patient</Text>
-          </View>
-          <Ionicons name="pencil-outline" size={20} color="black" style={styles.editIcon} />
+      <View style={styles.profileContainer}>
+        <Image 
+          source={{ uri: 'https://i.pravatar.cc/300?u=po' }}
+          style={styles.profileImage}
+        />
+        <View style={styles.nameContainer}>
+          <Text style={styles.nameText}>Jane Doe</Text>
         </View>
-     
+        <View style={styles.nameContainer}>
+          <Text style={styles.roleText}>Patient</Text>
+        </View>
+        <Ionicons name="pencil-outline" size={20} color="black" style={styles.editIcon} />
+      </View>
 
       {/* Profile Details */}
       <View style={styles.detailsContainer}>
@@ -31,7 +40,7 @@ export default function BioPage() {
         <View style={styles.infoRow}>
           <Ionicons name="person-outline" size={24} color="black" />
           <Text style={styles.infoLabel}>Sickness</Text>
-          <Text style={styles.infoText}>Diebetic</Text>
+          <Text style={styles.infoText}>Diabetic</Text>
         </View>
 
         <View style={styles.infoRow}>
@@ -47,16 +56,13 @@ export default function BioPage() {
         </View>
       </View>
 
-    
-      
-
       {/* Help and Feedback */}
       <TouchableOpacity style={styles.helpContainer}>
         <Ionicons name="help-circle-outline" size={24} color="black" />
         <Text style={styles.helpText}>Help and Feedback</Text>
         <Ionicons name="chevron-forward" size={18} color="black" />
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -67,13 +73,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 30,
   },
-  header: {
-    alignItems: 'center',
-  },
-  backIcon: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
+  contentContainer: {
+    paddingBottom: 20, // Extra padding for smoother scrolling
   },
   profileContainer: {
     alignItems: 'center',
@@ -104,6 +105,12 @@ const styles = StyleSheet.create({
     right: 10,
     top: 10,
   },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+    color: 'white',
+  },
   detailsContainer: {
     backgroundColor: 'white',
     borderRadius: 10,
@@ -130,21 +137,6 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: 14,
     color: 'grey',
-  },
-  socialContainer: {
-    marginTop: 20,
-    paddingHorizontal: 20,
-    backgroundColor: 'white',
-    borderRadius: 10,
-  },
-  socialIcons: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 10,
-    color: "white",
-  },
-  socialIcon: {
-    marginHorizontal: 5,
   },
   helpContainer: {
     flexDirection: 'row',

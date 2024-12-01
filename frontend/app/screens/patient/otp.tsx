@@ -6,9 +6,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
+  Animated, // Import Animated API
 } from "react-native";
 import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage"; 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from "../../styles/healthworker/otp";
 import { verifyOtp, requestNewOtp } from "../../api/otp"; // Import API functions
 
@@ -38,6 +39,8 @@ const Otp: React.FC = () => {
   const [successText, setSuccessText] = useState(""); // Success message
   const [countdown, setCountdown] = useState(120); // Countdown timer state (in seconds)
   const timer = useRef<NodeJS.Timeout | null>(null); // Using useRef to store the timer
+
+  const slideAnim = useRef(new Animated.Value(-500)).current; // Slide from the top
 
   // Function to clear and reset the countdown timer
   const resetCountdown = () => {
@@ -73,6 +76,15 @@ const Otp: React.FC = () => {
     };
   }, [countdown]);
 
+  // Slide-in animation on component mount
+  useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   // Handle OTP submission
   const handleSubmit = async () => {
     setLoading(true); // Start loading
@@ -80,8 +92,7 @@ const Otp: React.FC = () => {
     setSuccessText(""); // Clear previous success messages
     if (!otp) {
       setErrorText("Please enter a valid OTP");
-    setLoading(false); // Stop loading
-
+      setLoading(false); // Stop loading
       return;
     }
 
@@ -94,7 +105,9 @@ const Otp: React.FC = () => {
         const response = await verifyOtp(otp, user_pwd); // Call the API function
         console.log("Verification successful:", response);
 
-        setSuccessText(response.message || "Verification successful!"); // Show success message
+        setSuccessText(
+          response.message || "Verification successful! User registered successfully"
+        ); // Show success message
 
         // Update the userData to set is_verified = true
         userData.profile_details.is_verified = true;
@@ -103,7 +116,7 @@ const Otp: React.FC = () => {
         await AsyncStorage.setItem("userData", JSON.stringify(userData));
 
         setLoading(false); // Stop loading
-        setTimeout(() => router.push("./healthWorker"), 2000); // Navigate to the healthWorker screen after 2 seconds
+        setTimeout(() => router.push("./login"), 2000); // Navigate to the login screen after 2 seconds
       } else {
         setLoading(false);
         setErrorText("No user data or password found.");
@@ -153,7 +166,7 @@ const Otp: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, { transform: [{ translateY: slideAnim }] }]}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -165,14 +178,16 @@ const Otp: React.FC = () => {
             style={styles.input}
             placeholder="Enter OTP"
             placeholderTextColor="#aaa"
-            keyboardType="numeric"
+            keyboardType="phone-pad"
             value={otp}
             onChangeText={setOtp}
           />
 
           {/* Countdown timer always displayed in min:secs format */}
           <Text style={styles.countdownText}>
-            {countdown > 0 ? `Resend OTP in ${formatCountdown(countdown)}` : "You can resend OTP now"}
+            {countdown > 0
+              ? `Resend OTP in ${formatCountdown(countdown)}`
+              : "You can resend OTP now"}
           </Text>
 
           <TouchableOpacity onPress={handleSubmit} disabled={loading}>
@@ -191,7 +206,7 @@ const Otp: React.FC = () => {
           )}
         </View>
       </ScrollView>
-    </View>
+    </Animated.View>
   );
 };
 

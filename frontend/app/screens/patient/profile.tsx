@@ -51,7 +51,7 @@ export default function ProfilePage() {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.menuItem}
-         onPress={() => router.push('./login')} 
+         onPress={() => router.push('../../')} 
          >
           <Ionicons name="log-out-outline" size={24} color="black" />
           <Text style={styles.menuText}>Logout</Text>

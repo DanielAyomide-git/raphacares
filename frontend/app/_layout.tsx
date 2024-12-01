@@ -8,6 +8,7 @@ export default function RootLayout() {
       <Stack.Screen name="screens/patient/resetPassword" options={{ title: '' }} />
       <Stack.Screen name="screens/healthworker/resetPassword" options={{ title: '' }} />
       <Stack.Screen name="screens/healthworker/otp" options={{ title: '' }} />
+      <Stack.Screen name="screens/patient/otp" options={{ title: '' }} />
       <Stack.Screen name="screens/patient/register" options={{ title: '' }} />
       <Stack.Screen name="screens/healthworker/healthWorker" options={{ title: '' }} />
       <Stack.Screen name="screens/patient/app" options={{ title: '' }} />
