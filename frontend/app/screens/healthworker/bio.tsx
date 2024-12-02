@@ -1,63 +1,142 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {jwtDecode} from 'jwt-decode';
+import { API_BASE_URL } from '../../api/config'; // Adjust the path as needed
+
+// Interfaces for the decoded token and bio data
+interface DecodedToken {
+  profile_id: string;
+}
+
+interface BioData {
+  first_name: string;
+  last_name: string;
+  contact: number;
+  email: string;
+  specialization: string;
+}
 
 export default function BioPage() {
   const navigation = useNavigation();
+  const [bioData, setBioData] = useState<BioData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
+  const [contact, setContact] = useState<string>('');
+  const [specialization, setSpecialization] = useState<string>('');
+  const [practitionerType, setPractitionerType] = useState<string>('');
+
+  useEffect(() => {
+    fetchBioData();
+  }, []);
+
+  const fetchBioData = async () => {
+    try {
+      const token = await AsyncStorage.getItem('access_token');
+      if (!token) throw new Error('Access token not found. Please log in again.');
+
+      const decodedToken: DecodedToken = jwtDecode<DecodedToken>(token);
+      const { profile_id } = decodedToken;
+
+      if (!profile_id) throw new Error('Invalid token. Profile ID is missing.');
+
+      const endpoint = `${API_BASE_URL}/medical_practitioners/${profile_id}`;
+      const response = await fetch(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch bio. Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.status === 'success' && data.data) {
+        setFirstName(data.data.first_name);
+        setLastName(data.data.last_name);
+        setContact(data.data.phone_number);
+        setSpecialization(data.data.specialization);
+        setPractitionerType(data.data.practitioner_type);
+      } else {
+        throw new Error('Failed to fetch profile data.');
+      }
+      if (data.status === 'success' && data.data) {
+        setBioData({
+          first_name: data.data.first_name,
+          last_name: data.data.last_name,
+          contact: data.data.contact || 'N/A',
+          email: data.data.user.email || 'N/A',
+          specialization: data.data.specialization || 'N/A',
+        });
+      } else {
+        throw new Error('Failed to fetch bio data.');
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.loadingText}>Loading...</Text>
+      </ScrollView>
+    );
+  }
+
+  if (error) {
+    return (
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.errorText}>{error}</Text>
+      </ScrollView>
+    );
+  }
 
   return (
-    <ScrollView 
-      style={styles.container}
-      contentContainerStyle={styles.scrollContent} // Optional for content padding
-    >
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       {/* Back Button */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()} // Go back to the previous screen
-      >
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back" size={24} color="white" />
       </TouchableOpacity>
 
       {/* Header */}
       <View style={styles.profileContainer}>
-        <Image 
-          source={{ uri: 'https://bit.ly/dan-abramov' }}
-          style={styles.profileImage}
-        />
-        <View style={styles.nameContainer}>
-          <Text style={styles.nameText}>Morgan James</Text>
-        </View>
-        <View style={styles.nameContainer}>
-          <Text style={styles.roleText}>Doctor</Text>
-        </View>
-        <Ionicons name="pencil-outline" size={20} color="white" style={styles.editIcon} />
-      </View>
+        <Image source={{ uri: 'https://bit.ly/dan-abramov' }} style={styles.profileImage} />
+        <Text style={styles.nameText}>{firstName.charAt(0).toUpperCase() + firstName.slice(1)} {lastName.charAt(0).toUpperCase() + lastName.slice(1)}</Text>
+          <Text style={styles.roleText}>{practitionerType.charAt(17).toUpperCase() + practitionerType.slice(18)}</Text>
+         </View>
 
       {/* Profile Details */}
       <View style={styles.detailsContainer}>
         <Text style={styles.sectionTitle}>Bio</Text>
+
         <View style={styles.infoRow}>
           <Ionicons name="person-outline" size={24} color="black" />
-          <Text style={styles.infoLabel}>Full name</Text>
-          <Text style={styles.infoText}>FirstName LastName</Text>
+          <Text style={styles.infoLabel}>Full Name</Text>
+          <Text style={styles.infoText}>{firstName.charAt(0).toUpperCase() + firstName.slice(1)} {lastName.charAt(0).toUpperCase() + lastName.slice(1)}</Text>
         </View>
 
         <View style={styles.infoRow}>
           <Ionicons name="call-outline" size={24} color="black" />
           <Text style={styles.infoLabel}>Contact</Text>
-          <Text style={styles.infoText}>+24500000000</Text>
+          <Text style={styles.infoText}>{contact}</Text>
         </View>
 
         <View style={styles.infoRow}>
           <Ionicons name="mail-outline" size={24} color="black" />
           <Text style={styles.infoLabel}>Email</Text>
-          <Text style={styles.infoText}>mjdesigner@gmail.com</Text>
+          <Text style={styles.infoText}>{bioData?.email}</Text>
         </View>
+
         <View style={styles.infoRow}>
           <Ionicons name="medkit-outline" size={24} color="black" />
           <Text style={styles.infoLabel}>Specialization</Text>
-          <Text style={styles.infoText}>Specialization</Text>
+          <Text style={styles.infoText}>{bioData?.specialization}</Text>
         </View>
       </View>
 
@@ -65,10 +144,10 @@ export default function BioPage() {
       <View style={styles.socialContainer}>
         <Text style={styles.sectionTitle}>Other Ways People Can Find Me</Text>
         <View style={styles.socialIcons}>
-          <Ionicons name="logo-facebook" size={28} color="black" style={styles.socialIcon} />
-          <Ionicons name="logo-instagram" size={28} color="black" style={styles.socialIcon} />
-          <Ionicons name="logo-twitter" size={28} color="black" style={styles.socialIcon} />
-          <Ionicons name="logo-linkedin" size={28} color="black" style={styles.socialIcon} />
+          <Ionicons name="logo-facebook" size={28} color="black"  />
+          <Ionicons name="logo-instagram" size={28} color="black"  />
+          <Ionicons name="logo-twitter" size={28} color="black"  />
+          <Ionicons name="logo-linkedin" size={28} color="black" />
         </View>
       </View>
 
@@ -90,42 +169,37 @@ const styles = StyleSheet.create({
     paddingTop: 30,
   },
   scrollContent: {
-    paddingBottom: 20, // Add extra padding for smoother scrolling
+    paddingBottom: 20,
+  },
+  loadingText: {
+    fontSize: 18,
+    color: 'white',
+    textAlign: 'center',
+    marginTop: 50,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
   },
   profileContainer: {
     alignItems: 'center',
     marginTop: 20,
   },
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 15,
-    color: "white"
-  },
   profileImage: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#E0E0E0',
-  },
-  nameContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 10,
   },
   nameText: {
     fontSize: 18,
     fontWeight: 'bold',
     color: 'white',
+    marginTop: 10,
   },
   roleText: {
     fontSize: 14,
     color: 'white',
-  },
-  editIcon: {
-    position: 'absolute',
-    right: 10,
-    top: 10,
   },
   detailsContainer: {
     backgroundColor: 'white',
@@ -134,7 +208,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
     color: 'black',
     marginBottom: 10,
@@ -156,18 +230,20 @@ const styles = StyleSheet.create({
   },
   socialContainer: {
     marginTop: 20,
-    paddingHorizontal: 20,
     backgroundColor: 'white',
     borderRadius: 10,
+    padding: 20,
   },
   socialIcons: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 10,
-    color: "white",
   },
-  socialIcon: {
-    marginHorizontal: 5,
+  errorText: {
+    fontSize: 16,
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 50,
   },
   helpContainer: {
     flexDirection: 'row',

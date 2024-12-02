@@ -18,7 +18,7 @@ import Animated, {
   withDelay,
 } from "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { API_BASE_URL } from "../../api/config"; // Assuming this is your API base URL
+import { API_BASE_URL } from "../../api/config";
 import {jwtDecode} from "jwt-decode";
 import styles from "../../styles/patient/home";
 

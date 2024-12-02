@@ -72,7 +72,7 @@ const indexStyles = StyleSheet.create({
     fontSize: 30,
     fontFamily: "poppins-semibold",
     color: "white",
-    marginBottom: 10,
+    marginBottom: 5,
   },
   buttonRow: {
     flexDirection: "column",
@@ -86,7 +86,7 @@ const indexStyles = StyleSheet.create({
     borderRadius: 40,
     marginHorizontal: 10,
     marginBottom: 20,
-    marginTop: 20, 
+    marginTop: 25, 
 
   },
   buttonNo: {

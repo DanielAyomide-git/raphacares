@@ -74,9 +74,10 @@ const styles = StyleSheet.create({
       flexWrap: "wrap",
       justifyContent: "space-between",
       marginBottom: 20,
+      alignItems: "center",
     },
     serviceBox: {
-      width: "40%",
+      width: "45%",
       aspectRatio: 1,
       borderRadius: 15,
       justifyContent: "center",
@@ -95,6 +96,7 @@ const styles = StyleSheet.create({
       marginTop: 8,
       textAlign: "center",
     },
+    
     appointmentCard: {
       backgroundColor: "white",
       padding: 20,

@@ -35,7 +35,7 @@ function WelcomeScreen() {
   return (
     <View style={styles.welcomeContainer}>
       <Animated.Image
-        source={require('../../assets/RaphaCares-04.png')} // Replace with your image path
+        source={require('../../assets/logo.png')} // Replace with your image path
         style={[styles.logo, { opacity: fadeAnim }]} // Fade-in animation
       />
       <ActivityIndicator size="large" color="#000" />
