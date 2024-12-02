@@ -51,10 +51,10 @@ export default function LoginPage() {
   const handleLogin = async () => {
     setError("");
   
-    // if (!email || !password || !practitionerType) {
-    //   setError("All fields are required.");
-    //   return;
-    // }
+    if (!email || !password ) {
+      setError("All fields are required.");
+      return;
+    }
   
     setIsLoading(true);
   

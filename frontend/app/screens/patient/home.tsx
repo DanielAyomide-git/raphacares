@@ -74,7 +74,7 @@ export default function PatientDashboard() {
       servicesX.forEach((sharedValue, index) => {
         sharedValue.value = withDelay(index * 200, withTiming(0, { duration: 800 }));
       });
-    }, 2000);
+    }, 0);
 
     welcomeX.value = withTiming(0, { duration: 1000 });
 
@@ -142,13 +142,13 @@ export default function PatientDashboard() {
     ); // Fallback view while fonts load
   }
 
-  if (showWelcome) {
-    return (
-      <Animated.View style={[styles.welcomeContainer, welcomeStyle]}>
-        <Text style={styles.welcomeTitle}>Welcome to Raphacare</Text>
-      </Animated.View>
-    );
-  }
+  // if (showWelcome) {
+  //   return (
+  //     <Animated.View style={[styles.welcomeContainer, welcomeStyle]}>
+  //       <Text style={styles.welcomeTitle}>Welcome to Raphacare</Text>
+  //     </Animated.View>
+  //   );
+  // }
 
   const services: Service[] = [
     { id: "1", name: "Hospitals", icon: "bed-outline", color: "#4CAF50" },

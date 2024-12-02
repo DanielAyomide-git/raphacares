@@ -36,13 +36,13 @@ export const styles = StyleSheet.create({
     welcomeText1: {
       fontFamily: "Poppins",
       fontSize: 50,
-      color: "#0041F9",
+      color: "#FFB815",
       textAlign: "center",
     },
     welcomeText: {
       fontFamily: "Poppins",
       fontSize: 24,
-      color: "#0041F9",
+      color: "#FFB815",
       textAlign: "center",
     },
     dashboardContainer: {
@@ -55,7 +55,7 @@ export const styles = StyleSheet.create({
     },
     doctorText: {
       fontFamily: "Poppins-SemiBold",
-      color: "#0041F9",
+      color: "#FFB815",
       marginLeft: 2,
       marginBottom: 20,
     },
@@ -84,7 +84,7 @@ export const styles = StyleSheet.create({
     },
     sectionTitle: {
       fontFamily: "Poppins-SemiBold",
-      color: "#0041F9",
+      color: "#FFB815",
       fontSize: 16,
       marginBottom: 10,
     },

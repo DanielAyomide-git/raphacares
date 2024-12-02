@@ -79,6 +79,7 @@ export const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
     fontFamily: "poppins",
+    borderBlockColor:"grey"
   },
   row: {
     flexDirection: "column",

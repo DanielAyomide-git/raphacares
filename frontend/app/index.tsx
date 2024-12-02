@@ -105,7 +105,8 @@ const App = () => {
       </Animated.View>
 
       <View style={indexStyles.questionContainer}>
-        <Text style={indexStyles.questionText}>Are you a health worker?</Text>
+        <Text style={indexStyles.questionText}>Are you a </Text>
+        <Text style={indexStyles.questionText}>health worker?</Text>
         <View style={indexStyles.buttonRow}>
           <TouchableOpacity
             style={indexStyles.buttonYes}

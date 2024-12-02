@@ -37,7 +37,7 @@ export default function ProfilePage() {
        
 
         <TouchableOpacity style={styles.menuItem}
-         onPress={() => router.push('./setting')} 
+         onPress={() => router.push('./resetPassword')} 
          >
           <Ionicons name="briefcase-outline" size={24} color="black" />
           <Text style={styles.menuText}>Change password</Text>

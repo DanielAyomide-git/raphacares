@@ -3,7 +3,7 @@ import { View, Text, TextInput, FlatList, Image, Animated, ActivityIndicator } f
 import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { API_BASE_URL } from "../../api/config";
 import { styles } from "../../styles/healthworker/home";
 
@@ -23,16 +23,13 @@ interface Data {
 
 export default function Dashboard(): JSX.Element {
   const [fontsLoaded, setFontsLoaded] = useState<boolean>(false);
-  const [showWelcome, setShowWelcome] = useState<boolean>(true); // State to control Welcome message visibility
   const [userType, setUserType] = useState<string>("");
   const [firstName, setFirstName] = useState<string>(""); // State to store user's first name
-  const [initial, setInitial] = useState<string>(""); // State to store user's first name
+  const [initial, setInitial] = useState<string>(""); // State to store user's practitioner type
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null); // For handling errors
 
-  // Create animated values for sliding effects
-  const slideAnim = useRef(new Animated.Value(500)).current; // Start from off-screen
-  const welcomeSlideAnim = useRef(new Animated.Value(500)).current;
+  const slideAnim = useRef(new Animated.Value(500)).current; // Start off-screen to the right
 
   useEffect(() => {
     // Load fonts
@@ -46,28 +43,15 @@ export default function Dashboard(): JSX.Element {
     };
 
     loadFonts();
-    animateComponents();
     fetchProfileData();
-  }, []);
 
-  const animateComponents = () => {
-    // Trigger slide-in animation for welcome message
-    Animated.timing(welcomeSlideAnim, {
-      toValue: 0,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
-
-    // Trigger slide-in animation for the dashboard
+    // Start the slide-in animation
     Animated.timing(slideAnim, {
       toValue: 0,
-      duration: 5000,
+      duration: 2000,
       useNativeDriver: true,
     }).start();
-
-    // Hide the welcome message after 3 seconds
-    setTimeout(() => setShowWelcome(false), 3000);
-  };
+  }, []);
 
   const fetchProfileData = async () => {
     try {
@@ -79,9 +63,9 @@ export default function Dashboard(): JSX.Element {
       const decodedToken: DecodedToken = jwtDecode<DecodedToken>(token);
       const { profile_id, user_type } = decodedToken;
 
-      if (!profile_id ) {
+      if (!profile_id) {
         throw new Error("Invalid token. Profile ID is missing.");
-            }
+      }
 
       // Save user type to state
       setUserType(user_type);
@@ -130,7 +114,7 @@ export default function Dashboard(): JSX.Element {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#FFB815" />
+        <ActivityIndicator size="large" color="white" />
       </View>
     );
   }
@@ -144,91 +128,77 @@ export default function Dashboard(): JSX.Element {
   }
 
   return (
-    <View style={styles.container}>
-      {/* Show "Welcome to Raphacares" for 3 seconds */}
-      {showWelcome ? (
-        <Animated.View
-          style={[
-            styles.welcomeContainer,
-            { transform: [{ translateX: welcomeSlideAnim }] },
-          ]}
-        >
-          <Text style={styles.welcomeText1}>Welcome to Raphacares</Text>
-        </Animated.View>
-      ) : (
-        // Main Dashboard
-        <Animated.View
-          style={[
-            styles.dashboardContainer,
-            { transform: [{ translateY: slideAnim }] },
-          ]}
-        >
-          {/* Header */}
-          <View style={styles.header}>
-            <Image
-              source={{ uri: "https://bit.ly/dan-abramov" }}
-              style={styles.avatar}
-              accessible={true}
-              accessibilityLabel={`${userType}'s avatar`}
-            />
-            <View>
-              <Text style={styles.welcomeText}>Welcome</Text>
-              <Text style={styles.doctorText}>
+    <Animated.View
+      style={[
+        styles.container,
+        { transform: [{ translateY: slideAnim }] }, // Slide in from the right
+      ]}
+    >
+      {/* Main Dashboard */}
+      <View style={styles.dashboardContainer}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Image
+            source={{ uri: "https://bit.ly/dan-abramov" }}
+            style={styles.avatar}
+            accessible={true}
+            accessibilityLabel={`${userType}'s avatar`}
+          />
+          <View>
+            <Text style={styles.welcomeText}>Welcome</Text>
+            <Text style={styles.doctorText}>
               {initial.charAt(17).toUpperCase() + initial.slice(18)} {firstName.charAt(0).toUpperCase() + firstName.slice(1)}
-
-                 
-              </Text>
-            </View>
-            <Ionicons
-              name="notifications-outline"
-              size={24}
-              color="black"
-              style={styles.settingsIcon}
-            />
+            </Text>
           </View>
+          <Ionicons
+            name="notifications-outline"
+            size={24}
+            color="black"
+            style={styles.settingsIcon}
+          />
+        </View>
 
-          {/* Search Bar */}
-          <View style={styles.searchContainer}>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search for Clients/Appointments"
-              placeholderTextColor="#B0B0B0"
-            />
-            <Ionicons
-              name="search"
-              size={20}
-              color="#B0B0B0"
-              style={styles.searchIcon}
-            />
+        {/* Search Bar */}
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search for Clients/Appointments"
+            placeholderTextColor="#B0B0B0"
+          />
+          <Ionicons
+            name="search"
+            size={20}
+            color="#B0B0B0"
+            style={styles.searchIcon}
+          />
+        </View>
+
+        {/* Appointments Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Paid Appointments</Text>
+          <View style={styles.appointmentBox}></View>
+        </View>
+
+        {/* Recent Comments Section */}
+        <View style={styles.section}>
+          <View style={styles.commentsHeader}>
+            <Text style={styles.sectionTitle}>Most Recent Appointments</Text>
           </View>
-
-          {/* Appointments Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Paid Appointments</Text>
-            <View style={styles.appointmentBox}></View>
-          </View>
-
-          {/* Recent Comments Section */}
-          <View style={styles.section}>
-            <View style={styles.commentsHeader}>
-              <Text style={styles.sectionTitle}>Most Recent Appointments</Text>
-            </View>
-            <FlatList
-              data={comments}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <View style={styles.commentItem}>
-                  <View style={styles.commentAvatar}></View>
-                  <View style={styles.commentTextContainer}>
-                    <Text style={styles.commentName}>{item.name}</Text>
-                    <Text style={styles.commentDate}>{item.date}</Text>
-                  </View>
+          <FlatList
+            data={comments}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={styles.commentItem}>
+                <View style={styles.commentAvatar}></View>
+                <View style={styles.commentTextContainer}>
+                  <Text style={styles.commentName}>{item.name}</Text>
+                  <Text style={styles.commentDate}>{item.date}</Text>
                 </View>
-              )}
-            />
-          </View>
-        </Animated.View>
-      )}
-    </View>
+              </View>
+            )}
+          />
+        </View>
+      </View>
+    </Animated.View>
   );
 }

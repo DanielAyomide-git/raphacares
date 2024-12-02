@@ -13,7 +13,6 @@ export interface ProfileDetails {
   first_name: string;
   last_name: string;
   phone_number?: string;
-  practitioner_type: string;
   is_verified: boolean;
   is_available: boolean;
   user_type: "patient";

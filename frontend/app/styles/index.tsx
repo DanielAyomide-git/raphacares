@@ -64,13 +64,15 @@ const indexStyles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     marginBottom: 20,
-    marginTop: 370,
+    width: "100%",
+    marginTop: 450,
+
   },
   questionText: {
-    fontSize: 20,
-    fontFamily: "poppins-extrabold",
+    fontSize: 30,
+    fontFamily: "poppins-semibold",
     color: "white",
-    marginBottom: 20,
+    marginBottom: 10,
   },
   buttonRow: {
     flexDirection: "column",
@@ -84,6 +86,8 @@ const indexStyles = StyleSheet.create({
     borderRadius: 40,
     marginHorizontal: 10,
     marginBottom: 20,
+    marginTop: 20, 
+
   },
   buttonNo: {
     backgroundColor: "#00CDF9",

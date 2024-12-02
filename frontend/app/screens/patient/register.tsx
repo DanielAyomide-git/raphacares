@@ -74,7 +74,6 @@ export default function RegisterPage() {
         first_name: firstName,
         last_name: lastName,
         phone_number: phoneNumber,
-        practitioner_type: '', // Modify as needed
         is_verified: false,
         is_available: true,
         user_type: 'patient',
@@ -135,6 +134,8 @@ export default function RegisterPage() {
             value={firstName}
             onChangeText={setFirstName}
             placeholderTextColor="#c9cacd"
+            keyboardType="phone-pad"
+
           />
 
           <TextInput
@@ -142,6 +143,7 @@ export default function RegisterPage() {
             placeholder="Enter your last name"
             value={lastName}
             onChangeText={setLastName}
+            keyboardType="phone-pad"
             placeholderTextColor="#c9cacd"
           />
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
-import { GradientBackground, styles } from "@/app/styles/patient/resetPassword"; // Assuming styles are defined here
+import { GradientBackground, styles } from "@/app/styles/patient/resetPassword";
 import { resetPassword } from "../../api/newPassword"; // Import the resetPassword API function
 
 // Type for the error

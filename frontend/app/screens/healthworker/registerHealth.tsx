@@ -6,6 +6,7 @@ import {
   Animated,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
   ScrollView,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -144,7 +145,20 @@ export default function RegisterPage() {
       >
         <Animated.View style={[styles.container, { transform: [{ translateX: slideAnim }] }]}>
           <Text style={styles.title}>Sign up as Health Worker</Text>
-
+          <View style={styles.socialIcons}>
+            <Image
+              source={require("../../assets/facebook.png")}
+              style={styles.icon}
+            />
+            <Image
+              source={require("../../assets/google.png")}
+              style={styles.icon}
+            />
+            <Image
+              source={require("../../assets/apple.png")}
+              style={styles.icon}
+            />
+          </View>
           {/* Category Dropdown */}
           <View style={styles.pickerContainer}>
             <Picker
@@ -164,12 +178,14 @@ export default function RegisterPage() {
             style={styles.input}
             placeholder="Enter your First Name"
             value={firstName}
+            keyboardType="email-address"
             onChangeText={setFirstName}
             placeholderTextColor="#c9cacd"
           />
           <TextInput
             style={styles.input}
             placeholder="Enter your Last Name"
+            keyboardType="email-address"
             value={lastName}
             onChangeText={setLastName}
             placeholderTextColor="#c9cacd"

@@ -94,7 +94,7 @@ const Otp: React.FC = () => {
         const response = await verifyOtp(otp, user_pwd); // Call the API function
         console.log("Verification successful:", response);
 
-        setSuccessText(response.message || "Verification successful!"); // Show success message
+        setSuccessText(response.message || "Verification successful! User registered successfully"); // Show success message
 
         // Update the userData to set is_verified = true
         userData.profile_details.is_verified = true;
