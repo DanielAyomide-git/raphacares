@@ -27,7 +27,7 @@ function WelcomeScreen() {
     // Start the fade-in animation
     Animated.timing(fadeAnim, {
       toValue: 1, // Fully visible
-      duration: 2000, // Duration of the animation
+      duration: 4000, // Duration of the animation
       useNativeDriver: true, // Use native driver for better performance
     }).start();
   }, []);
@@ -38,7 +38,6 @@ function WelcomeScreen() {
         source={require('../../assets/logo.png')} // Replace with your image path
         style={[styles.logo, { opacity: fadeAnim }]} // Fade-in animation
       />
-      <ActivityIndicator size="large" color="#000" />
     </View>
   );
 }
@@ -87,6 +86,8 @@ function MyTabs() {
 function AppNavigator() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
+  const fadeAnim = useRef(new Animated.Value(0)).current; // Start with opacity 0
+
 
   useEffect(() => {
     // Load fonts
@@ -108,9 +109,12 @@ function AppNavigator() {
 
   if (!fontsLoaded) {
     return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#000" />
-      </View>
+      <View style={styles.welcomeContainer}>
+      <Animated.Image
+        source={require('../../assets/logo.png')} // Replace with your image path
+        style={[styles.logo, { opacity: fadeAnim }]} // Fade-in animation
+      />
+    </View>
     );
   }
 

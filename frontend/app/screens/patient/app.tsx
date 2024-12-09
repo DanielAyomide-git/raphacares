@@ -29,7 +29,7 @@ function WelcomeScreen() {
     // Start the fade-in animation
     Animated.timing(fadeAnim, {
       toValue: 1, // Fully visible
-      duration: 2000, // Duration of the animation
+      duration: 100, // Duration of the animation
       useNativeDriver: true, // Use native driver for better performance
     }).start();
   }, []);
@@ -40,7 +40,6 @@ function WelcomeScreen() {
         source={require('../../assets/logo.png')} // Replace with the correct path to your logo
         style={[styles.logo, { opacity: fadeAnim }]} // Apply fade-in animation
       />
-      <ActivityIndicator size="large" color="#0041F9" />
     </View>
   );
 }
@@ -96,7 +95,7 @@ function AppNavigator() {
     loadFonts();
     const timer = setTimeout(() => {
       setShowWelcome(false);
-    }, 2000); // Show welcome screen for 2 seconds
+    }, 3000); // Show welcome screen for 2 seconds
 
     return () => clearTimeout(timer); // Cleanup timer
   }, []);

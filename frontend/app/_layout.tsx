@@ -11,6 +11,7 @@ export default function RootLayout() {
       <Stack.Screen name="screens/patient/otp" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/register" options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/healthWorker" options={{ headerShown: false }} />
+      <Stack.Screen name="screens/healthworker/editProfile" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/app" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/bio" options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/registerHealth" options={{ headerShown: false }} />

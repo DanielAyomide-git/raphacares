@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {jwtDecode} from 'jwt-decode';
 import { API_BASE_URL } from '../../api/config'; // Adjust the path as needed
+import { useRouter } from 'expo-router';
 
 // Interfaces for the decoded token and bio data
 interface DecodedToken {
@@ -20,6 +21,7 @@ interface BioData {
 }
 
 export default function BioPage() {
+  const router = useRouter();
   const navigation = useNavigation();
   const [bioData, setBioData] = useState<BioData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -83,9 +85,9 @@ export default function BioPage() {
 
   if (loading) {
     return (
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.loadingText}>Loading...</Text>
-      </ScrollView>
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="white" />
+      </View>
     );
   }
 
@@ -100,9 +102,19 @@ export default function BioPage() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       {/* Back Button */}
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={24} color="white" />
-      </TouchableOpacity>
+      <View style={styles.headerContainer}>
+  {/* Back Button */}
+  <TouchableOpacity style={styles.backButton} onPress={() => router.push('./profile')}>
+    <Ionicons name="arrow-back" size={24} color="white" />
+  </TouchableOpacity>
+
+  {/* Edit Button */}
+  <TouchableOpacity style={styles.editButton} onPress={() => router.push('./editProfile')}>
+    <Ionicons name="create-outline" size={24} color="white" />
+  </TouchableOpacity>
+</View>
+
+      
 
       {/* Header */}
       <View style={styles.profileContainer}>
@@ -114,7 +126,7 @@ export default function BioPage() {
       {/* Profile Details */}
       <View style={styles.detailsContainer}>
         <Text style={styles.sectionTitle}>Bio</Text>
-
+       
         <View style={styles.infoRow}>
           <Ionicons name="person-outline" size={24} color="black" />
           <Text style={styles.infoLabel}>Full Name</Text>
@@ -164,9 +176,15 @@ export default function BioPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: 'grey',
     paddingHorizontal: 20,
     paddingTop: 30,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF", // Background color for the loader screen
   },
   scrollContent: {
     paddingBottom: 20,
@@ -177,11 +195,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 50,
   },
+  headerContainer: {
+    flexDirection: 'row', // Aligns items in a row
+    alignItems: 'center', // Vertically center items
+    justifyContent: 'space-between', // Add space between the buttons
+    marginBottom: 15,
+  },
+  
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
   },
+  
+  editButton: {
+    flexDirection: 'row',
+  },
+  
   profileContainer: {
     alignItems: 'center',
     marginTop: 20,
