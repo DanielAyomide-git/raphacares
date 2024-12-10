@@ -12,6 +12,12 @@ const styles = StyleSheet.create({
       alignItems: "center",
       backgroundColor: "white",
     },
+    loaderContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#FFFFFF", // Background color for the loader screen
+    },
     welcomeTitle: {
       fontFamily: "Poppins",
       fontSize: 50,

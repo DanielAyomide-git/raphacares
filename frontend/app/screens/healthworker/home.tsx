@@ -114,7 +114,7 @@ export default function Dashboard(): JSX.Element {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="white" />
+        <ActivityIndicator size="large" color="yellow" />
       </View>
     );
   }

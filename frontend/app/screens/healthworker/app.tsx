@@ -13,7 +13,6 @@ import * as Font from 'expo-font'; // Import expo-font
 import DoctorDashboard from './home';
 import MessagesScreen from './message';
 import NotificationsScreen from './notification';
-import ProfilePage from './profile';
 import BioPage from './bio';
 
 const Tab = createBottomTabNavigator();
@@ -77,7 +76,7 @@ function MyTabs() {
       <Tab.Screen name="Home" component={DoctorDashboard} />
       <Tab.Screen name="Messages" component={MessagesScreen} />
       <Tab.Screen name="Notification" component={NotificationsScreen} />
-      <Tab.Screen name="Profile" component={ProfilePage} />
+      <Tab.Screen name="Profile" component={BioPage} />
     </Tab.Navigator>
   );
 }

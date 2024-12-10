@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator,
   Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -19,7 +20,7 @@ import Animated, {
 } from "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../../api/config";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import styles from "../../styles/patient/home";
 
 // Define navigation types
@@ -42,6 +43,7 @@ export default function PatientDashboard() {
   const [showWelcome, setShowWelcome] = useState(true);
   const [patientName, setPatientName] = useState<string>("");
   const [patientAvatar, setPatientAvatar] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true); // Set loading state to true initially
 
   const navigation = useNavigation<NavigationProp>();
 
@@ -113,6 +115,8 @@ export default function PatientDashboard() {
       }
     } catch (error) {
       console.error("Error fetching patient data:", error);
+    } finally {
+      setLoading(false); // Ensure that loading is set to false once fetching is complete
     }
   };
 
@@ -134,21 +138,13 @@ export default function PatientDashboard() {
     }))
   );
 
-  if (!fontsLoaded) {
+  if (loading) {
     return (
-      <View style={styles.container}>
-        <Text>Loading...</Text>
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="yellow" />
       </View>
-    ); // Fallback view while fonts load
+    );
   }
-
-  // if (showWelcome) {
-  //   return (
-  //     <Animated.View style={[styles.welcomeContainer, welcomeStyle]}>
-  //       <Text style={styles.welcomeTitle}>Welcome to Raphacare</Text>
-  //     </Animated.View>
-  //   );
-  // }
 
   const services: Service[] = [
     { id: "1", name: "Hospitals", icon: "bed-outline", color: "#4CAF50" },

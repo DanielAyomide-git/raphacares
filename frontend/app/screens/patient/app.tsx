@@ -29,7 +29,7 @@ function WelcomeScreen() {
     // Start the fade-in animation
     Animated.timing(fadeAnim, {
       toValue: 1, // Fully visible
-      duration: 100, // Duration of the animation
+      duration: 4000, // Duration of the animation
       useNativeDriver: true, // Use native driver for better performance
     }).start();
   }, []);
@@ -37,12 +37,13 @@ function WelcomeScreen() {
   return (
     <View style={styles.welcomeContainer}>
       <Animated.Image
-        source={require('../../assets/logo.png')} // Replace with the correct path to your logo
-        style={[styles.logo, { opacity: fadeAnim }]} // Apply fade-in animation
+        source={require('../../assets/logo.png')} // Replace with your image path
+        style={[styles.logo, { opacity: fadeAnim }]} // Fade-in animation
       />
     </View>
   );
 }
+
 
 // Tab Navigation
 function MyTabs() {
@@ -73,7 +74,7 @@ function MyTabs() {
       <Tab.Screen name="Home" component={PatientDashboard} />
       <Tab.Screen name="Messages" component={MessagesScreen} />
       <Tab.Screen name="Notification" component={NotificationsScreen} />
-      <Tab.Screen name="Profile" component={ProfilePage} />
+      <Tab.Screen name="Profile" component={BioPage} />
     </Tab.Navigator>
   );
 }

@@ -15,14 +15,15 @@ interface DecodedToken {
 interface FormData {
   first_name: string;
   last_name: string;
-  other_names: string;
+  other_names: string | null;
   phone_number: string;
-  specialization: string;
-  practitioner_type: string;
-  license_number: string;
-  email: string;
-  availability: { [key: string]: string };
-  is_available: boolean;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  emergency_contact: string | null;
+  date_of_birth: string | null;
+  user_name: string | null;
 }
 
 const EditProfile = () => {
@@ -40,20 +41,13 @@ const EditProfile = () => {
     last_name: "",
     other_names: "",
     phone_number: "",
-    specialization: "",
-    practitioner_type: "",
-    license_number: "",
-    email: "",
-    availability: {
-      monday: "",
-      tuesday: "",
-      wednesday: "",
-      thursday: "",
-      friday: "",
-      saturday: "",
-      sunday: "",
-    },
-    is_available: false, // Default is false
+    address: "",
+    city: "",
+    state: "",
+    country: "",
+    emergency_contact: "",
+    date_of_birth: "",
+    user_name: "",
   });
 
   useEffect(() => {
@@ -79,7 +73,7 @@ const EditProfile = () => {
 
       setProfileId(profile_id);
 
-      const endpoint = `${API_BASE_URL}/medical_practitioners/${profile_id}`;
+      const endpoint = `${API_BASE_URL}/patients/${profile_id}`;
       const response = await fetch(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -95,12 +89,13 @@ const EditProfile = () => {
           last_name: data.data.last_name || "",
           other_names: data.data.other_names || "",
           phone_number: data.data.phone_number || "",
-          specialization: data.data.specialization || "",
-          practitioner_type: data.data.practitioner_type || "",
-          license_number: data.data.license_number || "",
-          email: data.data.user.email || "",
-          availability: data.data.availability || formData.availability,
-          is_available: data.data.is_available !== undefined ? data.data.is_available : false, // Use the fetched value or default to false
+          address: data.data.address || "",
+          city: data.data.city || "",
+          state: data.data.state || "",
+          country: data.data.country || "",
+          emergency_contact: data.data.emergency_contact || "",
+          date_of_birth: data.data.date_of_birth || "",
+          user_name: data.data.user_name || "",
         });
       } else {
         throw new Error("Failed to fetch profile data.");
@@ -119,24 +114,6 @@ const EditProfile = () => {
     }));
   };
 
-  const handleAvailabilityChange = (day: string, value: string) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      availability: {
-        ...prevState.availability,
-        [day]: value,
-      },
-    }));
-  };
-
-  const handleCheckboxToggle = () => {
-    // Toggle is_available based on checkbox state
-    setFormData((prevState) => ({
-      ...prevState,
-      is_available: !prevState.is_available, // If checkbox is checked, is_available will be true; if unchecked, false
-    }));
-  };
-
   const handleSubmit = async () => {
     setLoadingSave(true); // Show loader
     if (!profileId) {
@@ -145,7 +122,7 @@ const EditProfile = () => {
       return;
     }
 
-    const endpoint = `${API_BASE_URL}/medical_practitioners/${profileId}`;
+    const endpoint = `${API_BASE_URL}/patients/${profileId}`;
     try {
       const token = await AsyncStorage.getItem("access_token");
       if (!token) throw new Error("Access token not found.");
@@ -161,7 +138,7 @@ const EditProfile = () => {
 
       if (response.ok) {
         setSuccessMessage("Profile updated successfully!");
-       setTimeout(() => router.push("./app"), 1000); // Redirect after 2 seconds     
+        setTimeout(() => router.push("./app"), 1000); // Redirect after 2 seconds     
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Failed to update profile.");
@@ -195,103 +172,92 @@ const EditProfile = () => {
         <TextInput
           style={styles.input}
           placeholder="First Name"
-          placeholderTextColor="#D3D3D3"
           keyboardType="email-address"
+          placeholderTextColor="#D3D3D3"
           value={formData.first_name}
           onChangeText={(value) => handleInputChange("first_name", value)}
         />
         <TextInput
           style={styles.input}
           placeholder="Last Name"
-          placeholderTextColor="#D3D3D3"
           keyboardType="email-address"
+          placeholderTextColor="#D3D3D3"
           value={formData.last_name}
           onChangeText={(value) => handleInputChange("last_name", value)}
         />
         <TextInput
           style={styles.input}
-          placeholder="Other Names"
           keyboardType="email-address"
+          placeholder="Other Names"
           placeholderTextColor="#D3D3D3"
-          value={formData.other_names}
+          value={formData.other_names || ""}
           onChangeText={(value) => handleInputChange("other_names", value)}
         />
         <TextInput
           style={styles.input}
-          placeholder="Phone Number"
-          placeholderTextColor="#D3D3D3"
+          placeholder="Enter your Phone Number"
           keyboardType="email-address"
+          placeholderTextColor="#D3D3D3"
           value={formData.phone_number}
           onChangeText={(value) => handleInputChange("phone_number", value)}
         />
         <TextInput
           style={styles.input}
-          placeholder="Specialization"
-          placeholderTextColor="#D3D3D3"
+          placeholder="Enter your home Address"
           keyboardType="email-address"
-          value={formData.specialization}
-          onChangeText={(value) => handleInputChange("specialization", value)}
+          placeholderTextColor="#D3D3D3"
+          value={formData.address || ""}
+          onChangeText={(value) => handleInputChange("address", value)}
         />
-
-        {/* Practitioner Type Dropdown */}
-        <Text style={styles.sectionTitle}>Practitioner Type</Text>
-        <Picker
-          selectedValue={formData.practitioner_type}
-          onValueChange={(value) => handleInputChange("practitioner_type", value)}
-          style={styles.picker}
-        >
-          <Picker.Item label="Doctor" value="Doctor" />
-          <Picker.Item label="Nurse" value="Nurse" />
-          <Picker.Item label="Community Health Worker" value="community_health" />
-        </Picker>
-
-        {/* License Number */}
         <TextInput
           style={styles.input}
-          placeholder="License Number"
+          placeholder="Enter the City you live"
           placeholderTextColor="#D3D3D3"
           keyboardType="email-address"
-          value={formData.license_number}
-          onChangeText={(value) => handleInputChange("license_number", value)}
+          value={formData.city || ""}
+          onChangeText={(value) => handleInputChange("city", value)}
         />
-
-        {/* Email */}
         <TextInput
           style={styles.input}
-          placeholder="Email"
-          placeholderTextColor="#D3D3D3"
-          value={formData.email}
+          placeholder="Enter your State"
           keyboardType="email-address"
-          onChangeText={(value) => handleInputChange("email", value)}
+          placeholderTextColor="#D3D3D3"
+          value={formData.state || ""}
+          onChangeText={(value) => handleInputChange("state", value)}
         />
-
-        {/* Availability */}
-        <Text style={styles.sectionTitle}>Availability</Text>
-        {Object.entries(formData.availability).map(([day, time]) => (
-          <View key={day} style={styles.availabilityRow}>
-            <Text style={styles.dayLabel}>{day.charAt(0).toUpperCase() + day.slice(1)}:</Text>
-            <TextInput
-              style={styles.availabilityInput}
-              placeholder="Availability"
-              value={time}
-              onChangeText={(value) => handleAvailabilityChange(day, value)}
-            />
-          </View>
-        ))}
-
-        {/* Is Available */}
-        <View style={styles.checkboxContainer}>
-          <Text style={styles.label}>Available for Appointments:</Text>
-          <TouchableOpacity
-            style={[
-              styles.checkbox,
-              formData.is_available ? styles.checkboxChecked : styles.checkboxUnchecked,
-            ]}
-            onPress={handleCheckboxToggle}
-          >
-            {formData.is_available && <Ionicons name="checkmark" size={18} color="white" />}
-          </TouchableOpacity>
-        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your Country"
+          keyboardType="email-address"          
+          placeholderTextColor="#D3D3D3"
+          value={formData.country || ""}
+          onChangeText={(value) => handleInputChange("country", value)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Emergency Contact"
+          placeholderTextColor="#D3D3D3"
+          keyboardType="email-address"
+                    value={formData.emergency_contact || ""}
+          onChangeText={(value) => handleInputChange("emergency_contact", value)}
+        />
+        
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Date of Birth"
+          placeholderTextColor="#D3D3D3"
+          keyboardType="email-address"
+          value={formData.date_of_birth || ""}
+          onChangeText={(value) => handleInputChange("date_of_birth", value)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter User Name"
+          placeholderTextColor="#D3D3D3"
+          keyboardType="email-address"
+          value={formData.user_name || ""}
+          onChangeText={(value) => handleInputChange("user_name", value)}
+        />
 
         {/* Success/Error Messages */}
         {successMessage && (
@@ -314,8 +280,6 @@ const EditProfile = () => {
   );
 };
 
-
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -326,110 +290,44 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FFFFFF", // Background color for the loader screen
+  },
+  backButton: {
+    marginBottom: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
-    color: "#333",
     textAlign: "center",
   },
   input: {
-    borderWidth: 1,
+    height: 50,
     borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 10,
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
     marginBottom: 15,
-    backgroundColor: "white",
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginTop: 20,
-    marginBottom: 10,
-    color: "#333",
-  },
-  availabilityRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  dayLabel: {
-    fontSize: 16,
-    flex: 1,
-    color: "#555",
-  },
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  availabilityInput: {
-    flex: 2,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 8,
-    backgroundColor: "white",
-  },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 20,
-    marginBottom: 40,
-  },
-  label: {
-    fontSize: 16,
-    flex: 1,
-    color: "#333",
-  },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderWidth: 1,
-    borderRadius: 4,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  checkboxChecked: {
-    backgroundColor: "#4caf50",
-    borderColor: "#4caf50",
-  },
-  checkboxUnchecked: {
-    backgroundColor: "white",
-    borderColor: "#ccc",
   },
   submitButton: {
-    marginTop: 30,
     backgroundColor: "#4caf50",
     padding: 15,
-    borderRadius: 8,
-    marginBottom: 40,
+    borderRadius: 5,
+    marginTop: 20,
+    alignItems: "center",
   },
   submitButtonText: {
-    color: "white",
-    fontSize: 18,
-    textAlign: "center",
+    color: "#fff",
+    fontSize: 16,
   },
   successText: {
-    fontSize: 18,
     color: "green",
     textAlign: "center",
-    marginBottom: 20,
+    marginTop: 10,
   },
   errorText: {
-    fontSize: 18,
     color: "red",
     textAlign: "center",
-    marginBottom: 20,
-  },
-  picker: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    marginBottom: 15,
-    backgroundColor: "white",
-    padding: 10,
+    marginTop: 10,
   },
 });
 
