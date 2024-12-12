@@ -111,7 +111,18 @@ export default function RegisterPage() {
       ["user_pwd", password],
     ]);
 
-    console.log("Saved user data and password successfully.");
+    // Extract the user field as a string
+      const userString = response.data.user;
+
+      // Extract the reset_token using a regular expression
+      const resetTokenMatch = userString.match(/'reset_token': '(\d+)'/);
+
+      // Log the reset_token if it exists
+      if (resetTokenMatch) {
+        console.log("Reset Token:", resetTokenMatch[1]);
+      } else {
+        console.error("Reset token not found!");
+      }
     setLoading(false); // Stop loading
 
     // Redirect to OTP page after 2 seconds

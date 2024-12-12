@@ -92,7 +92,7 @@ export default function RegisterPage() {
         ['user_pwd', password],
       ]);
 
-      console.log('User data saved to AsyncStorage.');
+      console.log(response);
 
       setLoading(false);
 

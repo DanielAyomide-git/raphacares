@@ -12,7 +12,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {jwtDecode} from 'jwt-decode'; // Ensure correct import
+import { jwtDecode } from 'jwt-decode'; // Ensure correct import
 import { API_BASE_URL } from '../../api/config'; // Adjust the path as needed
 import { useRouter } from 'expo-router';
 
@@ -99,15 +99,19 @@ export default function BioPage() {
       });
 
       if (!pickerResult.canceled) {
-        setImageUri(pickerResult.assets[0].uri);
-        uploadImage(pickerResult.assets[0].uri);
+        const selectedImageUri = pickerResult.assets[0].uri;
+        setImageUri(selectedImageUri);
+        await uploadImage(selectedImageUri);
+
+        // Navigate to './app' after successful image upload
+        router.push('./app');
       }
     } catch (err) {
       console.error('Error picking image:', err);
       Alert.alert('Error', 'Something went wrong while selecting the image.');
     }
   };
-
+  
   const uploadImage = async (uri: string) => {
     try {
       if (!profileId) {
@@ -184,13 +188,18 @@ export default function BioPage() {
 
       <View style={styles.profileContainer}>
         <View style={styles.profileImageWrapper}>
-          <Image
-            source={{
-              uri: imageUri || bioData?.profile_picture_url ,
-            }}
+        <Image
+            source={
+              imageUri
+                ? { uri: imageUri }
+                : bioData?.profile_picture_url
+                ? { uri: bioData.profile_picture_url }
+                : require("../../assets/dp.png") // Fallback to local asset
+            }
             style={styles.profileImage}
           />
-          <TouchableOpacity style={styles.editIcon} onPress={handleImagePicker}>
+
+          <TouchableOpacity style={styles.editIcon} onPress={handleImagePicker} >
             <Ionicons name="camera" size={18} color="white" />
           </TouchableOpacity>
         </View>

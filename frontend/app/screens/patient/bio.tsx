@@ -101,8 +101,12 @@ export default function BioPage() {
       });
 
       if (!pickerResult.canceled) {
-        setImageUri(pickerResult.assets[0].uri);
-        uploadImage(pickerResult.assets[0].uri);
+        const selectedImageUri = pickerResult.assets[0].uri;
+        setImageUri(selectedImageUri);
+        await uploadImage(selectedImageUri);
+
+        // Navigate to './app' after successful image upload
+        router.push('./app');
       }
     } catch (err) {
       console.error('Error picking image:', err);
@@ -186,12 +190,17 @@ export default function BioPage() {
 
       <View style={styles.profileContainer}>
         <View style={styles.profileImageWrapper}>
-          <Image
-            source={{
-              uri: imageUri || bioData?.profile_picture_url ,
-            }}
-            style={styles.profileImage}
-          />
+        <Image
+              source={
+                imageUri
+                  ? { uri: imageUri }
+                  : bioData?.profile_picture_url
+                  ? { uri: bioData.profile_picture_url }
+                  : require("../../assets/dp.png") // Fallback to local asset
+              }
+              style={styles.profileImage}
+            />
+
           <TouchableOpacity style={styles.editIcon} onPress={handleImagePicker}>
             <Ionicons name="camera" size={18} color="white" />
           </TouchableOpacity>
@@ -205,7 +214,7 @@ export default function BioPage() {
         <Text style={styles.sectionTitle}>Details</Text>
         <View style={styles.infoRow}>
           <Ionicons name="call-outline" size={24} color="black" />
-          <Text style={styles.infoLabel}>phone_number</Text>
+          <Text style={styles.infoLabel}>Phone number</Text>
           <Text style={styles.infoText}>{bioData?.phone_number}</Text>
         </View>
         <View style={styles.infoRow}>
@@ -322,7 +331,7 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#00CDF9',
     marginTop: 10,
   },
   roleText: {

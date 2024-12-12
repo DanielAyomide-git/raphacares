@@ -79,7 +79,7 @@ const Otp: React.FC = () => {
     setErrorText(""); // Clear previous errors
     setSuccessText(""); // Clear previous success messages
     if (!otp) {
-      setErrorText("Please enter a valid OTP");
+      setErrorText("Please enter a valid OTP", );
     setLoading(false); // Stop loading
 
       return;

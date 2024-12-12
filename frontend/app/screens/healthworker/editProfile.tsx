@@ -240,8 +240,8 @@ const EditProfile = () => {
           onValueChange={(value) => handleInputChange("practitioner_type", value)}
           style={styles.picker}
         >
-          <Picker.Item label="Doctor" value="Doctor" />
-          <Picker.Item label="Nurse" value="Nurse" />
+          <Picker.Item label="Doctor" value="doctor" />
+          <Picker.Item label="Nurse" value="nurse" />
           <Picker.Item label="Community Health Worker" value="community_health" />
         </Picker>
 

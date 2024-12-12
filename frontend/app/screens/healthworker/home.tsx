@@ -19,20 +19,22 @@ interface DecodedToken {
 interface Data {
   first_name: string;
   practitioner_type: string;
+  profile_picture_url: string;
+
 }
 
 export default function Dashboard(): JSX.Element {
   const [fontsLoaded, setFontsLoaded] = useState<boolean>(false);
   const [userType, setUserType] = useState<string>("");
-  const [firstName, setFirstName] = useState<string>(""); // State to store user's first name
-  const [initial, setInitial] = useState<string>(""); // State to store user's practitioner type
+  const [firstName, setFirstName] = useState<string>("");
+  const [initial, setInitial] = useState<string>("");
+  const [profilePictureUrl, setProfilePictureUrl] = useState<string>(""); // New state for profile picture URL
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null); // For handling errors
+  const [error, setError] = useState<string | null>(null);
 
-  const slideAnim = useRef(new Animated.Value(500)).current; // Start off-screen to the right
+  const slideAnim = useRef(new Animated.Value(500)).current;
 
   useEffect(() => {
-    // Load fonts
     const loadFonts = async () => {
       await Font.loadAsync({
         Poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
@@ -45,7 +47,6 @@ export default function Dashboard(): JSX.Element {
     loadFonts();
     fetchProfileData();
 
-    // Start the slide-in animation
     Animated.timing(slideAnim, {
       toValue: 0,
       duration: 2000,
@@ -55,11 +56,9 @@ export default function Dashboard(): JSX.Element {
 
   const fetchProfileData = async () => {
     try {
-      // Get token from AsyncStorage
       const token = await AsyncStorage.getItem("access_token");
       if (!token) throw new Error("Access token not found. Please log in again.");
 
-      // Decode the token to get user info
       const decodedToken: DecodedToken = jwtDecode<DecodedToken>(token);
       const { profile_id, user_type } = decodedToken;
 
@@ -67,13 +66,10 @@ export default function Dashboard(): JSX.Element {
         throw new Error("Invalid token. Profile ID is missing.");
       }
 
-      // Save user type to state
       setUserType(user_type);
 
-      // Build the API endpoint
       const endpoint = `${API_BASE_URL}/medical_practitioners/${profile_id}`;
 
-      // Fetch user profile
       const response = await fetch(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -87,6 +83,7 @@ export default function Dashboard(): JSX.Element {
       if (data.status === "success" && data.data) {
         setFirstName(data.data.first_name);
         setInitial(data.data.practitioner_type);
+        setProfilePictureUrl(data.data.profile_picture_url); // Save the profile picture URL
       } else {
         throw new Error("Failed to fetch profile data.");
       }
@@ -97,8 +94,8 @@ export default function Dashboard(): JSX.Element {
     }
   };
 
-  // Sample data for recent comments
-  const comments = [
+   // Sample data for recent comments
+   const comments = [
     {
       id: "1",
       name: "Moses Aubrey",
@@ -110,6 +107,7 @@ export default function Dashboard(): JSX.Element {
       date: "29/03/24",
     },
   ];
+
 
   if (loading) {
     return (
@@ -131,22 +129,26 @@ export default function Dashboard(): JSX.Element {
     <Animated.View
       style={[
         styles.container,
-        { transform: [{ translateY: slideAnim }] }, // Slide in from the right
+        { transform: [{ translateY: slideAnim }] },
       ]}
     >
-      {/* Main Dashboard */}
       <View style={styles.dashboardContainer}>
         {/* Header */}
         <View style={styles.header}>
-          <Image
-            source={{ uri: "https://bit.ly/dan-abramov" }}
+        <Image
+            source={
+              profilePictureUrl
+                ? { uri: profilePictureUrl }
+                : require("../../assets/dp.png") // Fallback to local asset
+            }
             style={styles.avatar}
             accessible={true}
             accessibilityLabel={`${userType}'s avatar`}
           />
+
           <View>
             <Text style={styles.welcomeText}>Welcome</Text>
-            <Text style={styles.doctorText}>
+             <Text style={styles.doctorText}>
               {initial.charAt(17).toUpperCase() + initial.slice(18)} {firstName.charAt(0).toUpperCase() + firstName.slice(1)}
             </Text>
           </View>
@@ -157,9 +159,8 @@ export default function Dashboard(): JSX.Element {
             style={styles.settingsIcon}
           />
         </View>
-
-        {/* Search Bar */}
-        <View style={styles.searchContainer}>
+         {/* Search Bar */}
+         <View style={styles.searchContainer}>
           <TextInput
             style={styles.searchInput}
             placeholder="Search for Clients/Appointments"

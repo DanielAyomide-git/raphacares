@@ -23,8 +23,19 @@ export interface RegisterRequest {
   profile_details: ProfileDetails;
 }
 
+// Define type for the user
+export interface User {
+  id: string;
+  email: string;
+  created_at: string;
+  updated_at: string;
+  [key: string]: any; // To include any additional fields dynamically
+}
+
+// Extended RegisterResponse to include user
 export interface RegisterResponse {
   message: string;
+  user: User; // Include user information
 }
 
 // Create Axios instance

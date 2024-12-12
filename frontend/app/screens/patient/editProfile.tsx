@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Animated, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  Animated,
+  ActivityIndicator,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { jwtDecode } from "jwt-decode";
-import { Picker } from "@react-native-picker/picker";
+import {jwtDecode} from "jwt-decode";
 import { Ionicons } from "@expo/vector-icons";
 import { API_BASE_URL } from "../../api/config";
 import { useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
+import DateTimePicker from "@react-native-community/datetimepicker"; // Import DateTimePicker
 
 interface DecodedToken {
   profile_id: string;
@@ -22,19 +31,19 @@ interface FormData {
   state: string | null;
   country: string | null;
   emergency_contact: string | null;
-  date_of_birth: string | null;
-  user_name: string | null;
 }
 
-const EditProfile = () => {
+const EditProfile: React.FC = () => {
   const [profileId, setProfileId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [loadingSave, setLoadingSave] = useState<boolean>(false); // Loader state for save
-  const [slideAnimation] = useState(new Animated.Value(400)); // Initial position off-screen to the right
+  const [loadingSave, setLoadingSave] = useState<boolean>(false);
+  const [slideAnimation] = useState(new Animated.Value(400));
   const navigation = useNavigation();
   const router = useRouter();
+  const [date, setDate] = useState<Date>(new Date());
+  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
 
   const [formData, setFormData] = useState<FormData>({
     first_name: "",
@@ -46,20 +55,15 @@ const EditProfile = () => {
     state: "",
     country: "",
     emergency_contact: "",
-    date_of_birth: "",
-    user_name: "",
   });
 
   useEffect(() => {
     fetchProfileData();
-    // Start the animation after 3 seconds
-    setTimeout(() => {
-      Animated.timing(slideAnimation, {
-        toValue: 0,
-        duration: 500,
-        useNativeDriver: true,
-      }).start();
-    }, 300); // 3 seconds delay
+    Animated.timing(slideAnimation, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
   }, []);
 
   const fetchProfileData = async () => {
@@ -68,22 +72,16 @@ const EditProfile = () => {
       if (!token) throw new Error("Access token not found. Please log in again.");
 
       const decodedToken: DecodedToken = jwtDecode<DecodedToken>(token);
-      const { profile_id } = decodedToken;
-      if (!profile_id) throw new Error("Invalid token. Profile ID is missing.");
+      setProfileId(decodedToken.profile_id);
 
-      setProfileId(profile_id);
-
-      const endpoint = `${API_BASE_URL}/patients/${profile_id}`;
-      const response = await fetch(endpoint, {
+      const response = await fetch(`${API_BASE_URL}/patients/${decodedToken.profile_id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch profile data. Status: ${response.status}`);
-      }
+      if (!response.ok) throw new Error("Failed to fetch profile data.");
 
       const data = await response.json();
-      if (data.status === "success" && data.data) {
+      if (data?.status === "success" && data?.data) {
         setFormData({
           first_name: data.data.first_name || "",
           last_name: data.data.last_name || "",
@@ -94,11 +92,7 @@ const EditProfile = () => {
           state: data.data.state || "",
           country: data.data.country || "",
           emergency_contact: data.data.emergency_contact || "",
-          date_of_birth: data.data.date_of_birth || "",
-          user_name: data.data.user_name || "",
         });
-      } else {
-        throw new Error("Failed to fetch profile data.");
       }
     } catch (err: any) {
       setError(err.message);
@@ -107,27 +101,27 @@ const EditProfile = () => {
     }
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      [field]: value,
-    }));
+  const handleInputChange = (field: keyof FormData, value: string) => {
+    setFormData((prevState) => ({ ...prevState, [field]: value }));
   };
 
   const handleSubmit = async () => {
-    setLoadingSave(true); // Show loader
+    setLoadingSave(true);
     if (!profileId) {
       setError("Profile ID is missing.");
-      setLoadingSave(false); // Hide loader
+      setLoadingSave(false);
       return;
     }
-
-    const endpoint = `${API_BASE_URL}/patients/${profileId}`;
+  
     try {
       const token = await AsyncStorage.getItem("access_token");
-      if (!token) throw new Error("Access token not found.");
-
-      const response = await fetch(endpoint, {
+      if (!token) {
+        setError("Access token not found.");
+        setLoadingSave(false);
+        return;
+      }
+  
+      const response = await fetch(`${API_BASE_URL}/patients/${profileId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -135,156 +129,159 @@ const EditProfile = () => {
         },
         body: JSON.stringify(formData),
       });
-
+  
+      const responseData = await response.json(); // Always check response data
       if (response.ok) {
         setSuccessMessage("Profile updated successfully!");
-        setTimeout(() => router.push("./app"), 1000); // Redirect after 2 seconds     
+        setTimeout(() => router.push("./bio"), 1000);
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to update profile.");
+        // Log error details for debugging
+        console.error("API error response:", responseData);
+        setError(responseData.message || "Failed to update profile.");
       }
     } catch (err: any) {
-      setError(err.message || "An error occurred while updating the profile.");
+      // Log the error details
+      console.error("Error while updating profile:", err);
+      setError(err.message);
     } finally {
-      setLoadingSave(false); // Hide loader
+      setLoadingSave(false);
     }
   };
+  
 
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="yellow" />
+        <ActivityIndicator size="large" color="#00CDF9" />
       </View>
     );
   }
 
+
+
+
   return (
     <Animated.View style={[styles.container, { transform: [{ translateX: slideAnimation }] }]}>
       <ScrollView style={styles.container}>
-        {/* Back Button */}
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
 
         <Text style={styles.title}>Edit Profile</Text>
 
-        {/* Form Inputs */}
+        <View style={styles.inputContainer}>
+        <Text style={styles.label}>First Name</Text>
         <TextInput
           style={styles.input}
           placeholder="First Name"
-          keyboardType="email-address"
           placeholderTextColor="#D3D3D3"
           value={formData.first_name}
           onChangeText={(value) => handleInputChange("first_name", value)}
+          keyboardType="default"
         />
+
+        <Text style={styles.label}>Last Name</Text>
         <TextInput
           style={styles.input}
           placeholder="Last Name"
-          keyboardType="email-address"
           placeholderTextColor="#D3D3D3"
           value={formData.last_name}
           onChangeText={(value) => handleInputChange("last_name", value)}
+          keyboardType="default"
         />
+
+        <Text style={styles.label}>Other Names</Text>
         <TextInput
           style={styles.input}
-          keyboardType="email-address"
           placeholder="Other Names"
           placeholderTextColor="#D3D3D3"
           value={formData.other_names || ""}
           onChangeText={(value) => handleInputChange("other_names", value)}
+          keyboardType="default"
         />
+
+        <Text style={styles.label}>Phone Number</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter your Phone Number"
-          keyboardType="email-address"
+          placeholder="Phone Number"
           placeholderTextColor="#D3D3D3"
           value={formData.phone_number}
           onChangeText={(value) => handleInputChange("phone_number", value)}
+          keyboardType="phone-pad"
         />
+
+        <Text style={styles.label}>Address</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter your home Address"
-          keyboardType="email-address"
+          placeholder="Address"
           placeholderTextColor="#D3D3D3"
           value={formData.address || ""}
           onChangeText={(value) => handleInputChange("address", value)}
+          keyboardType="default"
         />
+
+        <Text style={styles.label}>City</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter the City you live"
+          placeholder="City"
           placeholderTextColor="#D3D3D3"
-          keyboardType="email-address"
           value={formData.city || ""}
           onChangeText={(value) => handleInputChange("city", value)}
+          keyboardType="default"
         />
+
+        <Text style={styles.label}>State</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter your State"
-          keyboardType="email-address"
+          placeholder="State"
           placeholderTextColor="#D3D3D3"
           value={formData.state || ""}
           onChangeText={(value) => handleInputChange("state", value)}
+          keyboardType="default"
         />
+
+        <Text style={styles.label}>Country</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter your Country"
-          keyboardType="email-address"          
+          placeholder="Country"
           placeholderTextColor="#D3D3D3"
           value={formData.country || ""}
           onChangeText={(value) => handleInputChange("country", value)}
+          keyboardType="default"
         />
+
+        <Text style={styles.label}>Emergency Contact</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter Emergency Contact"
+          placeholder="Emergency Contact"
           placeholderTextColor="#D3D3D3"
-          keyboardType="email-address"
-                    value={formData.emergency_contact || ""}
+          value={formData.emergency_contact || ""}
           onChangeText={(value) => handleInputChange("emergency_contact", value)}
+          keyboardType="phone-pad"
         />
-        
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Date of Birth"
-          placeholderTextColor="#D3D3D3"
-          keyboardType="email-address"
-          value={formData.date_of_birth || ""}
-          onChangeText={(value) => handleInputChange("date_of_birth", value)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Enter User Name"
-          placeholderTextColor="#D3D3D3"
-          keyboardType="email-address"
-          value={formData.user_name || ""}
-          onChangeText={(value) => handleInputChange("user_name", value)}
-        />
+</View>
 
-        {/* Success/Error Messages */}
-        {successMessage && (
-          <Text style={styles.successText}>{successMessage}</Text>
-        )}
-        {error && (
-          <Text style={styles.errorText}>{error}</Text>
-        )}
 
-        {/* Submit Button */}
+        {successMessage && <Text style={styles.successText}>{successMessage}</Text>}
+        {error && <Text style={styles.errorText}>{error}</Text>}
+
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit} disabled={loadingSave}>
-          {loadingSave ? (
-            <ActivityIndicator size="small" color="white" />
-          ) : (
-            <Text style={styles.submitButtonText}>Save Changes</Text>
-          )}
+          {loadingSave ? <ActivityIndicator size="small" color="white" /> : <Text style={styles.submitButtonText}>Save Changes</Text>}
         </TouchableOpacity>
       </ScrollView>
     </Animated.View>
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f7f7f7",
     padding: 20,
+  },
+  inputContainer: {
+    marginBottom: 15, // Space between each field
   },
   loaderContainer: {
     flex: 1,
@@ -297,8 +294,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
+    color: '#00CDF9',
     marginBottom: 20,
     textAlign: "center",
+  },
+  label: {
+    fontSize: 14, // Adjust the font size
+    color: '#00CDF9', // Adjust text color
+    marginBottom: 8, // Space between label and input
   },
   input: {
     height: 50,
@@ -308,8 +311,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 15,
   },
+  inputText: {
+    fontSize: 16,
+    color: "#333",
+  },
   submitButton: {
-    backgroundColor: "#4caf50",
+    backgroundColor: "#00CDF9",
     padding: 15,
     borderRadius: 5,
     marginTop: 20,

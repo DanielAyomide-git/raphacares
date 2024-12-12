@@ -42,7 +42,7 @@ export default function PatientDashboard() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const [patientName, setPatientName] = useState<string>("");
-  const [patientAvatar, setPatientAvatar] = useState<string>("");
+  const [patientAvatar, setPatientAvatar] = useState<string>(""); // state to hold the avatar URL
   const [loading, setLoading] = useState<boolean>(true); // Set loading state to true initially
 
   const navigation = useNavigation<NavigationProp>();
@@ -109,7 +109,7 @@ export default function PatientDashboard() {
         // Combine first_name and last_name into a full name
         const fullName = `${data.data.first_name} ${data.data.last_name}`;
         setPatientName(fullName);
-        setPatientAvatar(data.data.avatar_url); // Assuming avatar URL is in the response
+        setPatientAvatar(data.data.profile_picture_url ); // Assuming profile_picture_url is inside the data
       } else {
         throw new Error("Patient data not found");
       }
@@ -162,9 +162,14 @@ export default function PatientDashboard() {
           <Text style={styles.nameText}>{patientName || "Loading..."}</Text>
         </View>
         <Image
-          source={{ uri: patientAvatar || "https://i.pravatar.cc/300?u=po" }}
-          style={styles.profileImage}
-        />
+              source={
+                patientAvatar
+                  ? { uri: patientAvatar }
+                  : require("../../assets/dp.png") // Fallback to local asset
+              }
+              style={styles.profileImage}
+            />
+
       </View>
 
       {/* Free Consultation Card */}

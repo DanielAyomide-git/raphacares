@@ -37,7 +37,9 @@ const apiClient = axios.create({
 export const register = async (userData: RegisterRequest): Promise<any> => {
   try {
     const response = await apiClient.post("/auth/register", userData);
+    console.log(response.data)
     return response.data; // Return entire response body
+    
   } catch (error: any) {
     console.error("Error during registration:", error.response?.data || error);
 
