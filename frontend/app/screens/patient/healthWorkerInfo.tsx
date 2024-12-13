@@ -74,7 +74,7 @@ const HealthWorkerInfo: React.FC = () => {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#4CAF50" />
+        <ActivityIndicator size="large" color="#007bff" />
       </View>
     );
   }
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
   availabilityTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#4CAF50',
+    color: '#007bff',
   },
   availabilityRow: {
     flexDirection: 'row',
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   bookButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#007bff',
     borderRadius: 5,
     paddingVertical: 10,
     marginVertical: 20,

@@ -39,96 +39,100 @@ const BookAppointment: React.FC = () => {
     <ScrollView contentContainerStyle={styles.container}>
 
         {/* Back Button */}
-              <TouchableOpacity
-                style={styles.backButton}
-                onPress={() => router.push('./services')}
-              >
-                <Ionicons name="arrow-back" size={24} color="#333" />
-              </TouchableOpacity>
-
-
-      <View style={styles.card}>
-        <Text style={styles.title}>Book your appointment now</Text>
-        <Text style={styles.subtitle}>
-          So our team can reach out to you on time
-        </Text>
-
-        {/* Full Name */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Full Name</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="eg: John Doe"
-            value={formData.fullName}
-            onChangeText={(text) => handleInputChange('fullName', text)}
-          />
-        </View>
-
-        {/* Email */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="eg: john@email.com"
-            value={formData.email}
-            onChangeText={(text) => handleInputChange('email', text)}
-            keyboardType="email-address"
-          />
-        </View>
-
-        {/* Phone Number */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Phone Number</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Phone Number"
-            value={formData.email}
-            onChangeText={(text) => handleInputChange('phoneNumber', text)}
-            keyboardType="email-address"
-          />
-        </View>
-
-        {/* Available Date */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Available Date</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Date"
-            value={formData.email}
-            onChangeText={(text) => handleInputChange('availableDate', text)}
-            keyboardType="email-address"
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Appointment Reason</Text>
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            placeholder="Reason"
-            value={formData.reason}
-            onChangeText={(text) => handleInputChange('reason', text)}
-            multiline
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Additional information</Text>
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            placeholder="Note"
-            value={formData.note}
-            onChangeText={(text) => handleInputChange('note', text)}
-            multiline
-          />
-        </View>
-
-        {/* Submit Button */}
-        <TouchableOpacity style={styles.button} onPress={() => console.log(formData)}>
-          <Text style={styles.buttonText}>Book Now →</Text>
+        <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.push('./healthWorkerInfo')}
+        >
+            <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
-      </View>
+
+        <View style={styles.card}>
+            <Text style={styles.title}>Appointment Form</Text>
+
+            {/* Full Name */}
+            <View style={styles.inputGroup}>
+                <Text style={styles.label}>Full Name</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="eg: John Doe"
+                    placeholderTextColor="gray"
+                    value={formData.fullName}
+                    onChangeText={(text) => handleInputChange('fullName', text)}
+                />
+            </View>
+
+            {/* Email */}
+            <View style={styles.inputGroup}>
+                <Text style={styles.label}>Email</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="eg: john@email.com"
+                    placeholderTextColor="gray"
+                    value={formData.email}
+                    onChangeText={(text) => handleInputChange('email', text)}
+                    keyboardType="email-address"
+                />
+            </View>
+
+            {/* Phone Number */}
+            <View style={styles.inputGroup}>
+                <Text style={styles.label}>Phone Number</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Phone Number"
+                    placeholderTextColor="gray"
+                    value={formData.phoneNumber}
+                    onChangeText={(text) => handleInputChange('phoneNumber', text)}
+                    keyboardType="phone-pad"
+                />
+            </View>
+
+            {/* Available Date */}
+            <View style={styles.inputGroup}>
+                <Text style={styles.label}>Available Date</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Date"
+                    placeholderTextColor="gray"
+                    value={formData.availableDate}
+                    onChangeText={(text) => handleInputChange('availableDate', text)}
+                />
+            </View>
+
+            {/* Appointment Reason */}
+            <View style={styles.inputGroup}>
+                <Text style={styles.label}>Appointment Reason</Text>
+                <TextInput
+                    style={[styles.input, styles.textArea1]}
+                    placeholder="Reason"
+                    placeholderTextColor="gray"
+                    value={formData.reason}
+                    onChangeText={(text) => handleInputChange('reason', text)}
+                    multiline
+                />
+            </View>
+
+            {/* Additional Information */}
+            <View style={styles.inputGroup}>
+                <Text style={styles.label}>Additional information</Text>
+                <TextInput
+                    style={[styles.input, styles.textArea2]}
+                    placeholder="Note"
+                    placeholderTextColor="gray"
+                    value={formData.note}
+                    onChangeText={(text) => handleInputChange('note', text)}
+                    multiline
+                />
+            </View>
+
+            {/* Submit Button */}
+            <TouchableOpacity style={styles.button} onPress={() => console.log(formData)}>
+                <Text style={styles.buttonText}>Book Now</Text>
+            </TouchableOpacity>
+        </View>
     </ScrollView>
-  );
+);
+
 };
 
 const styles = StyleSheet.create({
@@ -153,8 +157,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '600',
-    marginBottom: 10,
-    color: '#333',
+    marginBottom: 60,
+    color: '#007bff',
     textAlign: 'center',
   },
   subtitle: {
@@ -169,8 +173,8 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
-    marginBottom: 5,
-    color: '#555',
+    marginBottom: 8,
+    color: '#007bff',
   },
   input: {
     backgroundColor: '#fff',
@@ -197,7 +201,11 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 5,
   },
-  textArea: {
+  textArea1: {
+    height: 50,
+    textAlignVertical: 'top',
+  },
+  textArea2: {
     height: 100,
     textAlignVertical: 'top',
   },
@@ -206,6 +214,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
     marginTop: 20,
+    marginRight:300
   },
   button: {
     backgroundColor: '#007bff',
