@@ -242,7 +242,7 @@ const EditProfile = () => {
         >
           <Picker.Item label="Doctor" value="doctor" />
           <Picker.Item label="Nurse" value="nurse" />
-          <Picker.Item label="Community Health Worker" value="community_health" />
+          <Picker.Item label="Pharmacist" value="community_health" />
         </Picker>
 
         {/* License Number */}

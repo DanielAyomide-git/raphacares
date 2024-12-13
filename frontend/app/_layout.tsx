@@ -6,9 +6,12 @@ export default function RootLayout() {
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/login" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/resetPassword" options={{ headerShown: false }} />
+      <Stack.Screen name="screens/patient/healthWorkerInfo" options={{ headerShown: false }} />
+      <Stack.Screen name="screens/patient/bookAppointment" options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/resetPassword" options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/otp" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/otp" options={{ headerShown: false }} />
+      <Stack.Screen name="screens/patient/services" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/register" options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/healthWorker" options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/editProfile" options={{ headerShown: false }} />

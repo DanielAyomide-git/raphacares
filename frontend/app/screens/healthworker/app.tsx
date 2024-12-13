@@ -19,27 +19,27 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 // Welcome Screen Component
-function WelcomeScreen() {
-  const fadeAnim = useRef(new Animated.Value(0)).current; // Start with opacity 0
+// function WelcomeScreen() {
+//   const fadeAnim = useRef(new Animated.Value(0)).current; // Start with opacity 0
 
-  useEffect(() => {
-    // Start the fade-in animation
-    Animated.timing(fadeAnim, {
-      toValue: 1, // Fully visible
-      duration: 4000, // Duration of the animation
-      useNativeDriver: true, // Use native driver for better performance
-    }).start();
-  }, []);
+//   useEffect(() => {
+//     // Start the fade-in animation
+//     Animated.timing(fadeAnim, {
+//       toValue: 1, // Fully visible
+//       duration: 4000, // Duration of the animation
+//       useNativeDriver: true, // Use native driver for better performance
+//     }).start();
+//   }, []);
 
-  return (
-    <View style={styles.welcomeContainer}>
-      <Animated.Image
-        source={require('../../assets/logo.png')} // Replace with your image path
-        style={[styles.logo, { opacity: fadeAnim }]} // Fade-in animation
-      />
-    </View>
-  );
-}
+//   return (
+//     <View style={styles.welcomeContainer}>
+//       <Animated.Image
+//         source={require('../../assets/logo.png')} // Replace with your image path
+//         style={[styles.logo, { opacity: fadeAnim }]} // Fade-in animation
+//       />
+//     </View>
+//   );
+// }
 
 // Tabs Navigation Component
 function MyTabs() {
@@ -117,9 +117,9 @@ function AppNavigator() {
     );
   }
 
-  if (showWelcome) {
-    return <WelcomeScreen />;
-  }
+  // if (showWelcome) {
+  //   return <WelcomeScreen />;
+  // }
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>

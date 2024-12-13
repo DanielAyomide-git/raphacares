@@ -11,38 +11,16 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import PatientDashboard from './home';
 import MessagesScreen from './message';
-import SettingsScreen from './setting';
 import NotificationsScreen from './notification';
-import ProfilePage from './profile';
 import BioPage from './bio';
 import Services from './services';
+import HealthWorkerInfo from './healthWorkerInfo'; // Import the HealthWorkerInfo screen
 import * as Font from 'expo-font'; // Import expo-font
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 // Welcome Screen with Fade Animation
-function WelcomeScreen() {
-  const fadeAnim = useRef(new Animated.Value(0)).current; // Start with opacity 0
-
-  useEffect(() => {
-    // Start the fade-in animation
-    Animated.timing(fadeAnim, {
-      toValue: 1, // Fully visible
-      duration: 4000, // Duration of the animation
-      useNativeDriver: true, // Use native driver for better performance
-    }).start();
-  }, []);
-
-  return (
-    <View style={styles.welcomeContainer}>
-      <Animated.Image
-        source={require('../../assets/logo.png')} // Replace with your image path
-        style={[styles.logo, { opacity: fadeAnim }]} // Fade-in animation
-      />
-    </View>
-  );
-}
 
 
 // Tab Navigation
@@ -55,8 +33,8 @@ function MyTabs() {
 
           if (route.name === 'Home') {
             iconName = 'home-outline';
-          } else if (route.name === 'Messages') {
-            iconName = 'chatbox-ellipses';
+          } else if (route.name === 'Appointments') {
+            iconName = 'stopwatch-outline';
           } else if (route.name === 'Profile') {
             iconName = 'person';
           } else if (route.name === 'Notification') {
@@ -72,10 +50,28 @@ function MyTabs() {
       })}
     >
       <Tab.Screen name="Home" component={PatientDashboard} />
-      <Tab.Screen name="Messages" component={MessagesScreen} />
+      <Tab.Screen name="Appointments" component={MessagesScreen} />
       <Tab.Screen name="Notification" component={NotificationsScreen} />
       <Tab.Screen name="Profile" component={BioPage} />
     </Tab.Navigator>
+  );
+}
+
+// Stack for Services and HealthWorkerInfo
+function ServicesStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Services"
+        component={Services}
+        options={{ title: 'Available Services' }}
+      />
+      <Stack.Screen
+        name="HealthWorkerInfo"
+        component={HealthWorkerInfo}
+        options={{ title: 'Health Worker Details' }}
+      />
+    </Stack.Navigator>
   );
 }
 
@@ -96,14 +92,11 @@ function AppNavigator() {
     loadFonts();
     const timer = setTimeout(() => {
       setShowWelcome(false);
-    }, 3000); // Show welcome screen for 2 seconds
+    }, 3000); // Show welcome screen for 3 seconds
 
     return () => clearTimeout(timer); // Cleanup timer
   }, []);
 
-  if (showWelcome) {
-    return <WelcomeScreen />;
-  }
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>

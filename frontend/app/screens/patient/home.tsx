@@ -18,6 +18,7 @@ import Animated, {
   withTiming,
   withDelay,
 } from "react-native-reanimated";
+import { useRouter } from 'expo-router';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../../api/config";
 import { jwtDecode } from "jwt-decode";
@@ -43,7 +44,9 @@ export default function PatientDashboard() {
   const [showWelcome, setShowWelcome] = useState(true);
   const [patientName, setPatientName] = useState<string>("");
   const [patientAvatar, setPatientAvatar] = useState<string>(""); // state to hold the avatar URL
-  const [loading, setLoading] = useState<boolean>(true); // Set loading state to true initially
+  const [loading, setLoading] = useState<boolean>(true); // Set loading state to true initially  
+  const router = useRouter();
+
 
   const navigation = useNavigation<NavigationProp>();
 
@@ -141,7 +144,7 @@ export default function PatientDashboard() {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="yellow" />
+        <ActivityIndicator size="large" color="blue" />
       </View>
     );
   }
@@ -149,7 +152,7 @@ export default function PatientDashboard() {
   const services: Service[] = [
     { id: "1", name: "Hospitals", icon: "bed-outline", color: "#4CAF50" },
     { id: "2", name: "Drug refill", icon: "flask-outline", color: "#2196F3" },
-    { id: "3", name: "Ambulance", icon: "car-sport-outline", color: "#FF5722" },
+    { id: "3", name: "Emergency", icon: "car-sport-outline", color: "#FF5722" },
     { id: "4", name: "Consultation", icon: "chatbubble-ellipses-outline", color: "#9C27B0" },
   ];
 
@@ -177,9 +180,9 @@ export default function PatientDashboard() {
         <Text style={styles.consultationText}>
           Get the best consultation from health professionals
         </Text>
-        <TouchableOpacity style={styles.consultButton}>
-          <Text style={styles.consultButtonText}>Find a doctor</Text>
-        </TouchableOpacity>
+        <TouchableOpacity style={styles.consultButton} onPress={() => router.push('./services')}>
+      <Text style={styles.consultButtonText}>Find a doctor</Text>
+    </TouchableOpacity>
       </View>
 
       {/* Services */}
@@ -191,7 +194,7 @@ export default function PatientDashboard() {
             style={[styles.serviceBox, { backgroundColor: service.color }, serviceStyles[index]]}
           >
             <TouchableOpacity
-              onPress={() => navigation.navigate("Services", { service })}
+              onPress={() => router.push('./services')}
             >
               <Ionicons name={service.icon} size={40} color="white" />
               <Text style={styles.serviceText}>{service.name}</Text>

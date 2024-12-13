@@ -82,7 +82,7 @@ const App = () => {
     return (
       <View style={indexStyles.splashContainer}>
         <Image
-          source={require("./assets/RaphaCares-04.png")}
+          source={require("./assets/logo.png")}
           style={indexStyles.logo}
         />
       </View>

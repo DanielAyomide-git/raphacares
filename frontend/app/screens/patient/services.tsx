@@ -1,50 +1,68 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   FlatList,
+  Image,
+  ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native"; // Import navigation hook
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 
-// Type definition for a Doctor
 interface Doctor {
   id: string;
-  name: string;
-  location: string;
-  rating: number;
+  first_name: string;
+  last_name: string;
+  profile_picture_url: string | null;
+  practitioner_type: string;
+  specialization: string;
 }
 
 const Services: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("Doctors");
-  const navigation = useNavigation(); // Access the navigation prop
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const router = useRouter();
 
-  // Categories for the tabs
-  const categories: string[] = [
-    "Doctors",
-    "Pharmacy",
-    "Ambulance",
-    "Hospitals",
-  ];
+  const categories: string[] = ["Doctors", "Pharmacy", "Nurse"];
 
-  // Sample doctor data
-  const doctors: Doctor[] = [
-    { id: "1", name: "Malcolm Function", location: "Taos, NM", rating: 5.0 },
-    { id: "2", name: "Ingredia Nutrisha", location: "Dallas, TX", rating: 4.5 },
-    { id: "3", name: "Nathaneal Down", location: "Espanola, NM", rating: 4.0 },
-    { id: "4", name: "Ursula Gurnmeister", location: "Ellis, Kansas", rating: 5.0 },
-    { id: "5", name: "Brandon Guidelines", location: "Kenton, Ohio", rating: 3.5 },
-  ];
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/api/v1/medical_practitioners/"
+        );
+        const data = await response.json();
+        if (data.status === "success") {
+          setDoctors(data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching doctors:", error);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
+
+  const handleDoctorPress = async (doctorId: string) => {
+    try {
+      // Save doctor id to AsyncStorage
+      await AsyncStorage.setItem("selectedDoctorId", doctorId);
+      console.log(doctorId)
+
+      // Navigate to healthWorkerInfo page
+      router.push("./healthWorkerInfo");
+    } catch (error) {
+      console.error("Error saving doctor ID:", error);
+    }
+  };
 
   const renderCategory = ({ item }: { item: string }) => (
     <TouchableOpacity
       key={item}
-      style={[
-        styles.tab,
-        selectedCategory === item && styles.activeTab,
-      ]}
+      style={[styles.tab, selectedCategory === item && styles.activeTab]}
       onPress={() => setSelectedCategory(item)}
     >
       <Text
@@ -61,54 +79,79 @@ const Services: React.FC = () => {
   const renderDoctor = ({ item }: { item: Doctor }) => (
     <View style={styles.doctorCard}>
       <View style={styles.doctorInfo}>
-        <View style={styles.avatar} />
+        <View style={styles.avatar}>
+          {item.profile_picture_url ? (
+            <Image
+              source={{ uri: item.profile_picture_url }}
+              style={styles.profileImage}
+            />
+          ) : (
+            <Ionicons name="person-circle-outline" size={50} color="#E0E0E0" />
+          )}
+        </View>
         <View>
-          <Text style={styles.doctorName}>{item.name}</Text>
-          <Text style={styles.doctorLocation}>
-            <Ionicons name="location-outline" size={14} color="#888" />{" "}
-            {item.location}
+          <TouchableOpacity onPress={() => handleDoctorPress(item.id)}>
+            <Text style={styles.doctorName}>
+              {item.first_name} {item.last_name}
+            </Text>
+          </TouchableOpacity>
+          <Text style={styles.doctorSpecialization}>
+          {item.practitioner_type
+            ? item.practitioner_type.charAt(0).toUpperCase() + item.practitioner_type.slice(1)
+            : "N/A"}
+        </Text>
+
+          <Text style={styles.doctorSpecialization}>
+            Specialization: {item.specialization || "N/A"}
           </Text>
         </View>
       </View>
       <View style={styles.ratingContainer}>
         <Ionicons name="star" size={16} color="#F5C518" />
-        <Text style={styles.ratingText}>{item.rating.toFixed(1)}</Text>
+        <Text style={styles.ratingText}>5.0</Text>
       </View>
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      {/* Back Button */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()} // Go back to the previous screen
-      >
-        <Ionicons name="arrow-back" size={24} color="#333" />
-      </TouchableOpacity>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.container}>
+        {/* Back Button */}
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.replace("./app")}
+        >
+          <Ionicons name="arrow-back" size={24} color="#333" />
+        </TouchableOpacity>
 
-      {/* Horizontally Scrollable Category Tabs */}
-      <FlatList
-        data={categories}
-        renderItem={renderCategory}
-        keyExtractor={(item) => item}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.categoryList}
-      />
+        {/* Horizontally Scrollable Category Tabs */}
+        <FlatList
+          data={categories}
+          renderItem={renderCategory}
+          keyExtractor={(item) => item}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.categoryList}
+        />
 
-      {/* List of Doctors */}
-      <FlatList
-        data={doctors}
-        renderItem={renderDoctor}
-        keyExtractor={(item) => item.id}
-        style={styles.doctorList}
-      />
-    </View>
+        {/* List of Doctors */}
+        <FlatList
+          data={doctors}
+          renderItem={renderDoctor}
+          keyExtractor={(item) => item.id}
+          style={styles.doctorList}
+          scrollEnabled={false} // Disable FlatList scrolling since ScrollView handles it
+        />
+      </View>
+    </ScrollView>
   );
 };
 
+
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: "#fff",
@@ -119,20 +162,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 15,
   },
-  backButtonText: {
-    fontSize: 16,
-    color: "#333",
-    marginLeft: 5,
-  },
   categoryList: {
-    marginBottom: 20,
+    marginBottom: 10,
   },
   tab: {
-    paddingVertical: 10,
+    paddingVertical: 8, // Adjust vertical padding for better spacing
     paddingHorizontal: 15,
     borderBottomWidth: 2,
     borderBottomColor: "transparent",
-    marginRight: 10, // Space between tabs
+    marginRight: 10,
   },
   activeTab: {
     borderBottomColor: "#4A90E2",
@@ -140,13 +178,17 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 14,
     color: "#888",
+    textAlign: "center", // Ensure proper alignment
+    marginBottom: 0, // Remove unnecessary negative margin
   },
   activeTabText: {
     color: "#4A90E2",
     fontWeight: "bold",
+    textAlign: "center", // Ensure proper alignment
   },
+  
   doctorList: {
-    marginTop: 5,
+    marginTop: 10,
   },
   doctorCard: {
     flexDirection: "row",
@@ -172,6 +214,13 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     backgroundColor: "#E0E0E0",
     marginRight: 15,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  profileImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
   },
   doctorName: {
     fontSize: 16,
@@ -182,6 +231,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#888",
     marginTop: 2,
+  },
+  doctorSpecialization: {
+    fontSize: 14,
+    color: "#888",
+    marginTop: 6,
   },
   ratingContainer: {
     flexDirection: "row",
