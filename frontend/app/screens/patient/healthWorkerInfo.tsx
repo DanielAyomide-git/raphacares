@@ -42,7 +42,7 @@ interface MedicalPractitioner {
 // Main Component
 const HealthWorkerInfo: React.FC = () => {
   const router = useRouter();
-  const [id, setId] = useState<string | null>(null); // Store the ID from AsyncStorage
+  const [storedId, setId] = useState<string | null>(null); // Store the ID from AsyncStorage
   const [healthWorker, setHealthWorker] = useState<MedicalPractitioner | null>(null); // Store fetched data
   const [loading, setLoading] = useState<boolean>(true); // Loading state
 
@@ -50,7 +50,7 @@ const HealthWorkerInfo: React.FC = () => {
   useEffect(() => {
     const fetchHealthWorkerInfo = async () => {
       try {
-        const storedId = await AsyncStorage.getItem('selectedDoctorId'); // Retrieve ID
+        const storedId = await AsyncStorage.getItem('selectedPractitionerId'); // Retrieve ID
         if (storedId) {
           setId(storedId);
 
@@ -96,6 +96,20 @@ const HealthWorkerInfo: React.FC = () => {
     availability,
   } = healthWorker;
 
+  const handleBookAppointment = async () => {
+    try {
+      // Save the medical practitioner ID to AsyncStorage
+      if (storedId) {
+        await AsyncStorage.setItem('medical_practitioner_id', storedId);
+      }
+
+      // Navigate to the book appointment screen
+      router.push('./bookAppointment');
+    } catch (error) {
+      console.error('Error saving medical practitioner ID:', error);
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       {/* Back Button */}
@@ -124,35 +138,37 @@ const HealthWorkerInfo: React.FC = () => {
           Specialization: {specialization || "N/A"}
         </Text>
       </View>
+      
       <View style={styles.availabilityContainer2}>
-
-      <Text style={styles.availabilityTitle}>Availability</Text>
-      <Text style={styles.availabilityTitle}>Time</Text>
-
+        <Text style={styles.availabilityTitle}>Availability</Text>
+        <Text style={styles.availabilityTitle}>Time</Text>
       </View>
+
       {/* Availability Section */}
       <View style={styles.availabilityContainer}>
-  {Object.keys(availability || {}).length > 0 ? (
-    Object.entries(availability).map(([day, time]) => (
-      <View key={day} style={styles.availabilityRow}>
-        {/* Day on the left */}
-        <Text style={styles.day}>{day.charAt(0).toUpperCase() + day.slice(1)}:</Text>
-        {/* Time on the right */}
-        <Text style={styles.time}>{time}</Text>
+        {Object.keys(availability || {}).length > 0 ? (
+          Object.entries(availability)
+            .filter(([day, time]) => time) // Filter out days with null or empty times
+            .map(([day, time]) => (
+              <View key={day} style={styles.availabilityRow}>
+                {/* Day on the left */}
+                <Text style={styles.day}>{day.charAt(0).toUpperCase() + day.slice(1)}:</Text>
+                {/* Time on the right */}
+                <Text style={styles.time}>{time}</Text>
+              </View>
+            ))
+        ) : (
+          <Text style={styles.noAvailability}>Not Available</Text>
+        )}
       </View>
-    ))
-  ) : (
-    <Text style={styles.noAvailability}>Not Available</Text>
-  )}
-</View>
 
-        <TouchableOpacity
-          style={styles.bookButton}
-          onPress={() => router.push('./bookAppointment')}
-        >
-          <Text style={styles.bookButtonText}>Book Appointment</Text>
-        </TouchableOpacity>
-
+      {/* Book Appointment Button */}
+      <TouchableOpacity
+        style={styles.bookButton}
+        onPress={handleBookAppointment} // Save ID and navigate
+      >
+        <Text style={styles.bookButtonText}>Book Appointment</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };

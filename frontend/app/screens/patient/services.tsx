@@ -4,15 +4,14 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  FlatList,
-  Image,
   ScrollView,
+  Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 
-interface Doctor {
+interface Practitioner {
   id: string;
   first_name: string;
   last_name: string;
@@ -23,62 +22,55 @@ interface Doctor {
 
 const Services: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("Doctors");
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [practitioners, setPractitioners] = useState<Practitioner[]>([]);
   const router = useRouter();
 
-  const categories: string[] = ["Doctors", "Pharmacy", "Nurse"];
+  const categories: string[] = ["Doctors", "Pharmacists", "Nurses"];
 
   useEffect(() => {
-    const fetchDoctors = async () => {
+    const fetchPractitioners = async () => {
       try {
         const response = await fetch(
           "http://127.0.0.1:8000/api/v1/medical_practitioners/"
         );
         const data = await response.json();
         if (data.status === "success") {
-          setDoctors(data.data);
+          setPractitioners(data.data);
         }
       } catch (error) {
-        console.error("Error fetching doctors:", error);
+        console.error("Error fetching practitioners:", error);
       }
     };
 
-    fetchDoctors();
+    fetchPractitioners();
   }, []);
 
-  const handleDoctorPress = async (doctorId: string) => {
+  const handlePractitionerPress = async (practitionerId: string) => {
     try {
-      // Save doctor id to AsyncStorage
-      await AsyncStorage.setItem("selectedDoctorId", doctorId);
-      console.log(doctorId)
-
-      // Navigate to healthWorkerInfo page
+      await AsyncStorage.setItem("selectedPractitionerId", practitionerId);
+      console.log(practitionerId);
       router.push("./healthWorkerInfo");
     } catch (error) {
-      console.error("Error saving doctor ID:", error);
+      console.error("Error saving practitioner ID:", error);
     }
   };
 
-  const renderCategory = ({ item }: { item: string }) => (
-    <TouchableOpacity
-      key={item}
-      style={[styles.tab, selectedCategory === item && styles.activeTab]}
-      onPress={() => setSelectedCategory(item)}
-    >
-      <Text
-        style={[
-          styles.tabText,
-          selectedCategory === item && styles.activeTabText,
-        ]}
-      >
-        {item}
-      </Text>
-    </TouchableOpacity>
-  );
+  const filteredPractitioners = practitioners.filter((practitioner) => {
+    if (selectedCategory === "Doctors") {
+      return practitioner.practitioner_type === "doctor";
+    }
+    if (selectedCategory === "Pharmacists") {
+      return practitioner.practitioner_type === "community_health";
+    }
+    if (selectedCategory === "Nurses") {
+      return practitioner.practitioner_type === "nurse";
+    }
+    return false;
+  });
 
-  const renderDoctor = ({ item }: { item: Doctor }) => (
-    <View style={styles.doctorCard}>
-      <View style={styles.doctorInfo}>
+  const renderPractitioner = ({ item }: { item: Practitioner }) => (
+    <View style={styles.practitionerCard}>
+      <View style={styles.practitionerInfo}>
         <View style={styles.avatar}>
           {item.profile_picture_url ? (
             <Image
@@ -90,25 +82,21 @@ const Services: React.FC = () => {
           )}
         </View>
         <View>
-          <TouchableOpacity onPress={() => handleDoctorPress(item.id)}>
-            <Text style={styles.doctorName}>
+          <TouchableOpacity onPress={() => handlePractitionerPress(item.id)}>
+            <Text style={styles.practitionerName}>
               {item.first_name} {item.last_name}
             </Text>
+            <Text style={styles.practitionerSpecialization}>
+              {item.practitioner_type
+                ? item.practitioner_type.charAt(0).toUpperCase() +
+                  item.practitioner_type.slice(1)
+                : "N/A"}
+            </Text>
+            <Text style={styles.practitionerSpecialization}>
+              Specialization: {item.specialization || "N/A"}
+            </Text>
           </TouchableOpacity>
-          <Text style={styles.doctorSpecialization}>
-          {item.practitioner_type
-            ? item.practitioner_type.charAt(0).toUpperCase() + item.practitioner_type.slice(1)
-            : "N/A"}
-        </Text>
-
-          <Text style={styles.doctorSpecialization}>
-            Specialization: {item.specialization || "N/A"}
-          </Text>
         </View>
-      </View>
-      <View style={styles.ratingContainer}>
-        <Ionicons name="star" size={16} color="#F5C518" />
-        <Text style={styles.ratingText}>5.0</Text>
       </View>
     </View>
   );
@@ -124,29 +112,42 @@ const Services: React.FC = () => {
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
 
-        {/* Horizontally Scrollable Category Tabs */}
-        <FlatList
-          data={categories}
-          renderItem={renderCategory}
-          keyExtractor={(item) => item}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoryList}
-        />
+        {/* Categories */}
+        <View style={styles.categoryContainer}>
+          {categories.map((category) => (
+            <TouchableOpacity
+              key={category}
+              style={styles.categoryButton}
+              onPress={() => setSelectedCategory(category)}
+            >
+              <Text
+                style={[
+                  styles.categoryText,
+                  selectedCategory === category && styles.activeCategoryText,
+                ]}
+              >
+                {category}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-        {/* List of Doctors */}
-        <FlatList
-          data={doctors}
-          renderItem={renderDoctor}
-          keyExtractor={(item) => item.id}
-          style={styles.doctorList}
-          scrollEnabled={false} // Disable FlatList scrolling since ScrollView handles it
-        />
+        {/* Practitioner List */}
+        <View style={styles.practitionerList}>
+          {filteredPractitioners.length > 0 ? (
+            filteredPractitioners.map((practitioner) =>
+              renderPractitioner({ item: practitioner })
+            )
+          ) : (
+            <Text style={styles.noPractitionersText}>
+              Not available. Please check back later.
+            </Text>
+          )}
+        </View>
       </View>
     </ScrollView>
   );
 };
-
 
 const styles = StyleSheet.create({
   scrollContainer: {
@@ -162,35 +163,31 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 15,
   },
-  categoryList: {
-    marginBottom: 10,
+  categoryContainer: {
+    flexDirection: "row",
+    marginBottom: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#f9f9f9",
+    borderRadius: 10,
+    padding: 10,
   },
-  tab: {
-    paddingVertical: 8, // Adjust vertical padding for better spacing
-    paddingHorizontal: 15,
-    borderBottomWidth: 2,
-    borderBottomColor: "transparent",
-    marginRight: 10,
+  categoryButton: {
+    marginHorizontal: 10,
   },
-  activeTab: {
-    borderBottomColor: "#4A90E2",
-  },
-  tabText: {
+  categoryText: {
     fontSize: 14,
     color: "#888",
-    textAlign: "center", // Ensure proper alignment
-    marginBottom: 0, // Remove unnecessary negative margin
   },
-  activeTabText: {
-    color: "#4A90E2",
+  activeCategoryText: {
+    color: "#00CDF9",
     fontWeight: "bold",
-    textAlign: "center", // Ensure proper alignment
+    fontSize: 20,
   },
-  
-  doctorList: {
+  practitionerList: {
     marginTop: 10,
   },
-  doctorCard: {
+  practitionerCard: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -198,13 +195,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9f9f9",
     borderRadius: 10,
     marginBottom: 10,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
   },
-  doctorInfo: {
+  practitionerInfo: {
     flexDirection: "row",
     alignItems: "center",
   },
@@ -222,29 +214,21 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
   },
-  doctorName: {
+  practitionerName: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#333",
   },
-  doctorLocation: {
-    fontSize: 14,
-    color: "#888",
-    marginTop: 2,
-  },
-  doctorSpecialization: {
+  practitionerSpecialization: {
     fontSize: 14,
     color: "#888",
     marginTop: 6,
   },
-  ratingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  ratingText: {
-    marginLeft: 5,
-    fontSize: 14,
-    color: "#333",
+  noPractitionersText: {
+    fontSize: 16,
+    color: "#888",
+    textAlign: "center",
+    marginTop: 20,
   },
 });
 

@@ -161,7 +161,7 @@ const EditProfile = () => {
 
       if (response.ok) {
         setSuccessMessage("Profile updated successfully!");
-       setTimeout(() => router.push("./app"), 1000); // Redirect after 2 seconds     
+       setTimeout(() => router.back(), 1000); // Redirect after 2 seconds     
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Failed to update profile.");
@@ -272,8 +272,9 @@ const EditProfile = () => {
             <Text style={styles.dayLabel}>{day.charAt(0).toUpperCase() + day.slice(1)}:</Text>
             <TextInput
               style={styles.availabilityInput}
-              placeholder="Availability"
+              placeholder="Example: 12am - 12pm"
               value={time}
+              placeholderTextColor="#D3D3D3"
               onChangeText={(value) => handleAvailabilityChange(day, value)}
             />
           </View>
