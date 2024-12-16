@@ -15,7 +15,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { API_BASE_URL } from "../../api/config";
 import { useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import DateTimePicker from "@react-native-community/datetimepicker"; // Import DateTimePicker
 
 interface DecodedToken {
   profile_id: string;
@@ -72,16 +71,16 @@ const EditProfile: React.FC = () => {
     try {
       const token = await AsyncStorage.getItem("access_token");
       if (!token) throw new Error("Access token not found. Please log in again.");
-
+  
       const decodedToken: DecodedToken = jwtDecode<DecodedToken>(token);
       setProfileId(decodedToken.profile_id);
-
+  
       const response = await fetch(`${API_BASE_URL}/patients/${decodedToken.profile_id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+  
       if (!response.ok) throw new Error("Failed to fetch profile data.");
-
+  
       const data = await response.json();
       if (data?.status === "success" && data?.data) {
         setFormData({
@@ -89,7 +88,7 @@ const EditProfile: React.FC = () => {
           last_name: data.data.last_name || "",
           other_names: data.data.other_names || "",
           phone_number: data.data.phone_number || "",
-          date_of_birth: data.data.date_of_birth || "",
+          date_of_birth: data.data.date_of_birth.split("T")[0] || "",
           address: data.data.address || "",
           city: data.data.city || "",
           state: data.data.state || "",
@@ -99,6 +98,7 @@ const EditProfile: React.FC = () => {
       }
     } catch (err: any) {
       setError(err.message);
+      setTimeout(() => setError(null), 2000); // Clear error after 2 seconds
     } finally {
       setLoading(false);
     }
@@ -112,6 +112,7 @@ const EditProfile: React.FC = () => {
     setLoadingSave(true);
     if (!profileId) {
       setError("Profile ID is missing.");
+      setTimeout(() => setError(null), 2000); // Clear error after 2 seconds
       setLoadingSave(false);
       return;
     }
@@ -120,6 +121,7 @@ const EditProfile: React.FC = () => {
       const token = await AsyncStorage.getItem("access_token");
       if (!token) {
         setError("Access token not found.");
+        setTimeout(() => setError(null), 2000); // Clear error after 2 seconds
         setLoadingSave(false);
         return;
       }
@@ -133,22 +135,42 @@ const EditProfile: React.FC = () => {
         body: JSON.stringify(formData),
       });
   
-      const responseData = await response.json(); // Always check response data
+      const responseData = await response.json();
       if (response.ok) {
         setSuccessMessage("Profile updated successfully!");
-        setTimeout(() => router.push("./bio"), 1000);
+        setTimeout(() => setSuccessMessage(null), 2000); // Clear success message after 2 seconds
+        setTimeout(() => router.push("./app"), 1000);
       } else {
-        // Log error details for debugging
-        console.error("API error response:", responseData);
-        setError(responseData.message || "Failed to update profile.");
+        setError(responseData.message || "Invalid Date format");
+        setTimeout(() => setError(null), 2000); // Clear error after 2 seconds
       }
     } catch (err: any) {
-      // Log the error details
-      console.error("Error while updating profile:", err);
       setError(err.message);
+      setTimeout(() => setError(null), 2000); // Clear error after 2 seconds
     } finally {
       setLoadingSave(false);
     }
+  };
+  
+  const handleDateInput = (value: string) => {
+    // Remove any non-numeric characters
+    const cleaned = value.replace(/[^0-9]/g, "");
+  
+    // Format as YYYY-MM-DD
+    let formatted = cleaned;
+    if (cleaned.length > 3) {
+      formatted = `${cleaned.slice(0, 4)}-${cleaned.slice(4)}`;
+    }
+    if (cleaned.length > 5) {
+      formatted = `${cleaned.slice(0, 4)}-${cleaned.slice(4, 6)}-${cleaned.slice(6, 8)}`;
+    }
+  
+    // Restrict to 10 characters (YYYY-MM-DD)
+    if (formatted.length > 10) {
+      formatted = formatted.slice(0, 10);
+    }
+  
+    handleInputChange("date_of_birth", formatted);
   };
   
 
@@ -203,15 +225,16 @@ const EditProfile: React.FC = () => {
           keyboardType="default"
         />
 
-        <Text style={styles.label}>Date of Birth</Text>
+        <Text style={styles.label}>Date of Birth (YYYY-MM-DD)</Text>
         <TextInput
           style={styles.input}
           placeholder="Date of Birth"
           placeholderTextColor="#D3D3D3"
           value={formData.date_of_birth || ""}
-          onChangeText={(value) => handleInputChange("date_of_birth", value)}
+          onChangeText={(value) => handleDateInput(value)}
           keyboardType="phone-pad"
         />
+
 
         <Text style={styles.label}>Phone Number</Text>
         <TextInput

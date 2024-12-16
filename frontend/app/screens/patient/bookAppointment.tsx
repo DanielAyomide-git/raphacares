@@ -59,14 +59,13 @@ const BookAppointment: React.FC = () => {
       const patientId = decodedToken.profile_id;
 
       // Join appointment date and time
-      const appointmentStartDateTime = `${formData.appointmentStartTime} ${formData.appointmentEndTime}`;
 
       // Prepare data for the API call
       const appointmentData = {
         patient_id: patientId,
         medical_practitioner_id: medicalPractitionerId,
-        appointment_start_time: appointmentStartDateTime,
-        appointment_end_time: appointmentStartDateTime,
+        appointment_start_time: formData.appointmentStartTime,
+        appointment_end_time: formData.appointmentEndTime,
         reason: formData.reason,
         note: formData.note,
         appointment_status: 'pending', // Default status
@@ -146,29 +145,21 @@ const BookAppointment: React.FC = () => {
           />
         </View>
 
-        {/* Appointment Date */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Appointment Date</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="YYYY-MM-DD"
-            placeholderTextColor="gray"
-            value={formData.appointmentDate}
-            onChangeText={(text) => handleInputChange('appointmentStartTime', text)}
-          />
-        </View>
+        
 
-        {/* Appointment Start Time */}
+        {/* Appointment Start Date */}
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Appointment Start Time</Text>
+          <Text style={styles.label}>Appointment Date and Time</Text>
           <TextInput
-            style={styles.input}
-            placeholder="HH:MM"
+            style={styles.inputDate}
+            placeholder="YYYY-MM-DD"
             placeholderTextColor="gray"
             value={formData.appointmentStartTime}
             onChangeText={(text) => handleInputChange('appointmentStartTime', text)}
           />
         </View>
+
+        
 
         {/* Appointment End Time */}
         <View style={styles.inputGroup}>
@@ -178,7 +169,6 @@ const BookAppointment: React.FC = () => {
             placeholder="HH:MM"
             placeholderTextColor="gray"
             value={formData.appointmentEndTime}
-            onChangeText={(text) => handleInputChange('appointmentEndTime', text)}
           />
         </View>
 
@@ -259,6 +249,16 @@ const styles = StyleSheet.create({
     color: '#007bff',
   },
   input: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+    padding: 10,
+    fontSize: 14,
+    color: '#333',
+  },
+
+  inputDate: {
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#ddd',

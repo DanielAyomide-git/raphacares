@@ -235,10 +235,13 @@ export default function BioPage() {
         </View>
 
         <View style={styles.infoRow}>
-          <Ionicons name="egg-outline" size={24} color="black" />
-          <Text style={styles.infoLabel}>DOB</Text>
-          <Text style={styles.infoText}>{bioData?.date_of_birth}</Text>
-        </View>
+        <Ionicons name="egg-outline" size={24} color="black" />
+        <Text style={styles.infoLabel}>DOB</Text>
+        <Text style={styles.infoText}>
+          {bioData?.date_of_birth?.split('T')[0]}
+        </Text>
+      </View>
+
         
 
 

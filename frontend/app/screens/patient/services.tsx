@@ -25,7 +25,7 @@ const Services: React.FC = () => {
   const [practitioners, setPractitioners] = useState<Practitioner[]>([]);
   const router = useRouter();
 
-  const categories: string[] = ["Doctors", "Pharmacists", "Nurses"];
+  const categories: string[] = ["Doctors", "Nurses", "Others"];
 
   useEffect(() => {
     const fetchPractitioners = async () => {
@@ -59,7 +59,7 @@ const Services: React.FC = () => {
     if (selectedCategory === "Doctors") {
       return practitioner.practitioner_type === "doctor";
     }
-    if (selectedCategory === "Pharmacists") {
+    if (selectedCategory === "Others") {
       return practitioner.practitioner_type === "community_health";
     }
     if (selectedCategory === "Nurses") {
