@@ -21,6 +21,7 @@ interface FormData {
   fullName: string;
   email: string;
   phoneNumber: string;
+  appointmentDate: string;
   appointmentStartTime: string;
   appointmentEndTime: string;
   reason: string;
@@ -34,6 +35,7 @@ const BookAppointment: React.FC = () => {
     fullName: '',
     email: '',
     phoneNumber: '',
+    appointmentDate: '',
     appointmentStartTime: '',
     appointmentEndTime: '',
     reason: '',
@@ -151,7 +153,7 @@ const BookAppointment: React.FC = () => {
             style={styles.input}
             placeholder="YYYY-MM-DD"
             placeholderTextColor="gray"
-            value={formData.appointmentStartTime}
+            value={formData.appointmentDate}
             onChangeText={(text) => handleInputChange('appointmentStartTime', text)}
           />
         </View>
@@ -161,7 +163,7 @@ const BookAppointment: React.FC = () => {
           <Text style={styles.label}>Appointment Start Time</Text>
           <TextInput
             style={styles.input}
-            placeholder="MM:SS"
+            placeholder="HH:MM"
             placeholderTextColor="gray"
             value={formData.appointmentStartTime}
             onChangeText={(text) => handleInputChange('appointmentStartTime', text)}
@@ -173,7 +175,7 @@ const BookAppointment: React.FC = () => {
           <Text style={styles.label}>Appointment End Time</Text>
           <TextInput
             style={styles.input}
-            placeholder="MM:SS"
+            placeholder="HH:MM"
             placeholderTextColor="gray"
             value={formData.appointmentEndTime}
             onChangeText={(text) => handleInputChange('appointmentEndTime', text)}

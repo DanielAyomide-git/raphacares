@@ -26,6 +26,7 @@ interface FormData {
   last_name: string;
   other_names: string | null;
   phone_number: string;
+  date_of_birth: string;
   address: string | null;
   city: string | null;
   state: string | null;
@@ -50,6 +51,7 @@ const EditProfile: React.FC = () => {
     last_name: "",
     other_names: "",
     phone_number: "",
+    date_of_birth:"",
     address: "",
     city: "",
     state: "",
@@ -87,6 +89,7 @@ const EditProfile: React.FC = () => {
           last_name: data.data.last_name || "",
           other_names: data.data.other_names || "",
           phone_number: data.data.phone_number || "",
+          date_of_birth: data.data.date_of_birth || "",
           address: data.data.address || "",
           city: data.data.city || "",
           state: data.data.state || "",
@@ -200,6 +203,16 @@ const EditProfile: React.FC = () => {
           keyboardType="default"
         />
 
+        <Text style={styles.label}>Date of Birth</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Date of Birth"
+          placeholderTextColor="#D3D3D3"
+          value={formData.date_of_birth || ""}
+          onChangeText={(value) => handleInputChange("date_of_birth", value)}
+          keyboardType="phone-pad"
+        />
+
         <Text style={styles.label}>Phone Number</Text>
         <TextInput
           style={styles.input}
@@ -259,6 +272,7 @@ const EditProfile: React.FC = () => {
           onChangeText={(value) => handleInputChange("emergency_contact", value)}
           keyboardType="phone-pad"
         />
+        
 </View>
 
 
