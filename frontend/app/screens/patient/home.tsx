@@ -10,28 +10,19 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { jwtDecode } from "jwt-decode";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   withDelay,
 } from "react-native-reanimated";
-import { useRouter } from 'expo-router';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../../api/config";
-import { jwtDecode } from "jwt-decode";
 import styles from "../../styles/patient/home";
 
 // Define navigation types
-type RootStackParamList = {
-  Services: { service: Service }; // Define the "Services" screen route params
-};
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Services">;
-
-// Define service type
 type Service = {
   id: string;
   name: string;
@@ -39,25 +30,39 @@ type Service = {
   color: string;
 };
 
+type Appointment = {
+  id: string;
+  appointment_start_time: string;
+  appointment_reason:string;
+  appointment_status: string;
+  appointment_end_time: string;
+  medical_practitioner: {
+    specialization: string;
+    practitioner_type: string;
+    name: string;
+    profile_picture_url: string;
+
+  
+  };
+};
+
 export default function PatientDashboard() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const [patientName, setPatientName] = useState<string>("");
-  const [patientAvatar, setPatientAvatar] = useState<string>(""); // state to hold the avatar URL
-  const [loading, setLoading] = useState<boolean>(true); // Set loading state to true initially  
+  const [patientAvatar, setPatientAvatar] = useState<string>("");
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
   const router = useRouter();
-
-
-  const navigation = useNavigation<NavigationProp>();
-
-  const welcomeX = useSharedValue(300); // Welcome text starts off-screen to the right
-  const pageY = useSharedValue(300); // Page content starts off-screen at the bottom
+  const welcomeX = useSharedValue(300);
+  const pageY = useSharedValue(300);
 
   const servicesX = [
-    useSharedValue(-300), // "Hospitals" slides in from the left
-    useSharedValue(300), // "Drug refill" slides in from the right
-    useSharedValue(-300), // "Ambulance" slides in from the left
-    useSharedValue(300), // "Consultation" slides in from the right
+    useSharedValue(-300),
+    useSharedValue(300),
+    useSharedValue(-300),
+    useSharedValue(300),
   ];
 
   useEffect(() => {
@@ -71,7 +76,6 @@ export default function PatientDashboard() {
     loadFonts();
   }, []);
 
-  // Show the welcome message for 2 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowWelcome(false);
@@ -93,7 +97,6 @@ export default function PatientDashboard() {
         throw new Error("Token not found");
       }
 
-      // Decode the token (Assume JWT format for decoding)
       const decodedToken = jwtDecode(token) as { profile_id: string };
       const { profile_id } = decodedToken;
 
@@ -109,19 +112,88 @@ export default function PatientDashboard() {
 
       const data = await response.json();
       if (data.status === "success" && data.data) {
-        // Combine first_name and last_name into a full name
         const fullName = `${data.data.first_name} ${data.data.last_name}`;
         setPatientName(fullName);
-        setPatientAvatar(data.data.profile_picture_url ); // Assuming profile_picture_url is inside the data
+        setPatientAvatar(data.data.profile_picture_url);
+        fetchAppointments(profile_id, token);
       } else {
         throw new Error("Patient data not found");
       }
     } catch (error) {
       console.error("Error fetching patient data:", error);
     } finally {
-      setLoading(false); // Ensure that loading is set to false once fetching is complete
+      setLoading(false);
     }
   };
+
+  const fetchAppointments = async (patientId: string, token: string) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/appointments?patient_id=${patientId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error("Failed to fetch appointments");
+      }
+  
+      const data = await response.json();
+      if (data.status === "success") {
+        const appointmentPromises = data.data.map(async (appointment: any) => {
+          // Fetch medical practitioner details
+          const practitionerResponse = await fetch(
+            `${API_BASE_URL}/medical_practitioners/${appointment.medical_practitioner_id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+  
+          let practitioner = {
+            name: "Unknown Practitioner",
+            profile_picture_url: "https://via.placeholder.com/100",
+            practitioner_type: "",
+            specialization: "", // Add specialization with a fallback
+          };
+          
+  
+          if (practitionerResponse.ok) {
+            const practitionerData = await practitionerResponse.json();
+            if (practitionerData.status === "success" && practitionerData.data) {
+              practitioner = {
+                name: `${practitionerData.data.first_name} ${practitionerData.data.last_name}`,
+                profile_picture_url: practitionerData.data.profile_picture_url,
+                practitioner_type: practitionerData.data.practitioner_type,
+                specialization: practitionerData.data.specialization,
+              };
+            }
+          }
+  
+          return {
+            id: appointment.id,
+            appointment_start_time: appointment.appointment_start_time,
+            appointment_end_time: appointment.appointment_end_time,
+            appointment_reason: appointment.appointment_reason,
+            appointment_status: appointment.appointment_status,
+            medical_practitioner: practitioner,
+            practitioner_type: appointment.practitioner_type
+          };
+        });
+  
+        // Wait for all practitioner fetches
+        const detailedAppointments = await Promise.all(appointmentPromises);
+        setAppointments(detailedAppointments);
+      }
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    }
+  };
+  
 
   useEffect(() => {
     fetchPatientData();
@@ -158,64 +230,87 @@ export default function PatientDashboard() {
 
   return (
     <Animated.ScrollView style={[styles.container, pageStyle]}>
-      {/* Header */}
       <View style={styles.header}>
         <View>
           <Text style={styles.welcomeText}>Welcome</Text>
           <Text style={styles.nameText}>{patientName || "Loading..."}</Text>
         </View>
         <Image
-              source={
-                patientAvatar
-                  ? { uri: patientAvatar }
-                  : require("../../assets/dp.png") // Fallback to local asset
-              }
-              style={styles.profileImage}
-            />
-
+          source={
+            patientAvatar
+              ? { uri: patientAvatar }
+              : require("../../assets/dp.png")
+          }
+          style={styles.profileImage}
+        />
       </View>
+  
 
-      {/* Free Consultation Card */}
-      <View style={styles.consultationCard}>
-        <Text style={styles.consultationText}>
-          Get the best consultation from health professionals
-        </Text>
-        <TouchableOpacity style={styles.consultButton} onPress={() => router.push('./services')}>
-      <Text style={styles.consultButtonText}>Find a doctor</Text>
-    </TouchableOpacity>
-      </View>
-
-      {/* Services */}
       <Text style={styles.sectionTitle}>Our Services</Text>
       <View style={styles.servicesContainer}>
         {services.map((service, index) => (
           <Animated.View
             key={service.id}
-            style={[styles.serviceBox, { backgroundColor: service.color }, serviceStyles[index]]}
+            style={[
+              styles.serviceBox,
+              { backgroundColor: service.color },
+              serviceStyles[index],
+            ]}
           >
-            <TouchableOpacity
-              onPress={() => router.push('./services')}
-            >
+            <TouchableOpacity onPress={() => router.push("./services")}>
               <Ionicons name={service.icon} size={40} color="white" />
               <Text style={styles.serviceText}>{service.name}</Text>
             </TouchableOpacity>
+
+            
           </Animated.View>
         ))}
       </View>
-
-      {/* Appointment Section */}
       <Text style={styles.sectionTitle}>Appointments</Text>
-      <View style={styles.appointmentCard}>
-        <Text style={styles.appointmentTime}>08:00 - 09:00</Text>
-        <Text style={styles.appointmentDate}>Wed, Jun 20</Text>
-        <View style={styles.doctorInfo}>
-          <Image
-            source={{ uri: "https://bit.ly/dan-abramov" }}
-            style={styles.doctorImage}
-          />
-          <Text style={styles.doctorName}>Dr. Indah Kusumaningrum</Text>
-        </View>
+{appointments.length > 0 ? (
+  appointments.map((appointment) => (
+    <TouchableOpacity
+      key={appointment.id}
+      style={styles.appointmentCard}
+      onPress={() => router.push(`./appointmentInfo`)} // Navigate to a detailed appointment page
+    >
+
+<View style={styles.doctorInfo}>
+        <Image
+          source={{
+            uri: appointment.medical_practitioner.profile_picture_url,
+          }}
+          style={styles.doctorImage}
+        />
+        <Text style={styles.doctorName}>
+        {appointment.medical_practitioner.name} | {" "}
+        
+        </Text>
+        <Text style={styles.doctorName2}>
+        {appointment.medical_practitioner.specialization || "N/A"} 
+        
+        </Text>
       </View>
+      <Text style={styles.appointmentTime}>
+        {new Date(appointment.appointment_start_time).toLocaleTimeString()} -{" "}
+        {new Date(appointment.appointment_end_time).toLocaleTimeString()}
+      </Text>
+      <Text style={styles.appointmentDate}>
+        {new Date(appointment.appointment_start_time).toDateString()}
+      </Text>
+      <Text style={styles.appointmentReason}>
+        Reason: {appointment.appointment_reason || "Not specified"}
+      </Text>
+      <Text style={styles.appointmentStatus}>
+        Status: {appointment.appointment_status}
+      </Text>
+      
+    </TouchableOpacity>
+  ))
+) : (
+  <Text style={styles.noAppointmentsText}>No appointments scheduled.</Text>
+)}
+
     </Animated.ScrollView>
   );
 }
