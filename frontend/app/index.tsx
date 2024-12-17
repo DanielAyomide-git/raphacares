@@ -26,7 +26,7 @@ const App = () => {
     require("./assets/indexbg.jpeg"),
     require("./assets/drugs.jpg"),
     require("./assets/dpatient.jpeg"),
-    require("./assets/indexbg.png"),
+    require("./assets/indexbg.jpeg"),
   ];
 
   // Preload custom fonts

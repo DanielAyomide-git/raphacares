@@ -65,7 +65,7 @@ const indexStyles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
     width: "100%",
-    marginTop: 450,
+    marginTop: 500,
 
   },
   questionText: {

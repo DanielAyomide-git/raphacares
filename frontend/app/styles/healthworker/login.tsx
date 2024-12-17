@@ -46,11 +46,9 @@ export const styles = StyleSheet.create({
     textAlign: "center",
   },
   scrollViewContainer: {
-    flexGrow: 1, // Ensures the content grows to take up available space
-    justifyContent: "center", // Vertically centers the content
-    alignItems: "center", // Horizontally centers the content
-    paddingHorizontal: 20, // Adds padding on the left and right for better spacing
-    paddingBottom: 20, // Adds padding at the bottom to ensure buttons are not cut off
+    flexGrow: 1, // Ensures the content expands and takes up the full space
+    justifyContent: 'center', // Centers content if there is less content than screen height
+    paddingBottom: 20, // Adds padding to avoid content being cut off at the bottom
   },
   
   picker: {
