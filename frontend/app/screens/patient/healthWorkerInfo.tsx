@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { API_BASE_URL } from '../../api/config'; // Adjust the path as needed
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Define TypeScript interfaces for the API response
@@ -55,9 +56,9 @@ const HealthWorkerInfo: React.FC = () => {
           setId(storedId);
 
           // Fetch data from the API
-          const response = await fetch(
-            `http://127.0.0.1:8000/api/v1/medical_practitioners/${storedId}`
-          );
+          const endpoint = `${API_BASE_URL}/medical_practitioners/${storedId}`;
+          
+                const response = await fetch(endpoint);
           const { data }: { data: MedicalPractitioner } = await response.json(); // Extract the data object
           setHealthWorker(data);
         }

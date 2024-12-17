@@ -10,6 +10,8 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { API_BASE_URL } from '../../api/config'; // Adjust the path as needed
+
 
 interface Practitioner {
   id: string;
@@ -30,8 +32,10 @@ const Services: React.FC = () => {
   useEffect(() => {
     const fetchPractitioners = async () => {
       try {
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/v1/medical_practitioners/"
+
+        const endpoint = `${API_BASE_URL}/medical_practitioners/`;
+       
+             const response = await fetch(endpoint,
         );
         const data = await response.json();
         if (data.status === "success") {
@@ -134,16 +138,19 @@ const Services: React.FC = () => {
 
         {/* Practitioner List */}
         <View style={styles.practitionerList}>
-          {filteredPractitioners.length > 0 ? (
-            filteredPractitioners.map((practitioner) =>
-              renderPractitioner({ item: practitioner })
-            )
-          ) : (
-            <Text style={styles.noPractitionersText}>
-              Not available. Please check back later.
-            </Text>
-          )}
-        </View>
+            {filteredPractitioners.length > 0 ? (
+              filteredPractitioners.map((practitioner) => (
+                <View key={practitioner.id}>
+                  {renderPractitioner({ item: practitioner })}
+                </View>
+              ))
+            ) : (
+              <Text style={styles.noPractitionersText}>
+                Not available. Please check back later.
+              </Text>
+            )}
+          </View>
+
       </View>
     </ScrollView>
   );

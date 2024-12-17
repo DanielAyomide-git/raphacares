@@ -47,8 +47,13 @@ export default function LoginPage() {
   }, []);
 
   const handleLogin = async () => {
-    setLoading(true);
     setError('');
+    if (!email || !password ) {
+      setError("All fields are required.");
+      return;
+    }
+    setLoading(true);
+
     try {
       const response = await loginApi(email, password, 'patient');
       

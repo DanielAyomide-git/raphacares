@@ -9,8 +9,11 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import {jwtDecode} from 'jwt-decode';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Picker } from '@react-native-picker/picker';
+import {jwtDecode} from 'jwt-decode';
+import { API_BASE_URL } from '../../api/config'; // Adjust the path as needed
+
 
 interface DecodedToken {
   profile_id: string;
@@ -21,9 +24,9 @@ interface FormData {
   fullName: string;
   email: string;
   phoneNumber: string;
-  appointmentDate: string;
-  appointmentStartTime: string;
-  appointmentEndTime: string;
+  date: string; // YYYY-MM-DD
+  startTime: string; // HH:MM
+  duration: string;
   reason: string;
   note: string;
 }
@@ -35,146 +38,187 @@ const BookAppointment: React.FC = () => {
     fullName: '',
     email: '',
     phoneNumber: '',
-    appointmentDate: '',
-    appointmentStartTime: '',
-    appointmentEndTime: '',
+    date: '',
+    startTime: '',
+    duration: '',
     reason: '',
     note: '',
   });
+
+  const [errorText, setErrorText] = useState<string | null>(null);
+  const [successText, setSuccessText] = useState<string | null>(null);
 
   const handleInputChange = (field: keyof FormData, value: string): void => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async () => {
-    try {
-      // Get medical practitioner ID from AsyncStorage
-      const medicalPractitionerId = await AsyncStorage.getItem('medical_practitioner_id');
+  const handleDateChange = (input: string): void => {
+    const cleaned = input.replace(/[^0-9]/g, '');
+    let formatted = cleaned;
 
-      // Get patient ID from decoded JWT token
+    if (cleaned.length > 4) {
+      formatted = `${cleaned.slice(0, 4)}-${cleaned.slice(4)}`;
+    }
+    if (cleaned.length > 6) {
+      formatted = `${cleaned.slice(0, 4)}-${cleaned.slice(4, 6)}-${cleaned.slice(6)}`;
+    }
+
+    setFormData((prev) => ({ ...prev, date: formatted.slice(0, 10) }));
+  };
+
+  const handleTimeChange = (input: string): void => {
+    const cleaned = input.replace(/[^0-9]/g, '');
+    let formatted = cleaned;
+
+    if (cleaned.length > 2) {
+      formatted = `${cleaned.slice(0, 2)}:${cleaned.slice(2)}`;
+    }
+
+    setFormData((prev) => ({ ...prev, startTime: formatted.slice(0, 5) }));
+  };
+
+  const calculateEndTime = (startTime: string, duration: string): string => {
+    if (!startTime || !duration) return '';
+
+    const [hours, minutes] = startTime.split(':').map(Number);
+    const durationHours = parseInt(duration, 10);
+
+    if (isNaN(hours) || isNaN(minutes) || isNaN(durationHours)) return '';
+
+    const endDateTime = new Date();
+    endDateTime.setHours(hours + durationHours, minutes);
+
+    return `${endDateTime.getHours().toString().padStart(2, '0')}:${endDateTime
+      .getMinutes()
+      .toString()
+      .padStart(2, '0')}`;
+  };
+
+  const handleDurationChange = (duration: string): void => {
+    const endTime = calculateEndTime(formData.startTime, duration);
+    setFormData((prev) => ({ ...prev, duration, endTime }));
+  };
+
+  const handleSubmit = async (): Promise<void> => {
+    
+
+    try {
+      const medicalPractitionerId = await AsyncStorage.getItem('medical_practitioner_id');
       const token = await AsyncStorage.getItem('access_token');
       if (!token) throw new Error('Token is missing');
 
       const decodedToken: DecodedToken = jwtDecode<DecodedToken>(token);
       const patientId = decodedToken.profile_id;
 
-      // Join appointment date and time
+      const appointmentStartTime = `${formData.date}T${formData.startTime}`;
+      const appointmentEndTime = `${formData.date}T${calculateEndTime(
+        formData.startTime,
+        formData.duration
+      )}`;
 
-      // Prepare data for the API call
       const appointmentData = {
         patient_id: patientId,
         medical_practitioner_id: medicalPractitionerId,
-        appointment_start_time: formData.appointmentStartTime,
-        appointment_end_time: formData.appointmentEndTime,
-        reason: formData.reason,
-        note: formData.note,
-        appointment_status: 'pending', // Default status
+        appointment_start_time: appointmentStartTime,
+        appointment_end_time: appointmentEndTime,
+        appointment_status: 'pending',
+        appointment_reason: formData.reason,
+        appointment_note: formData.note,
       };
+      const endpoint = `${API_BASE_URL}/appointments/`;
 
-      // Make API call to submit the appointment
-      const response = await fetch('http://127.0.0.1:8000/api/v1/appointments/', {
+      const response = await fetch(endpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(appointmentData),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to book appointment');
+        const errorData = await response.json();
+        const errorMessage: string = errorData?.detail || 'An error occurred. Please try again.';
+        throw new Error(errorMessage);
       }
 
-      // Handle successful appointment booking
-      console.log('Appointment booked successfully');
-      // Redirect or show success message
-      router.push('./app');
+      setSuccessText('Appointment booked successfully');
+      setTimeout(() => {
+        setSuccessText(null);
+        setFormData({
+          fullName: '',
+          email: '',
+          phoneNumber: '',
+          date: '',
+          startTime: '',
+          duration: '',
+          reason: '',
+          note: '',
+        });
+        router.push('./app');
+      }, 2000);
     } catch (error) {
       console.error('Error:', error);
-      // Handle error appropriately
+      setErrorText((error as Error).message || 'Slot is not available');
+      setTimeout(() => setErrorText(null), 2000);
     }
   };
+
+
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Back Button */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => router.push('./healthWorkerInfo')}
-      >
+      <TouchableOpacity style={styles.backButton} onPress={() => router.push('./healthWorkerInfo')}>
         <Ionicons name="arrow-back" size={24} color="#333" />
       </TouchableOpacity>
 
       <View style={styles.card}>
         <Text style={styles.title}>Appointment Form</Text>
 
-        {/* Full Name */}
+        {/* Date */}
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Full Name</Text>
+          <Text style={styles.label}>Date (YYYY-MM-DD)</Text>
           <TextInput
             style={styles.input}
-            placeholder="eg: John Doe"
-            placeholderTextColor="gray"
-            value={formData.fullName}
-            onChangeText={(text) => handleInputChange('fullName', text)}
-          />
-        </View>
-
-        {/* Email */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="eg: john@email.com"
-            placeholderTextColor="gray"
-            value={formData.email}
-            onChangeText={(text) => handleInputChange('email', text)}
-            keyboardType="email-address"
-          />
-        </View>
-
-        {/* Phone Number */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Phone Number</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Phone Number"
-            placeholderTextColor="gray"
-            value={formData.phoneNumber}
-            onChangeText={(text) => handleInputChange('phoneNumber', text)}
-            keyboardType="phone-pad"
-          />
-        </View>
-
-        
-
-        {/* Appointment Start Date */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Appointment Date and Time</Text>
-          <TextInput
-            style={styles.inputDate}
             placeholder="YYYY-MM-DD"
             placeholderTextColor="gray"
-            value={formData.appointmentStartTime}
-            onChangeText={(text) => handleInputChange('appointmentStartTime', text)}
+            value={formData.date}
+            onChangeText={handleDateChange}
+            maxLength={10}
+            keyboardType="number-pad"
           />
         </View>
 
-        
-
-        {/* Appointment End Time */}
+        {/* Start Time */}
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Appointment End Time</Text>
+          <Text style={styles.label}>Start Time (HH:MM)</Text>
           <TextInput
             style={styles.input}
             placeholder="HH:MM"
             placeholderTextColor="gray"
-            value={formData.appointmentEndTime}
+            value={formData.startTime}
+            onChangeText={handleTimeChange}
+            maxLength={5}
+            keyboardType="number-pad"
           />
+        </View>
+
+        {/* Duration */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Duration (Hours)</Text>
+          <Picker
+            selectedValue={formData.duration}
+            onValueChange={handleDurationChange}
+            style={styles.pickerContainer}>
+            <Picker.Item label="Select Duration" value="" />
+            <Picker.Item label="1 Hour" value="1" />
+            <Picker.Item label="2 Hours" value="2" />
+            <Picker.Item label="3 Hours" value="3" />
+          </Picker>
         </View>
 
         {/* Appointment Reason */}
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Appointment Reason</Text>
+          <Text style={styles.label}>Reason</Text>
           <TextInput
             style={[styles.input, styles.textArea1]}
             placeholder="Reason"
@@ -185,8 +229,8 @@ const BookAppointment: React.FC = () => {
           />
         </View>
 
-        {/* Additional Information */}
-        <View style={styles.inputGroup}>
+          {/* Additional Information */}
+          <View style={styles.inputGroup}>
           <Text style={styles.label}>Additional Information</Text>
           <TextInput
             style={[styles.input, styles.textArea2]}
@@ -197,6 +241,12 @@ const BookAppointment: React.FC = () => {
             multiline
           />
         </View>
+
+
+        {errorText && <Text style={styles.errorText}>{errorText}</Text>}
+        {successText && <Text style={styles.successText}>{successText}</Text>}
+
+       
 
         {/* Submit Button */}
         <TouchableOpacity style={styles.button} onPress={handleSubmit}>
@@ -225,6 +275,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 4,
+  },
+  textArea: {
+    height: 100, // Set height to make it larger for multiline input
+    borderColor: '#ccc', // Border color
+    borderWidth: 1, // Border width
+    borderRadius: 5, // Rounded corners
+    padding: 10, // Inner padding for better readability
+    fontSize: 16, // Adjust font size
+    color: '#333', // Text color
+    backgroundColor: '#f9f9f9', // Optional: Light background for better contrast
+    textAlignVertical: 'top', // Align text to the top for multiline
   },
   title: {
     fontSize: 24,
@@ -275,6 +336,27 @@ const styles = StyleSheet.create({
     height: 100,
     textAlignVertical: 'top',
   },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 0,
+    backgroundColor: 'white',
+    marginLeft: 15,
+    paddingHorizontal: 5,
+    paddingVertical: 5,
+    fontSize: 15,
+    color: '#333',
+    alignContent: "center",
+    justifyContent: "center"
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+    color: '#333',
+    alignItems: "center"
+
+  },
+  
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -293,6 +375,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#fff',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 20,
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  successText: {
+    color: 'green',
+    fontSize: 20,
+    marginBottom: 10,
+    textAlign: 'center',
   },
 });
 
