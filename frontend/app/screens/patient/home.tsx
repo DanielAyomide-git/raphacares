@@ -245,6 +245,17 @@ export default function PatientDashboard() {
         />
       </View>
   
+     {/* Free Consultation Card */}
+     <View style={styles.consultationCard}>
+        <Text style={styles.consultationText}>
+          Get the best consultation from health professionals
+        </Text>
+        <TouchableOpacity style={styles.consultButton} onPress={() => router.push('./services')}>
+      <Text style={styles.consultButtonText}>Find a doctor</Text>
+    </TouchableOpacity>
+      </View>
+
+      
 
       <Text style={styles.sectionTitle}>Our Services</Text>
       <View style={styles.servicesContainer}>

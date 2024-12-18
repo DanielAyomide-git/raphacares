@@ -134,7 +134,7 @@ export default function RegisterPage() {
             value={firstName}
             onChangeText={setFirstName}
             placeholderTextColor="#c9cacd"
-            keyboardType="phone-pad"
+            keyboardType="email-address"
 
           />
 
@@ -143,7 +143,7 @@ export default function RegisterPage() {
             placeholder="Enter your last name"
             value={lastName}
             onChangeText={setLastName}
-            keyboardType="phone-pad"
+            keyboardType="email-address"
             placeholderTextColor="#c9cacd"
           />
 
@@ -163,6 +163,7 @@ export default function RegisterPage() {
             secureTextEntry
             value={password}
             onChangeText={setPassword}
+            keyboardType="email-address"
             placeholderTextColor="#c9cacd"
           />
 

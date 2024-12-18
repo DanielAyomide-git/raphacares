@@ -147,6 +147,9 @@ export default function LoginPage() {
             value={password}
             onChangeText={setPassword}
             placeholderTextColor="#c9cacd"
+            keyboardType="email-address"
+
+            
           />
 
           <TouchableOpacity onPress={handleLogin} style={styles.signInButton}>
