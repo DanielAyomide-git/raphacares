@@ -89,10 +89,10 @@ export default function LoginPage() {
 
   return (
     <LinearGradient
-      colors={["#FFB815", "#FFFFFF"]}
-      start={{ x: 0.5, y: -5 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.gradientContainer}
+       colors={["#FFB815", "#FFFFFF"]}
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 1 }}
+            style={styles.gradientContainer}
     >
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
         <Animated.View

@@ -24,14 +24,9 @@ export default function RootLayout() {
       <Stack.Screen name="screens/patient/newPassword" options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/home" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/home" options={{ headerShown: false }} />
-      <Stack.Screen name="screens/healthworker/message" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/message" options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/notification" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/notification" options={{ headerShown: false }} />
-      <Stack.Screen name="screens/healthworker/Mail" options={{ headerShown: false }} />
-      <Stack.Screen name="screens/healthworker/User" options={{ headerShown: false }} />
-      <Stack.Screen name="screens/patient/User" options={{ headerShown: false }} />
-      <Stack.Screen name="screens/healthworker/profile" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/profile" options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/app" options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/bio" options={{ headerShown: false }} />

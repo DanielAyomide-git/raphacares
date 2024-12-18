@@ -62,7 +62,7 @@ export const styles = StyleSheet.create({
   },
   errorText: {
     color: 'red', // Red color for errors
-    fontFamily: 'poppins', // Use the same font as the other text
+    fontFamily: 'Poppins', // Use the same font as the other text
     fontSize: 14, // Font size for the error message
     marginTop: 10, // Add some space above the error message
     textAlign: 'center', // Center the error message
@@ -76,7 +76,7 @@ export const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: "center",
     fontSize: 16,
-    fontFamily: "poppins",
+    fontFamily: "Poppins",
     borderBlockColor:"grey"
   },
   row: {
