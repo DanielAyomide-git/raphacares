@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
       fontSize: 18,
       fontFamily: "Poppins",
       color: "#333",
+      marginTop:30
     },
     nameText: {
       fontSize: 22,
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
     },
     doctorName2: {
       fontSize: 14,
-      fontFamily: "Poppins-regular",
+      fontFamily: "Poppins",
       color: "#333",
     },
   });

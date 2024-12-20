@@ -34,6 +34,7 @@ type Appointment = {
   id: string;
   appointment_start_time: string;
   appointment_reason:string;
+  appointment_note:string;
   appointment_status: string;
   appointment_end_time: string;
   medical_practitioner: {
@@ -50,6 +51,8 @@ export default function PatientDashboard() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const [patientName, setPatientName] = useState<string>("");
+  const [dob, setDob] = useState<string>("");
+  const [gender, setGender] = useState<string>("");
   const [patientAvatar, setPatientAvatar] = useState<string>("");
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -96,25 +99,33 @@ export default function PatientDashboard() {
       if (!token) {
         throw new Error("Token not found");
       }
-
+  
       const decodedToken = jwtDecode(token) as { profile_id: string };
       const { profile_id } = decodedToken;
-
+  
       const response = await fetch(`${API_BASE_URL}/patients/${profile_id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
+  
       if (!response.ok) {
         throw new Error("Failed to fetch patient data");
       }
-
+  
       const data = await response.json();
       if (data.status === "success" && data.data) {
         const fullName = `${data.data.first_name} ${data.data.last_name}`;
         setPatientName(fullName);
         setPatientAvatar(data.data.profile_picture_url);
+        setDob(data.data.date_of_birth);
+        setGender(data.data.gender);
+  
+        // Save patient data to AsyncStorage
+        await AsyncStorage.setItem("patient_name", fullName);
+        await AsyncStorage.setItem("date_of_birth", data.data.date_of_birth);
+        await AsyncStorage.setItem("gender", data.data.gender);
+  
         fetchAppointments(profile_id, token);
       } else {
         throw new Error("Patient data not found");
@@ -125,7 +136,7 @@ export default function PatientDashboard() {
       setLoading(false);
     }
   };
-
+  
   const fetchAppointments = async (patientId: string, token: string) => {
     try {
       const response = await fetch(
@@ -158,9 +169,8 @@ export default function PatientDashboard() {
             name: "Unknown Practitioner",
             profile_picture_url: "https://via.placeholder.com/100",
             practitioner_type: "",
-            specialization: "", // Add specialization with a fallback
+            specialization: "",
           };
-          
   
           if (practitionerResponse.ok) {
             const practitionerData = await practitionerResponse.json();
@@ -174,6 +184,20 @@ export default function PatientDashboard() {
             }
           }
   
+          // Save appointment and practitioner data to AsyncStorage
+          await AsyncStorage.setItem(
+            `appointment_${appointment.id}`,
+            JSON.stringify({
+              appointment_start_time: appointment.appointment_start_time,
+              appointment_reason: appointment.appointment_reason,
+              appointment_note: appointment.appointment_note,
+              practitioner_name: practitioner.name,
+              practitioner_type: practitioner.practitioner_type,
+              practitioner_specialization: practitioner.specialization,
+              practitioner_profile_picture_url: practitioner.profile_picture_url,
+            })
+          );
+  
           return {
             id: appointment.id,
             appointment_start_time: appointment.appointment_start_time,
@@ -181,18 +205,26 @@ export default function PatientDashboard() {
             appointment_reason: appointment.appointment_reason,
             appointment_status: appointment.appointment_status,
             medical_practitioner: practitioner,
-            practitioner_type: appointment.practitioner_type
           };
         });
   
-        // Wait for all practitioner fetches
         const detailedAppointments = await Promise.all(appointmentPromises);
+  
+        // Sort appointments by start time (newest first)
+        detailedAppointments.sort(
+          (a, b) =>
+            new Date(b.appointment_start_time).getTime() -
+            new Date(a.appointment_start_time).getTime()
+        );
+  
         setAppointments(detailedAppointments);
       }
     } catch (error) {
       console.error("Error fetching appointments:", error);
     }
   };
+  
+  
   
 
   useEffect(() => {
@@ -278,49 +310,98 @@ export default function PatientDashboard() {
         ))}
       </View>
       <Text style={styles.sectionTitle}>Appointments</Text>
-{appointments.length > 0 ? (
+      {appointments.length > 0 ? (
   appointments.map((appointment) => (
     <TouchableOpacity
-      key={appointment.id}
-      style={styles.appointmentCard}
-      onPress={() => router.push(`./appointmentInfo`)} // Navigate to a detailed appointment page
-    >
-
-<View style={styles.doctorInfo}>
-        <Image
-          source={{
-            uri: appointment.medical_practitioner.profile_picture_url,
-          }}
-          style={styles.doctorImage}
-        />
-        <Text style={styles.doctorName}>
-        {appointment.medical_practitioner.name} | {" "}
-        
-        </Text>
-        <Text style={styles.doctorName2}>
-        {appointment.medical_practitioner.specialization || "N/A"} 
-        
-        </Text>
-      </View>
-      <Text style={styles.appointmentTime}>
-        {new Date(appointment.appointment_start_time).toLocaleTimeString()} -{" "}
-        {new Date(appointment.appointment_end_time).toLocaleTimeString()}
+    key={appointment.id}
+    style={styles.appointmentCard}
+    onPress={async () => {
+      try {
+        // Save patient details
+        await AsyncStorage.setItem("patient_name", patientName);
+        await AsyncStorage.setItem("date_of_birth", dob);
+        await AsyncStorage.setItem("gender", gender);
+  
+        // Save appointment and practitioner details
+        await AsyncStorage.setItem(
+          "practitioner_type",
+          appointment.medical_practitioner.practitioner_type
+        );
+        await AsyncStorage.setItem(
+          "specialization",
+          appointment.medical_practitioner.specialization
+        );
+        await AsyncStorage.setItem(
+          "profile_picture_url",
+          appointment.medical_practitioner.profile_picture_url
+        );
+        await AsyncStorage.setItem(
+          "practitioner_name",
+          appointment.medical_practitioner.name
+        );
+  
+        await AsyncStorage.setItem(
+          "appointment_start_time",
+          appointment.appointment_start_time
+        );
+        await AsyncStorage.setItem(
+          "appointment_reason",
+          appointment.appointment_reason
+        );
+        await AsyncStorage.setItem(
+          "appointment_note",
+          appointment.appointment_note || "No notes provided"
+        );
+  
+        // Log all items in AsyncStorage
+        const allKeys = await AsyncStorage.getAllKeys();
+        const allItems = await AsyncStorage.multiGet(allKeys);
+        console.log('AsyncStorage content:');
+        allItems.forEach(([key, value]) => {
+          console.log(`${key}: ${value}`);
+        });
+  
+        // Navigate to detailed appointment info page
+        router.push("./appointmentInfo");
+      } catch (error) {
+        console.error("Error saving appointment details:", error);
+      }
+    }}
+  >
+    <View style={styles.doctorInfo}>
+      <Image
+        source={{
+          uri: appointment.medical_practitioner.profile_picture_url,
+        }}
+        style={styles.doctorImage}
+      />
+      <Text style={styles.doctorName}>
+        {appointment.medical_practitioner.name} |{" "}
       </Text>
-      <Text style={styles.appointmentDate}>
-        {new Date(appointment.appointment_start_time).toDateString()}
+      <Text style={styles.doctorName2}>
+        {appointment.medical_practitioner.specialization || "N/A"}
       </Text>
-      <Text style={styles.appointmentReason}>
-        Reason: {appointment.appointment_reason || "Not specified"}
-      </Text>
-      <Text style={styles.appointmentStatus}>
-        Status: {appointment.appointment_status}
-      </Text>
-      
-    </TouchableOpacity>
+    </View>
+    <Text style={styles.appointmentTime}>
+      {new Date(appointment.appointment_start_time).toLocaleTimeString()} -{" "}
+      {new Date(appointment.appointment_end_time).toLocaleTimeString()}
+    </Text>
+    <Text style={styles.appointmentDate}>
+      {new Date(appointment.appointment_start_time).toDateString()}
+    </Text>
+    <Text style={styles.appointmentReason}>
+      Reason: {appointment.appointment_reason || "Not specified"}
+    </Text>
+    <Text style={styles.appointmentStatus}>
+      Status: {appointment.appointment_status}
+    </Text>
+  </TouchableOpacity>
+  
   ))
 ) : (
   <Text style={styles.noAppointmentsText}>No appointments scheduled.</Text>
 )}
+
 
     </Animated.ScrollView>
   );

@@ -10,8 +10,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { API_BASE_URL } from '../../api/config'; // Adjust the path as needed
-
+import { API_BASE_URL } from "../../api/config"; // Adjust the path as needed
 
 interface Practitioner {
   id: string;
@@ -32,11 +31,8 @@ const Services: React.FC = () => {
   useEffect(() => {
     const fetchPractitioners = async () => {
       try {
-
         const endpoint = `${API_BASE_URL}/medical_practitioners/`;
-       
-             const response = await fetch(endpoint,
-        );
+        const response = await fetch(endpoint);
         const data = await response.json();
         if (data.status === "success") {
           setPractitioners(data.data);
@@ -121,7 +117,10 @@ const Services: React.FC = () => {
           {categories.map((category) => (
             <TouchableOpacity
               key={category}
-              style={styles.categoryButton}
+              style={[
+                styles.categoryButton,
+                selectedCategory === category && styles.activeCategoryButton,
+              ]}
               onPress={() => setSelectedCategory(category)}
             >
               <Text
@@ -138,19 +137,18 @@ const Services: React.FC = () => {
 
         {/* Practitioner List */}
         <View style={styles.practitionerList}>
-            {filteredPractitioners.length > 0 ? (
-              filteredPractitioners.map((practitioner) => (
-                <View key={practitioner.id}>
-                  {renderPractitioner({ item: practitioner })}
-                </View>
-              ))
-            ) : (
-              <Text style={styles.noPractitionersText}>
-                Not available. Please check back later.
-              </Text>
-            )}
-          </View>
-
+          {filteredPractitioners.length > 0 ? (
+            filteredPractitioners.map((practitioner) => (
+              <View key={practitioner.id}>
+                {renderPractitioner({ item: practitioner })}
+              </View>
+            ))
+          ) : (
+            <Text style={styles.noPractitionersText}>
+              Not available. Please check back later.
+            </Text>
+          )}
+        </View>
       </View>
     </ScrollView>
   );
@@ -174,22 +172,28 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 30,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-around",
     backgroundColor: "#f9f9f9",
     borderRadius: 10,
-    padding: 10,
+    padding: 15,
   },
   categoryButton: {
-    marginHorizontal: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  activeCategoryButton: {
+    backgroundColor: "#1a73e8",
   },
   categoryText: {
-    fontSize: 14,
+    fontSize: 16,
     color: "#888",
+    fontWeight: "500",
   },
   activeCategoryText: {
-    color: "#00CDF9",
+    color: "white",
     fontWeight: "bold",
-    fontSize: 20,
+    fontSize: 18,
   },
   practitionerList: {
     marginTop: 10,
@@ -199,7 +203,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 15,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#E8F0FE",
     borderRadius: 10,
     marginBottom: 10,
   },
@@ -224,7 +228,7 @@ const styles = StyleSheet.create({
   practitionerName: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#333",
+    color: "#1a73e8",
   },
   practitionerSpecialization: {
     fontSize: 14,

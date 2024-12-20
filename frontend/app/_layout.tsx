@@ -13,6 +13,7 @@ export default function RootLayout() {
       <Stack.Screen name="screens/patient/otp" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/services" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/register" options={{ headerShown: false }} />
+      <Stack.Screen name="screens/patient/addReview" options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/healthWorker" options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/editProfile" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/editProfile" options={{ headerShown: false }} />
@@ -24,7 +25,7 @@ export default function RootLayout() {
       <Stack.Screen name="screens/patient/newPassword" options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/home" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/home" options={{ headerShown: false }} />
-      <Stack.Screen name="screens/patient/message" options={{ headerShown: false }} />
+      <Stack.Screen name="screens/patient/appointments" options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/notification" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/notification" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/profile" options={{ headerShown: false }} />

@@ -36,6 +36,7 @@ const App = () => {
         poppins: require("./assets/fonts/Poppins-Regular.ttf"),
         "poppins-bold": require("./assets/fonts/Poppins-Bold.ttf"),
         "poppins-Extrabold": require("./assets/fonts/Poppins-ExtraBold.ttf"),
+        "poppins-Semibold": require("./assets/fonts/Poppins-SemiBold.ttf"),
       });
       setFontsLoaded(true);
     };

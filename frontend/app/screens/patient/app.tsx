@@ -10,7 +10,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import PatientDashboard from './home';
-import MessagesScreen from './message';
+import AppointmentsScreen from './appointments';
 import NotificationsScreen from './notification';
 import BioPage from './bio';
 import Services from './services';
@@ -50,7 +50,7 @@ function MyTabs() {
       })}
     >
       <Tab.Screen name="Home" component={PatientDashboard} />
-      <Tab.Screen name="Appointments" component={MessagesScreen} />
+      <Tab.Screen name="Appointments" component={AppointmentsScreen} />
       <Tab.Screen name="Notification" component={NotificationsScreen} />
       <Tab.Screen name="Profile" component={BioPage} />
     </Tab.Navigator>

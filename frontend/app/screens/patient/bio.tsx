@@ -167,7 +167,7 @@ export default function BioPage() {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="yellow" />
+        <ActivityIndicator size="large" color="blue" />
       </View>
     );
   }
@@ -330,6 +330,7 @@ const styles = StyleSheet.create({
     padding: 5,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 60
   },
   nameText: {
     fontSize: 20,
@@ -369,6 +370,7 @@ const styles = StyleSheet.create({
   },
   editButton: {
     flexDirection: 'row',
+    marginTop:30
   },
   
   errorText: {

@@ -24,6 +24,7 @@ const indexStyles = StyleSheet.create({
     height: "100%",
     justifyContent: "flex-end",
     alignItems: "center",
+    marginTop:60
 
   },
   animatedBackground: {
@@ -44,7 +45,7 @@ const indexStyles = StyleSheet.create({
   },
   welcomeText: {
     fontSize: 15,
-    fontFamily: "poppins",
+    fontFamily: "poppins-bold",
     color: "#00CDF9",
     marginVertical: 20,
     textAlign: "center",
@@ -70,7 +71,7 @@ const indexStyles = StyleSheet.create({
   },
   questionText: {
     fontSize: 30,
-    fontFamily: "poppins-semibold",
+    fontFamily: "poppins-Semibold",
     color: "white",
     marginBottom: 5,
   },

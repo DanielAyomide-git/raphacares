@@ -11,7 +11,7 @@ const loginStyles = StyleSheet.create({
     padding: 10,
   },
   title: {
-    fontFamily: 'Poppins-Bold',
+    fontFamily: 'poppins-bold',
     fontSize: 24,
     color: '#FFFFFF', // Adjust for better contrast on blue gradient
     marginBottom: 50,
