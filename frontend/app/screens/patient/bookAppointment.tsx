@@ -29,6 +29,7 @@ interface FormData {
   duration: string;
   reason: string;
   note: string;
+  type: string;
 }
 
 const BookAppointment: React.FC = () => {
@@ -43,6 +44,7 @@ const BookAppointment: React.FC = () => {
     duration: '',
     reason: '',
     note: '',
+    type: '',
   });
 
   const [errorText, setErrorText] = useState<string | null>(null);
@@ -124,6 +126,7 @@ const BookAppointment: React.FC = () => {
         appointment_status: 'pending',
         appointment_reason: formData.reason,
         appointment_note: formData.note,
+        appointment_type: formData.type,
       };
       const endpoint = `${API_BASE_URL}/appointments/`;
 
@@ -151,6 +154,7 @@ const BookAppointment: React.FC = () => {
           duration: '',
           reason: '',
           note: '',
+          type:'',
         });
         router.push('./app');
       }, 2000);
@@ -166,12 +170,13 @@ const BookAppointment: React.FC = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Back Button */}
+     
+      
+
+      <View style={styles.card}>
       <TouchableOpacity style={styles.backButton} onPress={() => router.push('./healthWorkerInfo')}>
         <Ionicons name="arrow-back" size={24} color="#333" />
       </TouchableOpacity>
-
-      <View style={styles.card}>
         <Text style={styles.title}>Appointment Form</Text>
 
         {/* Date */}
@@ -215,6 +220,28 @@ const BookAppointment: React.FC = () => {
             <Picker.Item label="3 Hours" value="3" />
           </Picker>
         </View>
+
+       {/* Gender */}
+<View style={styles.inputGroup}>
+  <Text style={styles.label}>Appointment Type</Text>
+  <Picker
+    selectedValue={formData.type}
+    style={styles.pickerContainer}
+    onValueChange={(itemValue) => {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        type: itemValue, // Update the formData with the selected value
+      }));
+    }}
+  >
+    <Picker.Item label="Select Type" value="" />
+    <Picker.Item label="Online" value="online" />
+    <Picker.Item label="Physical" value="physical" />
+  </Picker>
+
+  
+</View>
+
 
         {/* Appointment Reason */}
         <View style={styles.inputGroup}>
@@ -275,6 +302,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 4,
+    marginTop:50
   },
   textArea: {
     height: 100, // Set height to make it larger for multiline input
@@ -291,12 +319,18 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '600',
     marginBottom: 60,
-    color: '#007bff',
+    color: '#00CDF9',
     textAlign: 'center',
   },
+  selectedValueText: {
+    marginTop: 10,
+    fontSize: 14,
+    color: "blue",
+  },
+  
   subtitle: {
     fontSize: 14,
-    color: '#777',
+    color: '#00CDF9',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -307,7 +341,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     marginBottom: 8,
-    color: '#007bff',
+    color: '#00CDF9',
   },
   input: {
     backgroundColor: '#fff',
@@ -361,11 +395,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
-    marginTop: 20,
-    marginRight: 300,
   },
   button: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#00CDF9',
     borderRadius: 5,
     paddingVertical: 12,
     alignItems: 'center',

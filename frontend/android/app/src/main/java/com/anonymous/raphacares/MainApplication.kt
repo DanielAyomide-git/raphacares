@@ -1,7 +1,9 @@
-package com.anonymous.raphacares
+package com.raphacares
 
 import android.app.Application
 import android.content.res.Configuration
+import com.raphacares.BuildConfig
+
 
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication

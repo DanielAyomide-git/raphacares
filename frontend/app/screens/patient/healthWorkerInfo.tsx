@@ -75,7 +75,7 @@ const HealthWorkerInfo: React.FC = () => {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#007bff" />
+        <ActivityIndicator size="large" color="#00CDF9" />
       </View>
     );
   }
@@ -118,7 +118,7 @@ const HealthWorkerInfo: React.FC = () => {
         style={styles.backButton}
         onPress={() => router.push('./services')}
       >
-        <Ionicons name="arrow-back" size={24} color="#333" />
+        <Ionicons name="arrow-back" size={24} color="#00CDF9" />
       </TouchableOpacity>
 
       {/* Profile Section */}
@@ -184,7 +184,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
-    marginTop: 20,
+    marginTop:60
+    
   },
   loaderContainer: {
     flex: 1,
@@ -243,7 +244,7 @@ const styles = StyleSheet.create({
   availabilityTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#007bff',
+    color: '#00CDF9',
   },
   availabilityRow: {
     flexDirection: 'row',
@@ -275,7 +276,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   bookButton: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#00CDF9',
     borderRadius: 5,
     paddingVertical: 10,
     marginVertical: 20,

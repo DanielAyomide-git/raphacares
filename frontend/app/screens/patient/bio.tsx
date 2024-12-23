@@ -30,6 +30,7 @@ interface BioData {
   profile_picture_url: string;
   date_of_birth: string;
   country: string;
+  gender: string;
 }
 
 export default function BioPage() {
@@ -74,6 +75,7 @@ export default function BioPage() {
           city: data.data.city || 'N/A',
           profile_picture_url: data.data.profile_picture_url || '',
           date_of_birth: data.data.date_of_birth || 'N/A',
+          gender: data.data.gender || 'N/A',
           country: data.data.country || 'N/A',
         });
       } else {
@@ -134,7 +136,7 @@ export default function BioPage() {
       const formData = new FormData();
       formData.append('profile_id', profileId);
       formData.append('resource_type', 'profile_picture');
-      formData.append('file', fileBlob, `profile_${profileId}.jpg`); // Attach the file blob with a name
+      formData.append('file', fileBlob, `profile_${profileId}.jpg`); 
 
 
       const endpoint = `${API_BASE_URL}/patients/${profileId}/upload_file`;
@@ -167,7 +169,7 @@ export default function BioPage() {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="blue" />
+        <ActivityIndicator size="large" color="#00CDF9" />
       </View>
     );
   }
@@ -196,7 +198,7 @@ export default function BioPage() {
                   ? { uri: imageUri }
                   : bioData?.profile_picture_url
                   ? { uri: bioData.profile_picture_url }
-                  : require("../../assets/dp.png") // Fallback to local asset
+                  : require("../../assets/dp.png") 
               }
               style={styles.profileImage}
             />
@@ -223,19 +225,24 @@ export default function BioPage() {
           <Text style={styles.infoText}>{bioData?.email}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Ionicons name="airplane-outline" size={24} color="black" />
-          <Text style={styles.infoLabel}>City</Text>
-          <Text style={styles.infoText}>{bioData?.city}</Text>
-        </View>
+  <Ionicons name="airplane-outline" size={24} color="black" />
+  <Text style={styles.infoLabel}>City</Text>
+  <Text style={styles.infoText}>
+    {bioData?.city ? bioData.city.charAt(0).toUpperCase() + bioData.city.slice(1) : ""}
+  </Text>
+</View>
+
+<View style={styles.infoRow}>
+  <Ionicons name="planet-outline" size={24} color="black" />
+  <Text style={styles.infoLabel}>Gender</Text>
+  <Text style={styles.infoText}>
+    {bioData?.gender ? bioData.gender.charAt(0).toUpperCase() + bioData.gender.slice(1) : ""}
+  </Text>
+</View>
+
 
         <View style={styles.infoRow}>
-          <Ionicons name="planet-outline" size={24} color="black" />
-          <Text style={styles.infoLabel}>Country</Text>
-          <Text style={styles.infoText}>{bioData?.country}</Text>
-        </View>
-
-        <View style={styles.infoRow}>
-        <Ionicons name="egg-outline" size={24} color="black" />
+        <Ionicons name="person-add-outline" size={24} color="black" />
         <Text style={styles.infoLabel}>DOB</Text>
         <Text style={styles.infoText}>
           {bioData?.date_of_birth?.split('T')[0]}
@@ -254,17 +261,21 @@ export default function BioPage() {
         <Text style={styles.helpText}>Help and Feedback</Text>
         <Ionicons name="chevron-forward" size={18} color="black" />
       </TouchableOpacity>
+      <TouchableOpacity style={styles.menuItem} >
+        <Ionicons name="book-outline" size={24} color="black" />
+        <Text style={styles.menuText}>Medical Record</Text>
+        <Ionicons name="chevron-forward" size={18} color="black" />
+      </TouchableOpacity>
 
       <TouchableOpacity style={styles.menuItem} onPress={() => router.push('../../')}>
         <Ionicons name="log-out-outline" size={24} color="black" />
         <Text style={styles.menuText}>Logout</Text>
         <Ionicons name="chevron-forward" size={18} color="black" />
       </TouchableOpacity>
+     
     </ScrollView>
   );
 }
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -287,6 +298,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     marginTop: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 5 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3, 
   },
   menuText: {
     flex: 1,
@@ -320,6 +336,12 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     borderWidth: 3,
     borderColor: '#ddd',
+    // Shadow for profile image wrapper
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3, // Android shadow
   },
   editIcon: {
     position: 'absolute',
@@ -330,7 +352,7 @@ const styles = StyleSheet.create({
     padding: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 60
+    marginTop: 60,
   },
   nameText: {
     fontSize: 20,
@@ -347,11 +369,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     marginTop: 10,
+    // Shadow for details container
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3, // Android shadow
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 20,
   },
   infoRow: {
     flexDirection: 'row',
@@ -370,9 +398,8 @@ const styles = StyleSheet.create({
   },
   editButton: {
     flexDirection: 'row',
-    marginTop:30
+    marginTop: 30,
   },
-  
   errorText: {
     fontSize: 16,
     color: 'red',
@@ -384,13 +411,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
+    // Shadow for social container
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3, // Android shadow
   },
   socialIcons: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 10,
   },
-  
   helpContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -398,11 +430,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 15,
     borderRadius: 10,
+    // Shadow for help container
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3, // Android shadow
   },
   helpText: {
     flex: 1,
     marginLeft: 10,
     fontSize: 16,
     color: 'black',
-  }
+  },
 });

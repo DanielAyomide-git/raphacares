@@ -1,0 +1,14 @@
+coverage/
+*.spec.js
+*.test.js
+*.snap
+node_modules
+.expo/
+.expo-shared/
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+android
+admin
+.idea

@@ -11,7 +11,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import PatientDashboard from './home';
 import AppointmentsScreen from './appointments';
-import NotificationsScreen from './notification';
+import Consultation from './consultation';
 import BioPage from './bio';
 import Services from './services';
 import HealthWorkerInfo from './healthWorkerInfo'; // Import the HealthWorkerInfo screen
@@ -37,8 +37,8 @@ function MyTabs() {
             iconName = 'stopwatch-outline';
           } else if (route.name === 'Profile') {
             iconName = 'person';
-          } else if (route.name === 'Notification') {
-            iconName = 'notifications';
+          } else if (route.name === 'Consultations') {
+            iconName = 'chatbubble-ellipses-outline';
           }
 
           return <Ionicons name={iconName ?? 'home-outline'} size={size} color={color} />;
@@ -47,15 +47,20 @@ function MyTabs() {
         tabBarInactiveTintColor: 'grey',
         headerShown: false,
         tabBarStyle: styles.tabBar,
+        tabBarLabelStyle: {
+          fontSize: 12, // Adjust the font size of the label
+          marginTop: -5, // Reduce the margin above the label
+        },
       })}
     >
       <Tab.Screen name="Home" component={PatientDashboard} />
       <Tab.Screen name="Appointments" component={AppointmentsScreen} />
-      <Tab.Screen name="Notification" component={NotificationsScreen} />
+      <Tab.Screen name="Consultations" component={Consultation} />
       <Tab.Screen name="Profile" component={BioPage} />
     </Tab.Navigator>
   );
 }
+
 
 // Stack for Services and HealthWorkerInfo
 function ServicesStack() {
@@ -117,7 +122,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     marginLeft: 10,
     marginRight: 10,
-    marginBottom: 4,
+    marginBottom: 2,
   },
   welcomeContainer: {
     flex: 1,

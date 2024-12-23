@@ -11,7 +11,7 @@ import {
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const AddReview: React.FC = () => {
+const Details: React.FC = () => {
   const router = useRouter();
   const [rating, setRating] = useState(0); // State to manage star rating
   const [appointmentDetails, setAppointmentDetails] = useState<any>(null); // Store appointment details
@@ -57,6 +57,14 @@ const AddReview: React.FC = () => {
       </View>
     );
   }
+  const capitalizeFirstLetter = (str: string): string => {
+    if (!str) return ""; // Handle empty or undefined strings
+    return str
+      .split(" ")
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  };
+  
 
   return (
     <View style={styles.container}>
@@ -65,66 +73,59 @@ const AddReview: React.FC = () => {
         <TouchableOpacity onPress={() => router.back()}>
           <Text style={styles.backButton}>{'←'}</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Add Review</Text>
+        {/* <Text style={styles.headerTitle}>Appointment Details</Text> */}
         <View style={{ width: 20 }} />
       </View>
 
-      <Text style={styles.description}>
-        {appointmentDetails.appointmentNote || "No additional notes available."}
-      </Text>
+     
 
       <Image
         source={{
-          uri: appointmentDetails.imageUrl || "https://via.placeholder.com/150",
+          uri: appointmentDetails.imageUrl || "https://img.icons8.com/?size=100&id=11730&format=png&color=000000",
         }}
         style={styles.reviewImage}
       />
 
-<View style={styles.practitionerInfo}>
-  <Text style={styles.practitionerName}>
-    {appointmentDetails.practitionerType
-      ? appointmentDetails.practitionerType.charAt(0).toUpperCase() + appointmentDetails.practitionerType.slice(1)
-      : ""}
-    {" "}
-    {appointmentDetails.doctorName
-      ? appointmentDetails.doctorName.charAt(0).toUpperCase() + appointmentDetails.doctorName.slice(1)
-      : ""}
-  </Text>
-  <Text style={styles.speciality}>
-    {appointmentDetails.speciality
-      ? appointmentDetails.speciality.charAt(0).toUpperCase() + appointmentDetails.speciality.slice(1)
-      : ""}
-  </Text>
+      <View style={styles.practitionerInfo}>
+      <Text style={styles.practitionerName}>
+  {capitalizeFirstLetter(appointmentDetails.practitionerType)}{" "}
+  {capitalizeFirstLetter(appointmentDetails.doctorName)}
+</Text>
+{/* <Text style={styles.speciality}>
+  {capitalizeFirstLetter(appointmentDetails.speciality)}
+</Text>
 
-  {/* Rating */}
-  <View style={styles.ratingContainer}>
-    {[...Array(5)].map((_, index) => (
-      <TouchableOpacity key={index} onPress={() => handleStarPress(index)}>
-        <Text
-          style={[
-            styles.star,
-            { color: index < rating ? "#FFC107" : "#E0E0E0" },
-          ]}
-        >
-          {index < rating ? "★" : "☆"}
-        </Text>
-      </TouchableOpacity>
-    ))}
-  </View>
-</View>
+<Text style={styles.description}>
+  {appointmentDetails.appointmentNote || "No additional notes available."}
+</Text> */}
+
+      <Text style={styles.appointmentDate}>
+  Date:{" "}
+  {new Date(appointmentDetails.appointmentStartTime).toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }) || "N/A"}
+</Text>
+<Text style={styles.appointmentDate}>
+  Start Time:{" "}
+  {new Date(appointmentDetails.appointmentStartTime).toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }) || "N/A"}
+</Text>
+<Text style={styles.appointmentDate}>
+  End Time:{" "}
+  {new Date(appointmentDetails.appointmentEndTime).toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }) || "N/A"}
+</Text>
+
+      </View>
 
 
-      {/* Comment Box */}
-      <TextInput
-        style={styles.commentBox}
-        placeholder="Enter Your Comment Here..."
-        multiline
-      />
-
-      {/* Add Review Button */}
-      <TouchableOpacity style={styles.addReviewButton}>
-        <Text style={styles.addReviewButtonText}>Add Review</Text>
-      </TouchableOpacity>
+  
     </View>
   );
 };
@@ -156,16 +157,22 @@ const styles = StyleSheet.create({
     backgroundColor: "#00CDF9",
     borderRadius: 8,
   },
+  appointmentDate: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: 'regular',
+    marginBottom:10
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
-    marginTop:20
+    marginBottom:50,
+    marginTop:40
 
   },
   backButton: {
     fontSize: 18,
-    color: "#00CDF9",
+    color: "#00cdf9",
     fontWeight: "bold",
   },
   headerTitle: {
@@ -181,7 +188,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 30,
     lineHeight: 20,
   },
   reviewImage: {
@@ -199,11 +206,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#00CDF9",
+    marginBottom:30
   },
   speciality: {
     fontSize: 16,
     color: "#666",
-    marginBottom: 12,
+    marginBottom: 20,
   },
   ratingContainer: {
     flexDirection: "row",
@@ -237,4 +245,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddReview;
+export default Details;

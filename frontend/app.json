@@ -11,7 +11,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.raphacares"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,7 +23,7 @@
           "CAMERA"
         ]
       },
-      "package": "com.anonymous.raphacares"
+      "package": "com.anonumous.raphacares"
     },
     "web": {
       "bundler": "metro",

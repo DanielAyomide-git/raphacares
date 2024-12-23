@@ -187,7 +187,7 @@ const EditProfile: React.FC = () => {
     <Animated.View style={[styles.container, { transform: [{ translateX: slideAnimation }] }]}>
       <ScrollView style={styles.container}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="black" />
+          <Ionicons name="arrow-back" size={24} color="#00cdf9" />
         </TouchableOpacity>
 
         <Text style={styles.title}>Edit Profile</Text>
@@ -207,7 +207,7 @@ const EditProfile: React.FC = () => {
           <TextInput
             style={styles.input}
             placeholder="Last Name"
-            placeholderTextColor="#D3D3D3"
+            placeholderTextColor="#ededed"
             value={formData.last_name}
             onChangeText={(value) => handleInputChange("last_name", value)}
             keyboardType="default"
@@ -217,7 +217,7 @@ const EditProfile: React.FC = () => {
           <TextInput
             style={styles.input}
             placeholder="Other Names"
-            placeholderTextColor="#D3D3D3"
+            placeholderTextColor="#ededed"
             value={formData.other_names || ""}
             onChangeText={(value) => handleInputChange("other_names", value)}
             keyboardType="default"

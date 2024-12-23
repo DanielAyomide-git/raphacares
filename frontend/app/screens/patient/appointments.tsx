@@ -21,17 +21,19 @@ interface Appointment {
   time: string;
   rating: number;
   imageUrl: string;
-  category: 'Complete' | 'Pending' | 'Cancelled';
+  category: 'Completed' | 'Pending' | 'Cancelled' | 'Confirmed';
   appointmentStatus: string;
   appointmentStartTime: string;
   appointmentEndTime: string;
+  appointmentNote: string;
+  practitionerType: string;
 }
 
 const AppointmentsScreen: React.FC = () => {
   const router = useRouter(); // Initialize the router
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedCategory, setSelectedCategory] = useState<'Complete' | 'Pending' | 'Cancelled'>('Pending');
+  const [selectedCategory, setSelectedCategory] = useState<'Completed' | 'Pending' | 'Cancelled' | 'Confirmed'>('Completed');
 
   // Fetch appointments and practitioner data
   useEffect(() => {
@@ -71,6 +73,7 @@ const AppointmentsScreen: React.FC = () => {
               profile_picture_url: "https://via.placeholder.com/100",
               practitioner_type: "",
               specialization: "",
+              appointment_note: "",
             };
 
             if (practitionerResponse.ok) {
@@ -81,18 +84,26 @@ const AppointmentsScreen: React.FC = () => {
                   profile_picture_url: practitionerData.data.profile_picture_url,
                   practitioner_type: practitionerData.data.practitioner_type,
                   specialization: practitionerData.data.specialization,
+                  appointment_note: practitionerData.data.appointment_note,
+
                 };
+
               }
+              
+
             }
 
             // Determine category based on appointment status
-            const category: 'Complete' | 'Pending' | 'Cancelled' = appointment.appointment_status === 'completed' 
-              ? 'Complete' 
-              : appointment.appointment_status === 'pending' 
-              ? 'Pending' 
-              : appointment.appointment_status === 'cancelled' 
-              ? 'Cancelled'
-              : 'Cancelled'; // Default to 'Cancelled' for any unhandled status
+            const category: 'Completed' | 'Pending' | 'Cancelled' | 'Confirmed' = 
+              appointment.appointment_status === 'completed'
+                ? 'Completed'
+                : appointment.appointment_status === 'pending'
+                ? 'Pending'
+                : appointment.appointment_status === 'cancelled'
+                ? 'Cancelled'
+                : appointment.appointment_status === 'confirmed'
+                ? 'Confirmed'
+                : 'Pending'; 
 
             return {
               id: appointment.id,
@@ -104,7 +115,10 @@ const AppointmentsScreen: React.FC = () => {
               appointmentStatus: appointment.appointment_status,
               appointmentStartTime: appointment.appointment_start_time,
               appointmentEndTime: appointment.appointment_end_time,
+              appointmentNote: appointment.appointment_note,
+              practitionerType: practitioner.practitioner_type
             };
+
           }));
 
           setAppointments(appointmentsWithDetails);
@@ -128,10 +142,13 @@ const AppointmentsScreen: React.FC = () => {
       <View style={styles.appointmentCard}>
         <View style={styles.topRow}>
           <Image
-            source={{ uri: item.imageUrl }}
+            source={{ uri: item.imageUrl || 'https://img.icons8.com/?size=100&id=11730&format=png&color=000000'}}
             style={styles.doctorImage}
           />
-          <Text style={styles.doctorName}>{item.doctorName}</Text>
+      <Text style={styles.doctorName}>
+        {item.practitionerType.charAt(0).toUpperCase() + item.practitionerType.slice(1)}{' '}
+        {item.doctorName.charAt(0).toUpperCase() + item.doctorName.slice(1)}
+      </Text>
         </View>
         <View style={styles.detailsContainer}>
           <Text style={styles.speciality}>{item.speciality}</Text>
@@ -146,45 +163,140 @@ const AppointmentsScreen: React.FC = () => {
               </Text>
             </>
           )}
-          {selectedCategory === 'Complete' && (
+          {selectedCategory === 'Completed' && (
             <Text style={styles.rating}>
               ⭐ {item.rating} <Text style={styles.heart}>❤</Text>
             </Text>
           )}
         </View>
         <View style={styles.actionButtons}>
-          {selectedCategory === 'Pending' ? (
-            <>
-              <TouchableOpacity style={styles.detailsButton}>
-                <Text style={styles.buttonText}>Details</Text>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Text style={styles.confirmButton}>✔</Text>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Text style={styles.cancelButton}>✖</Text>
-              </TouchableOpacity>
-            </>
-          ) : selectedCategory === 'Complete' ? (
-            <>
-              <TouchableOpacity style={styles.detailsButton}>
-                <Text style={styles.buttonText}>Re-Book</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.addReviewButton}
-                onPress={() => router.push('./addReview')}
-              >
-                <Text style={styles.buttonText}>Add Review</Text>
-              </TouchableOpacity>
-            </>
-          ) : (
-            selectedCategory === 'Cancelled' && (
-              <TouchableOpacity style={styles.addReviewButton} onPress={() => router.push('./addReview')}>
-                <Text style={styles.buttonText}>Add Review</Text>
-              </TouchableOpacity>
-            )
-          )}
-        </View>
+  {selectedCategory === 'Pending' ? (
+    <>
+      <TouchableOpacity
+        style={[styles.actionButton, styles.detailsButton]}
+        onPress={async () => {
+          const appointmentDetails = {
+            id: item.id,
+            doctorName: item.doctorName,
+            speciality: item.speciality,
+            imageUrl: item.imageUrl || 'https://img.icons8.com/?size=100&id=11730&format=png&color=000000',
+            rating: item.rating,
+            category: item.category,
+            appointmentStatus: item.appointmentStatus,
+            appointmentStartTime: item.appointmentStartTime,
+            appointmentEndTime: item.appointmentEndTime,
+            appointmentNote: item.appointmentNote,
+            practitionerType: item.practitionerType,
+          };
+
+          try {
+            await AsyncStorage.setItem('appointmentDetails', JSON.stringify(appointmentDetails));
+            console.log('Appointment details saved for Details screen:', appointmentDetails);
+
+            // Navigate to appointmentDetails screen
+            router.push('./appointmentDetails');
+          } catch (error) {
+            console.error('Error saving appointment details to AsyncStorage:', error);
+          }
+        }}
+      >
+        <Text style={styles.buttonText}>Details</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={[styles.actionButton, styles.cancelButton]}>
+        <Text style={styles.buttonText}>Cancel</Text>
+      </TouchableOpacity>
+    </>
+  ) : selectedCategory === 'Completed' ? (
+    <>
+      <TouchableOpacity
+        style={[styles.actionButton, styles.addReviewButton]}
+        onPress={async () => {
+          const appointmentDetails = {
+            id: item.id,
+            doctorName: item.doctorName,
+            speciality: item.speciality,
+            imageUrl: item.imageUrl || 'https://img.icons8.com/?size=100&id=11730&format=png&color=000000g',
+            rating: item.rating,
+            category: item.category,
+            appointmentStatus: item.appointmentStatus,
+            appointmentStartTime: item.appointmentStartTime,
+            appointmentEndTime: item.appointmentEndTime,
+            appointmentNote: item.appointmentNote,
+            practitionerType: item.practitionerType,
+          };
+
+          try {
+            await AsyncStorage.setItem('appointmentDetails', JSON.stringify(appointmentDetails));
+            console.log('Appointment details saved for review:', appointmentDetails);
+
+            router.push('./addReview');
+          } catch (error) {
+            console.error('Error saving appointment details to AsyncStorage:', error);
+          }
+        }}
+      >
+        <Text style={styles.buttonText}>Add Review</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.actionButton, styles.rebookButton]}
+        onPress={() => router.push('./services')}
+      >
+        <Text style={styles.buttonText}>Re-Book</Text>
+      </TouchableOpacity>
+    </>
+  ) : selectedCategory === 'Confirmed' ? (
+    <>
+      <TouchableOpacity
+        style={[styles.actionButton, styles.detailsButton]}
+        onPress={async () => {
+          const appointmentDetails = {
+            id: item.id,
+            doctorName: item.doctorName,
+            speciality: item.speciality,
+            imageUrl: item.imageUrl || 'https://img.icons8.com/?size=100&id=11730&format=png&color=000000',
+            rating: item.rating,
+            category: item.category,
+            appointmentStatus: item.appointmentStatus,
+            appointmentStartTime: item.appointmentStartTime,
+            appointmentEndTime: item.appointmentEndTime,
+            appointmentNote: item.appointmentNote,
+            practitionerType: item.practitionerType,
+          };
+
+          try {
+            await AsyncStorage.setItem('appointmentDetails', JSON.stringify(appointmentDetails));
+            console.log('Appointment details saved for Details screen:', appointmentDetails);
+
+            router.push('./appointmentDetails');
+          } catch (error) {
+            console.error('Error saving appointment details to AsyncStorage:', error);
+          }
+        }}
+      >
+        <Text style={styles.buttonText}>Details</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.actionButton, styles.payButton]}
+        onPress={() => router.push('./payment')}
+      >
+        <Text style={styles.buttonText}>Pay</Text>
+      </TouchableOpacity>
+    </>
+  ) : (
+    selectedCategory === 'Cancelled' && (
+      <TouchableOpacity
+        style={[styles.actionButton, styles.addReviewButton]}
+        onPress={() => router.push('./addReview')}
+      >
+        <Text style={styles.buttonText}>Add Review</Text>
+      </TouchableOpacity>
+    )
+  )}
+</View>
+
       </View>
     );
   };
@@ -192,7 +304,7 @@ const AppointmentsScreen: React.FC = () => {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="blue" />
+        <ActivityIndicator size="large" color="#00CDF9" />
       </View>
     );
   }
@@ -204,10 +316,10 @@ const AppointmentsScreen: React.FC = () => {
       </View>
 
       <View style={styles.tabs}>
-        {['Complete', 'Pending', 'Cancelled'].map((category) => (
+        {['Completed', 'Pending', 'Confirmed', 'Cancelled'].map((category) => (
           <TouchableOpacity
             key={category}
-            onPress={() => setSelectedCategory(category as 'Complete' | 'Pending' | 'Cancelled')}
+            onPress={() => setSelectedCategory(category as 'Completed' | 'Pending' | 'Confirmed'| 'Cancelled' )}
             style={[
               styles.tab,
               selectedCategory === category && styles.activeTab,
@@ -236,65 +348,79 @@ const AppointmentsScreen: React.FC = () => {
 };
 
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
     padding: 16,
   },
+  buttonText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
+    marginTop:50
   },
   headerTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#1a73e8',
+    color: '#00CDF9',
     textAlign: 'center',
     flex: 1,
     marginBottom:20,
+    marginTop: 25
   },
   tabs: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 10,
+    marginBottom: 20,
   },
   tab: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
+    paddingVertical: 6, // Reduced vertical padding
+    paddingHorizontal: 12, // Reduced horizontal padding
+    borderRadius: 8, // Smaller border radius for a compact look
     backgroundColor: '#F2F2F2',
     marginBottom: 10,
-
   },
   activeTab: {
-    backgroundColor: '#1a73e8',
+    backgroundColor: '#00CDF9',
   },
   tabText: {
-    fontSize: 14,
+    fontSize: 12, // Reduced font size
     color: '#666',
   },
   activeTabText: {
     color: 'white',
   },
+
   listContainer: {
     paddingBottom: 20,
   },
   appointmentCard: {
-    backgroundColor: '#E8F0FE',
-    borderRadius: 8,
+    backgroundColor: '#ccf6ff',
+    borderRadius: 20,
     padding: 16,
-    marginBottom: 16,
+    marginBottom: 20,
+    shadowColor: 'black',  // Set the shadow color to #9f9f9f
+    shadowOffset: { width: 0, height: 4 },  // Set the shadow's offset (distance)
+    shadowOpacity: 0.3,  // Control shadow transparency
+    shadowRadius: 6,  // Set the blur radius of the shadow
+    elevation: 8,  // Ensure shadow appears on Android devices
   },
+  
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 3,
+    marginBottom: 0,
   },
   doctorImage: {
     width: 50,
-    height: 50,
+    height: 40,
     borderRadius: 25,
     marginRight: 12,
   },
@@ -309,16 +435,16 @@ const styles = StyleSheet.create({
   speciality: {
     fontSize: 14,
     color: '#666',
-    marginBottom: 6,
+    marginBottom: 10,
   },
   date: {
     fontSize: 14,
-    color: '#1a73e8',
+    color: '#666',
     marginBottom: 4,
   },
   time: {
     fontSize: 14,
-    color: '#1a73e8',
+    color: '#666',
     marginBottom: 6,
   },
   rating: {
@@ -329,39 +455,35 @@ const styles = StyleSheet.create({
   heart: {
     color: '#f44336',
   },
+ 
+
   actionButtons: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
     marginTop: 10,
   },
-  detailsButton: {
-    backgroundColor: '#1a73e8',
+  actionButton: {
     borderRadius: 8,
     paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 16, // Standardized padding for all buttons
     marginRight: 10,
-    marginLeft: 60,
+  },
+  detailsButton: {
+    backgroundColor: '#00CDF9',
+    marginLeft:60
   },
   addReviewButton: {
-    backgroundColor: '#1a73e8',
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginLeft: 60,
+    backgroundColor: '#00CDF9',
+    marginLeft:60,
   },
-  buttonText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: 'bold',
+  rebookButton: {
+    backgroundColor: '#6ebf70',
   },
-  confirmButton: {
-    color: '#4caf50',
-    fontSize: 20,
-    marginHorizontal: 12,
+  payButton: {
+    backgroundColor: '#6ebf70',
   },
   cancelButton: {
-    color: '#f44336',
-    fontSize: 20,
+    backgroundColor: 'red',
   },
   loaderContainer: {
     flex: 1,

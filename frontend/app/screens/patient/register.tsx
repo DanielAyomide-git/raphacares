@@ -103,7 +103,7 @@ export default function RegisterPage() {
     } catch (error: any) {
       setLoading(false);
       console.error('Registration failed:', error.message);
-      setErrorText('User exists' );
+      setErrorText( error.message );
     }
   };
 

@@ -5,6 +5,7 @@ const styles = StyleSheet.create({
       flex: 1,
       backgroundColor: "white",
       padding: 20,
+      marginTop: 20,
     },
     
     welcomeContainer: {
@@ -13,11 +14,30 @@ const styles = StyleSheet.create({
       alignItems: "center",
       backgroundColor: "white",
     },
+    showMoreButton: {
+      marginTop: 20,
+      marginBottom: 40,
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      backgroundColor: "#00CDF9",
+      borderRadius: 20,
+      alignItems: "center",
+      justifyContent: "center",
+      alignSelf: "center",
+    },
+    
+    showMoreText: {
+      fontSize: 16,
+      fontFamily: "Poppins",
+      color: "white",
+      fontWeight: "bold",
+    },
+    
     loaderContainer: {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: "#FFFFFF", // Background color for the loader screen
+      backgroundColor: "white ",
     },
     welcomeTitle: {
       fontFamily: "Poppins",
@@ -34,7 +54,7 @@ const styles = StyleSheet.create({
     appointmentStatus: {
       fontSize: 14,
       fontFamily: "Poppins",
-      color: "brown", // You can change this color based on the status (e.g., green for confirmed, red for pending)
+      color: "brown",
       marginTop: 5,
     },
     noAppointmentsText: {
@@ -42,24 +62,24 @@ const styles = StyleSheet.create({
       fontFamily: "Poppins",
       color: "#888",
       textAlign: "center",
-      marginTop: 20,
+      marginTop: 10,
     },
     header: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginBottom: 20,
+      marginBottom: 10,
     },
     welcomeText: {
       fontSize: 18,
       fontFamily: "Poppins",
       color: "#333",
-      marginTop:30
+      marginTop: 30,
     },
     nameText: {
       fontSize: 22,
       fontFamily: "Poppins-Bold",
-      color: "#007BFF",
+      color: "#00CDF9",
     },
     profileImage: {
       width: 50,
@@ -76,11 +96,11 @@ const styles = StyleSheet.create({
     consultationText: {
       fontSize: 16,
       fontFamily: "Poppins",
-      color: "#007BFF",
+      color: "#00CDF9",
       marginBottom: 10,
     },
     consultButton: {
-      backgroundColor: "#007BFF",
+      backgroundColor: "#00CDF9",
       paddingVertical: 10,
       paddingHorizontal: 20,
       borderRadius: 20,
@@ -99,17 +119,19 @@ const styles = StyleSheet.create({
     servicesContainer: {
       flexDirection: "row",
       flexWrap: "wrap",
-      justifyContent: "space-between",
-      marginBottom: 20,
-      alignItems: "center",
+      justifyContent: "space-evenly",
+      alignContent: "space-evenly",
+      gap: 14,
+      marginBottom: 5,
     },
+    
     serviceBox: {
       width: "45%",
       aspectRatio: 1,
       borderRadius: 15,
       justifyContent: "center",
       alignItems: "center",
-      marginBottom: 15,
+      marginBottom: 5,
       elevation: 4,
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 3 },
@@ -125,21 +147,21 @@ const styles = StyleSheet.create({
     },
     
     appointmentCard: {
-      backgroundColor: "#ffffff", // White background for the card
-      borderRadius: 5,          // Rounded corners
-      padding: 16,               // Padding inside the card
-      marginVertical: 8,         // Space between cards
-      marginHorizontal: 4,      // Space on the sides
-      shadowColor: "#000",       // Shadow color for elevation
-      shadowOffset: { width: 0, height: 2 }, // Shadow position
-      shadowOpacity: 0.2,        // Shadow transparency
-      shadowRadius: 5,           // Blur radius for shadow
-      elevation: 5,              // Elevation for Android shadow
+      backgroundColor: "#ffffff",
+      borderRadius: 5,
+      padding: 16,
+      marginVertical: 8,
+      marginHorizontal: 4,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 5,
+      elevation: 5,
     },
     appointmentTime: {
       fontSize: 16,
       fontFamily: "Poppins-Bold",
-      color: "#007BFF",
+      color: "#00CDF9",
       marginBottom: 5,
     },
     appointmentDate: {
@@ -151,7 +173,7 @@ const styles = StyleSheet.create({
     doctorInfo: {
       flexDirection: "row",
       alignItems: "center",
-      marginBottom: 10
+      marginBottom: 10,
     },
     doctorImage: {
       width: 40,
