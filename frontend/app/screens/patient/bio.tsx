@@ -165,6 +165,19 @@ export default function BioPage() {
       Alert.alert('Error', err.message || 'Something went wrong while uploading the image.');
     }
   };
+  const handleLogout = async () => {
+    try {
+      // Clear AsyncStorage
+      await AsyncStorage.clear();
+  
+      // Optionally, you can navigate to the login screen or home screen after logout
+      router.push('../../'); // Navigate to the root or login screen
+    } catch (error) {
+      console.error('Error clearing AsyncStorage:', error);
+      Alert.alert('Error', 'Something went wrong during logout.');
+    }
+  };
+  
 
   if (loading) {
     return (
@@ -267,11 +280,11 @@ export default function BioPage() {
         <Ionicons name="chevron-forward" size={18} color="black" />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuItem} onPress={() => router.push('../../')}>
-        <Ionicons name="log-out-outline" size={24} color="black" />
-        <Text style={styles.menuText}>Logout</Text>
-        <Ionicons name="chevron-forward" size={18} color="black" />
-      </TouchableOpacity>
+       <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
+       <Ionicons name="log-out-outline" size={24} color="black" />
+       <Text style={styles.menuText}>Logout</Text>
+       <Ionicons name="chevron-forward" size={18} color="black" />
+     </TouchableOpacity>
      
     </ScrollView>
   );
@@ -288,7 +301,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'white',
   },
   menuItem: {
     flexDirection: 'row',
@@ -298,7 +311,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     marginTop: 15,
-    shadowColor: '#000',
+    shadowColor: '#00CDF9',
     shadowOffset: { width: 2, height: 5 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
@@ -337,7 +350,7 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: '#ddd',
     // Shadow for profile image wrapper
-    shadowColor: '#000',
+    shadowColor: '#00CDF9',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
@@ -347,7 +360,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#00CDF9',
     borderRadius: 15,
     padding: 5,
     justifyContent: 'center',
@@ -370,7 +383,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginTop: 10,
     // Shadow for details container
-    shadowColor: '#000',
+    shadowColor: '#00CDF9',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
@@ -412,7 +425,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     // Shadow for social container
-    shadowColor: '#000',
+    shadowColor: '#00CDF9',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
@@ -431,7 +444,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     // Shadow for help container
-    shadowColor: '#000',
+    shadowColor: '#00CDF9',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,

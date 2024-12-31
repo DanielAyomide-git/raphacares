@@ -2,7 +2,6 @@ coverage/
 *.spec.js
 *.test.js
 *.snap
-node_modules
 .expo/
 .expo-shared/
 *.log
@@ -12,3 +11,5 @@ Thumbs.db
 android
 admin
 .idea
+constants
+hooks

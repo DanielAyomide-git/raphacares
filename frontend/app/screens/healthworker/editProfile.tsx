@@ -56,6 +56,8 @@ const EditProfile = () => {
     is_available: false, // Default is false
   });
 
+  const [daysOfWeek, setDaysOfWeek] = useState<string[]>(["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]);
+
   useEffect(() => {
     fetchProfileData();
     // Start the animation after 3 seconds
@@ -161,7 +163,7 @@ const EditProfile = () => {
 
       if (response.ok) {
         setSuccessMessage("Profile updated successfully!");
-       setTimeout(() => router.back(), 1000); // Redirect after 2 seconds     
+        setTimeout(() => router.push("./app"), 1000); // Redirect after 2 seconds     
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Failed to update profile.");
@@ -171,6 +173,29 @@ const EditProfile = () => {
     } finally {
       setLoadingSave(false); // Hide loader
     }
+  };
+
+  const handleAddAvailability = (day: string) => {
+    if (day && !formData.availability[day]) {
+      setFormData((prevState) => ({
+        ...prevState,
+        availability: {
+          ...prevState.availability,
+          [day]: "", // Add new day with an empty time slot
+        },
+      }));
+    }
+  };
+
+  const handleDeleteAvailability = (day: string) => {
+    setFormData((prevState) => {
+      const newAvailability = { ...prevState.availability };
+      delete newAvailability[day];
+      return {
+        ...prevState,
+        availability: newAvailability,
+      };
+    });
   };
 
   if (loading) {
@@ -186,7 +211,7 @@ const EditProfile = () => {
       <ScrollView style={styles.container}>
         {/* Back Button */}
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="black" />
+          <Ionicons name="arrow-back" size={24} color="#FFB815" />
         </TouchableOpacity>
 
         <Text style={styles.title}>Edit Profile</Text>
@@ -196,7 +221,6 @@ const EditProfile = () => {
           style={styles.input}
           placeholder="First Name"
           placeholderTextColor="#D3D3D3"
-          keyboardType="email-address"
           value={formData.first_name}
           onChangeText={(value) => handleInputChange("first_name", value)}
         />
@@ -204,14 +228,12 @@ const EditProfile = () => {
           style={styles.input}
           placeholder="Last Name"
           placeholderTextColor="#D3D3D3"
-          keyboardType="email-address"
           value={formData.last_name}
           onChangeText={(value) => handleInputChange("last_name", value)}
         />
         <TextInput
           style={styles.input}
           placeholder="Other Names"
-          keyboardType="email-address"
           placeholderTextColor="#D3D3D3"
           value={formData.other_names}
           onChangeText={(value) => handleInputChange("other_names", value)}
@@ -220,15 +242,15 @@ const EditProfile = () => {
           style={styles.input}
           placeholder="Phone Number"
           placeholderTextColor="#D3D3D3"
-          keyboardType="email-address"
           value={formData.phone_number}
           onChangeText={(value) => handleInputChange("phone_number", value)}
         />
+        <Text style={styles.sectionTitle}> Specialization </Text>
+
         <TextInput
           style={styles.input}
           placeholder="Specialization"
           placeholderTextColor="#D3D3D3"
-          keyboardType="email-address"
           value={formData.specialization}
           onChangeText={(value) => handleInputChange("specialization", value)}
         />
@@ -242,80 +264,93 @@ const EditProfile = () => {
         >
           <Picker.Item label="Doctor" value="doctor" />
           <Picker.Item label="Nurse" value="nurse" />
-          <Picker.Item label="Pharmacist" value="community_health" />
+          <Picker.Item label="Others" value="community_health" />
         </Picker>
 
         {/* License Number */}
+        <Text style={styles.sectionTitle}> License Number</Text>
+
         <TextInput
           style={styles.input}
           placeholder="License Number"
           placeholderTextColor="#D3D3D3"
-          keyboardType="email-address"
           value={formData.license_number}
           onChangeText={(value) => handleInputChange("license_number", value)}
         />
 
         {/* Email */}
+        <Text style={styles.sectionTitle}> Mail</Text>
+
         <TextInput
           style={styles.input}
           placeholder="Email"
           placeholderTextColor="#D3D3D3"
           value={formData.email}
-          keyboardType="email-address"
           onChangeText={(value) => handleInputChange("email", value)}
         />
 
-        {/* Availability */}
-        <Text style={styles.sectionTitle}>Availability</Text>
-        {Object.entries(formData.availability).map(([day, time]) => (
+             {/* Availability */}
+      <Text style={styles.sectionTitle}>Availability</Text>
+      {Object.entries(formData.availability).map(([day, value]) => {
+        return (
           <View key={day} style={styles.availabilityRow}>
-            <Text style={styles.dayLabel}>{day.charAt(0).toUpperCase() + day.slice(1)}:</Text>
+            <Text style={styles.dayLabel}>
+              {day.charAt(0).toUpperCase() + day.slice(1)}:
+            </Text>
             <TextInput
               style={styles.availabilityInput}
               placeholder="Example: 12am - 12pm"
-              value={time}
+              value={value}
               placeholderTextColor="#D3D3D3"
-              onChangeText={(value) => handleAvailabilityChange(day, value)}
+              onChangeText={(text) => handleAvailabilityChange(day, text)}
             />
+            <TouchableOpacity onPress={() => handleDeleteAvailability(day)}>
+              <Ionicons name="trash" size={20} color="red" />
+            </TouchableOpacity>
           </View>
-        ))}
+        );
+      })}
 
-        {/* Is Available */}
-        <View style={styles.checkboxContainer}>
-          <Text style={styles.label}>Available for Appointments:</Text>
-          <TouchableOpacity
-            style={[
-              styles.checkbox,
-              formData.is_available ? styles.checkboxChecked : styles.checkboxUnchecked,
-            ]}
-            onPress={handleCheckboxToggle}
-          >
-            {formData.is_available && <Ionicons name="checkmark" size={18} color="white" />}
-          </TouchableOpacity>
-        </View>
+      {/* Add Availability */}
+      <View style={styles.addButtonContainer}>
+        <Picker
+          selectedValue={""}
+          onValueChange={(value) => handleAddAvailability(value)}
+          style={styles.picker}
+        >
+          <Picker.Item label="Select a day to add" value="" />
+          {daysOfWeek.map((day) => (
+            <Picker.Item label={day.charAt(0).toUpperCase() + day.slice(1)} value={day} key={day} />
+          ))}
+        </Picker>
+      </View>
 
-        {/* Success/Error Messages */}
-        {successMessage && (
-          <Text style={styles.successText}>{successMessage}</Text>
-        )}
-        {error && (
-          <Text style={styles.errorText}>{error}</Text>
-        )}
-
-        {/* Submit Button */}
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit} disabled={loadingSave}>
-          {loadingSave ? (
-            <ActivityIndicator size="small" color="white" />
-          ) : (
-            <Text style={styles.submitButtonText}>Save Changes</Text>
-          )}
+      {/* Is Available */}
+      <View style={styles.checkboxContainer}>
+        <Text style={styles.label}>Available for Appointments:</Text>
+        <TouchableOpacity
+          style={[styles.checkbox, formData.is_available ? styles.checkboxChecked : styles.checkboxUnchecked]}
+          onPress={handleCheckboxToggle}
+        >
+          {formData.is_available && <Ionicons name="checkmark" size={18} color="white" />}
         </TouchableOpacity>
-      </ScrollView>
+      </View>
+
+      {/* Success/Error Messages */}
+      {successMessage && <Text style={styles.successText}>{successMessage}</Text>}
+      {error && <Text style={styles.errorText}>{error}</Text>}
+
+      {/* Submit Button */}
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit} disabled={loadingSave}>
+        {loadingSave ? (
+          <ActivityIndicator size="small" color="white" />
+        ) : (
+          <Text style={styles.submitButtonText}>Save Changes</Text>
+        )}
+      </TouchableOpacity>      </ScrollView>
     </Animated.View>
   );
 };
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -327,13 +362,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FFFFFF", // Background color for the loader screen
+    backgroundColor: "#FFFFFF",
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
-    color: "#333",
+    color: "#FFB815",
     textAlign: "center",
   },
   input: {
@@ -345,11 +380,11 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "bold",
     marginTop: 20,
     marginBottom: 10,
-    color: "#333",
+    color: "#FFB815",
   },
   availabilityRow: {
     flexDirection: "row",
@@ -361,10 +396,6 @@ const styles = StyleSheet.create({
     flex: 1,
     color: "#555",
   },
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   availabilityInput: {
     flex: 2,
     borderWidth: 1,
@@ -372,6 +403,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 8,
     backgroundColor: "white",
+  },
+  addButtonContainer: {
+    marginBottom: 20,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   checkboxContainer: {
     flexDirection: "row",
@@ -393,8 +431,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   checkboxChecked: {
-    backgroundColor: "#4caf50",
-    borderColor: "#4caf50",
+    backgroundColor: "#FFB815",
+    borderColor: "#FFB815",
   },
   checkboxUnchecked: {
     backgroundColor: "white",
@@ -402,7 +440,7 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     marginTop: 30,
-    backgroundColor: "#4caf50",
+    backgroundColor: "#FFB815",
     padding: 15,
     borderRadius: 8,
     marginBottom: 40,

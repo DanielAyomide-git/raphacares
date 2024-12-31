@@ -82,10 +82,7 @@ const AddReview: React.FC = () => {
 
 <View style={styles.practitionerInfo}>
   <Text style={styles.practitionerName}>
-    {appointmentDetails.practitionerType
-      ? appointmentDetails.practitionerType.charAt(0).toUpperCase() + appointmentDetails.practitionerType.slice(1)
-      : ""}
-    {" "}
+   
     {appointmentDetails.doctorName
       ? appointmentDetails.doctorName.charAt(0).toUpperCase() + appointmentDetails.doctorName.slice(1)
       : ""}

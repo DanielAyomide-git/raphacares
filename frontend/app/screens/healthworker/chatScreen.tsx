@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#00cdf9',
+    backgroundColor: '#FFB815',
     paddingVertical: 10,
     paddingHorizontal: 15,
     marginTop: 50,
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   icon: {
     width: 20,
     height: 20,
-    tintColor: '#00cdf9',
+    tintColor: '#FFB815',
   },
   chatMessages: {
     flex: 1,
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   },
   chatBubbleReceived: {
     alignSelf: 'flex-start',
-    backgroundColor: '#ffd77a',
+    backgroundColor: '#94ebff',
     padding: 10,
     marginVertical: 5,
     borderRadius: 10,
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   },
   chatBubbleSent: {
     alignSelf: 'flex-end',
-    backgroundColor: '#94ebff',
+    backgroundColor: '#ffd77a',
     padding: 10,
     marginVertical: 5,
     borderRadius: 10,
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   sendButton: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#00cdf9',
+    backgroundColor: '#FFB815',
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
   voiceButton: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#00cdf9',
+    backgroundColor: '#FFB815',
     width: 40,
     height: 40,
     borderRadius: 20,

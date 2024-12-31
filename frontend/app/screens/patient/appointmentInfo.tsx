@@ -20,12 +20,17 @@ export default function AppointmentInfo() {
         const appointmentReason = await AsyncStorage.getItem('appointment_reason');
         const fullName = await AsyncStorage.getItem('patient_name');
         const gender = await AsyncStorage.getItem('gender');
+        const health_center_id = await AsyncStorage.getItem('health_center_id');
         const appointmentNote = await AsyncStorage.getItem('appointment_note');
         const id = await AsyncStorage.getItem('appointment_id');
         const appointmentStatus = await AsyncStorage.getItem('appointment_status');
+        const appointmentType = await AsyncStorage.getItem('appointment_type');
+        const healthCenters = await AsyncStorage.getItem('health_center');
         const profilePictureUrl = await AsyncStorage.getItem('practitioner_profile_picture_url');
         const practitionerName = await AsyncStorage.getItem('practitioner_name');
 
+
+        
         // Log fetched data for debugging
         console.log("Fetched Appointment Data:", {
           practitionerType,
@@ -38,6 +43,9 @@ export default function AppointmentInfo() {
           appointmentNote,
           profilePictureUrl,
           appointmentStatus,
+          appointmentType,
+          healthCenters,
+          health_center_id,
           id,
         });
 
@@ -47,11 +55,15 @@ export default function AppointmentInfo() {
           specialization,
           appointmentStartTime,
           appointmentReason,
+          appointmentType,
           fullName,
           gender,
+          health_center_id,
+
           appointmentNote,
           profilePictureUrl,
           appointmentStatus,
+          healthCenters,
           id
         });
       } catch (error) {
@@ -81,9 +93,7 @@ export default function AppointmentInfo() {
           <Text style={styles.doctorName}>
             {/* Ensure practitionerName exists, otherwise fallback to 'Name' */}
              
-            {appointmentData.practitionerType
-              ? appointmentData.practitionerType.charAt(0).toUpperCase() + appointmentData.practitionerType.slice(1)
-              : 'Doctor'} {appointmentData.practitionerName ? appointmentData.practitionerName : 'Name'}
+           {appointmentData.practitionerName ? appointmentData.practitionerName : 'Name'}
           </Text>
           <Text style={styles.doctorSpeciality}>{appointmentData.specialization || 'Specialization'}</Text>
         </View>
@@ -145,17 +155,24 @@ export default function AppointmentInfo() {
         <Text style={styles.sectionTitle}>Full Name:</Text>
         <Text style={styles.sectionContent}>{appointmentData.fullName || 'Not specified'}</Text>
 
-        <Text style={styles.sectionTitle}>Gender:</Text>
-        <Text style={styles.sectionContent}>{appointmentData.gender || 'Not specified'}</Text>
-      </View>
-
-      {/* Problem Description Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Note</Text>
+       
+        <Text style={styles.sectionTitle}>Note:</Text>
         <Text style={styles.sectionContent}>
           {appointmentData.appointmentNote || 'No additional notes provided.'}
         </Text>
-      </View>
+
+        <Text style={styles.sectionTitle}>Appointment type:</Text>
+        <Text style={styles.sectionContent}>
+          {appointmentData.appointmentType || ''}
+        </Text>
+
+        <Text style={styles.sectionTitle}>Health Center:</Text>
+        <Text style={styles.sectionContent}>
+        {appointmentData.healthCenters || ''}
+      
+        </Text>
+        </View>
+
     </ScrollView>
   );
 };

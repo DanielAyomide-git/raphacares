@@ -18,8 +18,7 @@ import {
 
 interface Appointment {
   id: string;
-  doctorName: string;
-  speciality: string;
+  patientName: string;
   date: string;
   time: string;
   rating: number;
@@ -29,7 +28,8 @@ interface Appointment {
   appointmentStartTime: string;
   appointmentEndTime: string;
   appointmentNote: string;
-  practitionerType: string;
+  appointmentType: string;
+  patientType: string;
   healthCenter: string;
   created: string;
 }
@@ -45,7 +45,7 @@ const AppointmentsScreen: React.FC = () => {
   const [appointmentToCancel, setAppointmentToCancel] = useState<Appointment | null>(null); // Appointment to cancel
 
 
-  // Fetch appointments and practitioner data
+  // Fetch appointments and patient data
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -79,13 +79,13 @@ const AppointmentsScreen: React.FC = () => {
         if (data.status === 'success' && data.data) {
           const appointmentsWithDetails = await Promise.all(data.data.map(async (appointment: any) => {
             // Filter appointments by profile_id
-            if (appointment.patient_id !== profileIdFromToken) {
+            if (appointment.medical_practitioner_id !== profileIdFromToken) {
               return null;
             }
 
-            // Fetch medical practitioner details
-            const practitionerResponse = await fetch(
-              `${API_BASE_URL}/medical_practitioners/${appointment.medical_practitioner_id}`,
+            // Fetch  patient details
+            const patientResponse = await fetch(
+              `${API_BASE_URL}/patients/${appointment.patient_id}`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -93,23 +93,19 @@ const AppointmentsScreen: React.FC = () => {
               }
             );
 
-            let practitioner = {
-              name: "Unknown Practitioner",
+            let patient = {
+              name: "Unknown patient",
               profile_picture_url: "https://via.placeholder.com/100",
-              practitioner_type: "",
-              specialization: "",
               appointment_note: "",
             };
 
-            if (practitionerResponse.ok) {
-              const practitionerData = await practitionerResponse.json();
-              if (practitionerData.status === 'success' && practitionerData.data) {
-                practitioner = {
-                  name: `${practitionerData.data.first_name} ${practitionerData.data.last_name}`,
-                  profile_picture_url: practitionerData.data.profile_picture_url,
-                  practitioner_type: practitionerData.data.practitioner_type,
-                  specialization: practitionerData.data.specialization,
-                  appointment_note: practitionerData.data.appointment_note,
+            if (patientResponse.ok) {
+              const patientData = await patientResponse.json();
+              if (patientData.status === 'success' && patientData.data) {
+                patient = {
+                  name: `${patientData.data.first_name} ${patientData.data.last_name}`,
+                  profile_picture_url: patientData.data.profile_picture_url,
+                  appointment_note: patientData.data.appointment_note,
                 };
               }
             }
@@ -128,18 +124,17 @@ const AppointmentsScreen: React.FC = () => {
 
             return {
               id: appointment.id,
-              doctorName: practitioner.name,
-              speciality: practitioner.specialization,
-              imageUrl: practitioner.profile_picture_url,
+              patientName: patient.name,
+              imageUrl: patient.profile_picture_url,
               rating: 5, // Hardcoded as an example, can be adjusted accordingly
               category: category,
               appointmentStatus: appointment.appointment_status,
               appointmentStartTime: appointment.appointment_start_time,
               appointmentEndTime: appointment.appointment_end_time,
+              appointmentType: appointment.appointment_type,
               created: appointment.created_at,
               appointmentNote: appointment.appointment_note,
               healthCenter: appointment.health_center,
-              practitionerType: practitioner.practitioner_type,
             };
           }));
 
@@ -168,12 +163,13 @@ const AppointmentsScreen: React.FC = () => {
             source={{ uri: item.imageUrl || 'https://img.icons8.com/?size=100&id=11730&format=png&color=000000'}}
             style={styles.doctorImage}
           />
-          <Text style={styles.doctorName}>
-            {item.doctorName.charAt(0).toUpperCase() + item.doctorName.slice(1)}
+          <Text style={styles.patientName}>
+            {item.patientName.charAt(0).toUpperCase() + item.patientName.slice(1)}
           </Text>
+          
         </View>
+        
         <View style={styles.detailsContainer}>
-          <Text style={styles.speciality}>{item.speciality}</Text>
           {selectedCategory === 'Pending' && (
             <>
               <Text style={styles.date}>
@@ -183,206 +179,100 @@ const AppointmentsScreen: React.FC = () => {
                 {new Date(item.appointmentStartTime).toLocaleTimeString()} -{' '}
                 {new Date(item.appointmentEndTime).toLocaleTimeString()}
               </Text>
+              <Text style={styles.type}>
+                Appointment Type: {item.appointmentType}
+              </Text>
+              <Text style={styles.type}>
+                Appointment Venue: 
+              </Text>
             </>
           )}
           
-          {selectedCategory === 'Completed' && (
-            <Text style={styles.rating}>
-              ⭐ {item.rating} <Text style={styles.heart}>❤</Text>
-            </Text>
-          )}
+         
         </View>
         <View style={styles.actionButtons}>
-          {selectedCategory === 'Pending' ? (
+        {selectedCategory === 'Completed' ? (
             <>
-              <TouchableOpacity
-                style={[styles.actionButton, styles.detailsButton]}
-                onPress={async () => {
-                  const appointmentDetails = {
-                    id: item.id,
-                    doctorName: item.doctorName,
-                    speciality: item.speciality,
-                    imageUrl: item.imageUrl || 'https://img.icons8.com/?size=100&id=11730&format=png&color=000000',
-                    rating: item.rating,
-                    category: item.category,
-                    appointmentStatus: item.appointmentStatus,
-                    appointmentStartTime: item.appointmentStartTime,
-                    appointmentEndTime: item.appointmentEndTime,
-                    appointmentNote: item.appointmentNote,
-                    created: item.created,
-                    practitionerType: item.practitionerType,
-                    healthCenter: item.healthCenter,
-                  };
-  
-                  try {
-                    await AsyncStorage.setItem('appointmentDetails', JSON.stringify(appointmentDetails));
-                    console.log('Appointment details saved for Details screen:', appointmentDetails);
-  
-                    // Navigate to appointmentDetails screen
-                    router.push('./appointmentDetails');
-                  } catch (error) {
-                    console.error('Error saving appointment details to AsyncStorage:', error);
-                  }
-                }}
-              >
-                <Text style={styles.buttonText}>Details</Text>
-              </TouchableOpacity>
-  
-              <TouchableOpacity
-  style={[styles.actionButton, styles.cancelButton]}
-  onPress={async () => {
-    setLoading(true); // Start the loader
-    try {
-      // Prepare the data to send to the backend
-      const data = {
-        id: item.id,
-        appointment_status: 'cancelled',
-      };
-
-      const token = await AsyncStorage.getItem('access_token');
-      if (!token) {
-        throw new Error('Access token not found');
-      }
-
-      const response = await fetch(
-        `${API_BASE_URL}/appointments/${item.id}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(data),
-        }
-      );
-
-      if (response.ok) {
-        // Update local state after successful cancellation
-        const updatedAppointments = appointments.map((appointment) =>
-          appointment.id === item.id
-            ? { ...appointment, appointmentStatus: 'cancelled', category: 'Cancelled' }
-            : appointment
-        );
-
-        console.log('Appointment canceled successfully');
-        router.push('./app'); // Redirect to the ./app route
-      } else {
-        const errorData = await response.json();
-        console.error('Failed to cancel appointment:', errorData.message || errorData);
-        alert('Failed to cancel the appointment. Please try again.');
-      }
-    } catch (error) {
-      console.error('Error canceling the appointment:', error);
-      alert('An error occurred. Please try again.');
-    } finally {
-      setLoading(false); // Stop the loader
-    }
-  }}
->
-  {/* Show a loader if loading is true */}
-  {loading ? (
-    <ActivityIndicator size="small" color="#fff" />
-  ) : (
-    <Text style={styles.buttonText}>Cancel</Text>
-  )}
-</TouchableOpacity>
-
-
+            
+             <View style={styles.detailsContainer}>
+            <>
+              <Text style={styles.date}>
+                {new Date(item.appointmentStartTime).toDateString()}
+              </Text>
+              <Text style={styles.time}>
+                {new Date(item.appointmentStartTime).toLocaleTimeString()} -{' '}
+                {new Date(item.appointmentEndTime).toLocaleTimeString()}
+              </Text>
+              <Text style={styles.type}>
+                Appointment Type: {item.appointmentType}
+              </Text>
+              <Text style={styles.type}>
+                Appointment Venue: 
+              </Text>
             </>
-          ) : selectedCategory === 'Completed' ? (
-            <>
-              <TouchableOpacity
-                style={[styles.actionButton, styles.addReviewButton]}
-                onPress={async () => {
-                  const appointmentDetails = {
-                    id: item.id,
-                    doctorName: item.doctorName,
-                    speciality: item.speciality,
-                    imageUrl: item.imageUrl || 'https://img.icons8.com/?size=100&id=11730&format=png&color=000000g',
-                    rating: item.rating,
-                    category: item.category,
-                    appointmentStatus: item.appointmentStatus,
-                    appointmentStartTime: item.appointmentStartTime,
-                    appointmentEndTime: item.appointmentEndTime,
-                    appointmentNote: item.appointmentNote,
-                    practitionerType: item.practitionerType,
-                    healthCenter: item.healthCenter,
-                    created: item.created,
-
-                  };
+          
+         
+        </View>
+        
   
-                  try {
-                    await AsyncStorage.setItem('appointmentDetails', JSON.stringify(appointmentDetails));
-                    console.log('Appointment details saved for review:', appointmentDetails);
-  
-                    router.push('./addReview');
-                  } catch (error) {
-                    console.error('Error saving appointment details to AsyncStorage:', error);
-                  }
-                }}
-              >
-                <Text style={styles.buttonText}>Add Review</Text>
-              </TouchableOpacity>
-  
-              <TouchableOpacity
-                style={[styles.actionButton, styles.rebookButton]}
-                onPress={() => router.push('./services')}
-              >
-                <Text style={styles.buttonText}>Re-Book</Text>
-              </TouchableOpacity>
+             
             </>
           ) : selectedCategory === 'Confirmed' ? (
             <>
-              <TouchableOpacity
-                style={[styles.actionButton, styles.detailsButton]}
-                onPress={async () => {
-                  const appointmentDetails = {
-                    id: item.id,
-                    doctorName: item.doctorName,
-                    speciality: item.speciality,
-                    imageUrl: item.imageUrl || 'https://img.icons8.com/?size=100&id=11730&format=png&color=000000',
-                    rating: item.rating,
-                    category: item.category,
-                    appointmentStatus: item.appointmentStatus,
-                    appointmentStartTime: item.appointmentStartTime,
-                    appointmentEndTime: item.appointmentEndTime,
-                    appointmentNote: item.appointmentNote,
-                    practitionerType: item.practitionerType,
-                    created: item.created,
-                    healthCenter: item.healthCenter,
-
-                  };
+               <View style={styles.detailsContainer}>
+                
+            <>
+              <Text style={styles.date}>
+                {new Date(item.appointmentStartTime).toDateString()}
+              </Text>
+              <Text style={styles.time}>
+                {new Date(item.appointmentStartTime).toLocaleTimeString()} -{' '}
+                {new Date(item.appointmentEndTime).toLocaleTimeString()}
+              </Text>
+              <Text style={styles.type}>
+                Appointment Type: {item.appointmentType}
+              </Text>
+              <Text style={styles.type}>
+                Appointment Venue: 
+              </Text>
+            </>
+          
+         
+        </View>
+        
+              
   
-                  try {
-                    await AsyncStorage.setItem('appointmentDetails', JSON.stringify(appointmentDetails));
-                    console.log('Appointment details saved for Details screen:', appointmentDetails);
-  
-                    router.push('./appointmentDetails');
-                  } catch (error) {
-                    console.error('Error saving appointment details to AsyncStorage:', error);
-                  }
-                }}
-              >
-                <Text style={styles.buttonText}>Details</Text>
-              </TouchableOpacity>
-  
-              <TouchableOpacity
-                style={[styles.actionButton, styles.payButton]}
-                onPress={() => router.push('./payment')}
-              >
-                <Text style={styles.buttonText}>Pay</Text>
-              </TouchableOpacity>
+             
             </>
           ) : (
             selectedCategory === 'Cancelled' && (
-              <TouchableOpacity
-                style={[styles.actionButton, styles.addReviewButton]}
-                onPress={() => router.push('./addReview')}
-              >
-                <Text style={styles.buttonText}>Add Review</Text>
-              </TouchableOpacity>
+              
+              <View style={styles.detailsContainer}>
+                
+              <>
+                <Text style={styles.date}>
+                  {new Date(item.appointmentStartTime).toDateString()}
+                </Text>
+                <Text style={styles.time}>
+                  {new Date(item.appointmentStartTime).toLocaleTimeString()} -{' '}
+                  {new Date(item.appointmentEndTime).toLocaleTimeString()}
+                </Text>
+                <Text style={styles.type}>
+                  Appointment Type: {item.appointmentType}
+                </Text>
+                <Text style={styles.type}>
+                  Appointment Venue: 
+                </Text>
+              </>
+            
+           
+          </View>
+              
+              
             )
+            
           )}
+          
         </View>
       </View>
     );
@@ -394,7 +284,7 @@ const AppointmentsScreen: React.FC = () => {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#00CDF9" />
+        <ActivityIndicator size="large" color="#FFB815" />
       </View>
     );
   }
@@ -492,7 +382,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#00CDF9',
+    color: '#FFB815',
     textAlign: 'center',
     flex: 1,
     marginBottom:20,
@@ -511,7 +401,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   activeTab: {
-    backgroundColor: '#00CDF9',
+    backgroundColor: '#FFB815',
   },
   tabText: {
     fontSize: 12, // Reduced font size
@@ -525,7 +415,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   appointmentCard: {
-    backgroundColor: '#ccf6ff',
+    backgroundColor: '#fff6e0',
     borderRadius: 20,
     padding: 16,
     marginBottom: 20,
@@ -547,7 +437,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     marginRight: 12,
   },
-  doctorName: {
+  patientName: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
@@ -555,15 +445,17 @@ const styles = StyleSheet.create({
   detailsContainer: {
     paddingLeft: 62, // Ensures proper alignment below the top row.
   },
-  speciality: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 10,
-  },
+ 
   date: {
     fontSize: 14,
     color: '#666',
     marginBottom: 4,
+  },
+  type: {
+    fontSize: 14,
+    color: 'black',
+    marginBottom: 4,
+
   },
   time: {
     fontSize: 14,
@@ -592,11 +484,11 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   detailsButton: {
-    backgroundColor: '#00CDF9',
+    backgroundColor: '#FFB815',
     marginLeft:60
   },
   addReviewButton: {
-    backgroundColor: '#00CDF9',
+    backgroundColor: '#FFB815',
     marginLeft:60,
   },
   rebookButton: {

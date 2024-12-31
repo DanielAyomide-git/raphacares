@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "myapp",
+    "icon": "./app/assets/logo.png",
     "userInterfaceStyle": "automatic",
     "splash": {
       "resizeMode": "contain",
@@ -16,14 +17,15 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#ffffff",
-        "permissions": [
-          "READ_EXTERNAL_STORAGE",
-          "WRITE_EXTERNAL_STORAGE",
-          "CAMERA"
-        ]
+        "foregroundImage": "./app/assets/logo.png",
+        "backgroundColor": "#ffffff"
       },
-      "package": "com.anonumous.raphacares"
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "CAMERA"
+      ],
+      "package": "com.anonymous.raphacares"
     },
     "web": {
       "bundler": "metro",

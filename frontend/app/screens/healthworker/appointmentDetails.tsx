@@ -88,7 +88,7 @@ const Details: React.FC = () => {
 
       <View style={styles.practitionerInfo}>
       <Text style={styles.practitionerName}>
-  {capitalizeFirstLetter(appointmentDetails.doctorName)}
+  {capitalizeFirstLetter(appointmentDetails.patientName)}
 </Text>
 {/* <Text style={styles.speciality}>
   {capitalizeFirstLetter(appointmentDetails.speciality)}

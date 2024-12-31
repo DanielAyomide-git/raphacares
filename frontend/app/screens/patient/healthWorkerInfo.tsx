@@ -38,6 +38,8 @@ interface MedicalPractitioner {
   is_verified: boolean;
   is_available: boolean;
   user: User;
+  health_centers?: Array<object>; // Define health_centers as an optional array
+
 }
 
 // Main Component
@@ -56,7 +58,7 @@ const HealthWorkerInfo: React.FC = () => {
           setId(storedId);
 
           // Fetch data from the API
-          const endpoint = `${API_BASE_URL}/medical_practitioners/${storedId}`;
+          const endpoint = `${API_BASE_URL}/medical_practitioners/${storedId}?get_health_centers=true`;
           
                 const response = await fetch(endpoint);
           const { data }: { data: MedicalPractitioner } = await response.json(); // Extract the data object
@@ -99,17 +101,22 @@ const HealthWorkerInfo: React.FC = () => {
 
   const handleBookAppointment = async () => {
     try {
-      // Save the medical practitioner ID to AsyncStorage
-      if (storedId) {
+      if (storedId && healthWorker) {
+        // Save the medical practitioner ID and health_centers to AsyncStorage
         await AsyncStorage.setItem('medical_practitioner_id', storedId);
+  
+        if (healthWorker.health_centers) {
+          await AsyncStorage.setItem('health_centers', JSON.stringify(healthWorker.health_centers));
+        }
       }
-
+  
       // Navigate to the book appointment screen
       router.push('./bookAppointment');
     } catch (error) {
-      console.error('Error saving medical practitioner ID:', error);
+      console.error('Error saving medical practitioner data:', error);
     }
   };
+  
 
   return (
     <ScrollView style={styles.container}>
