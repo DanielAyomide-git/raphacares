@@ -87,7 +87,7 @@ export default function LoginPage() {
 
   return (
     <LinearGradient
-      colors={['#00CDF9', '#FFFFFF']}
+      colors={['#FFFFFF', '#FFFFFF']}
       start={{ x: 0.5, y: 0 }}
       end={{ x: 0.5, y: 1 }}
       style={loginStyles.gradientContainer}

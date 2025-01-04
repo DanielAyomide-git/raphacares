@@ -13,7 +13,7 @@ const loginStyles = StyleSheet.create({
   title: {
     fontFamily: 'poppins-bold',
     fontSize: 24,
-    color: '#FFFFFF', // Adjust for better contrast on blue gradient
+    color: '#00CDF9', // Adjust for better contrast on blue gradient
     marginBottom: 50,
     textAlign: 'center',
   },
@@ -38,7 +38,7 @@ const loginStyles = StyleSheet.create({
     width: '80%',
     paddingHorizontal: 0,
     paddingVertical: 10,
-    backgroundColor: 'white',
+    backgroundColor: '#94ebff',
     borderRadius: 25,
     marginBottom: 20,
     textAlign: 'center',
@@ -60,7 +60,7 @@ const loginStyles = StyleSheet.create({
     fontFamily: 'poppins',
   },
   signInButton: {
-    backgroundColor: '#FAD02E',
+    backgroundColor: '#00CDF9',
     paddingVertical: 10,
     paddingHorizontal: 50,
     borderRadius: 25,
@@ -76,7 +76,7 @@ const loginStyles = StyleSheet.create({
     marginTop: 30,
   },
   registerText: {
-    color: 'black',
+    color: '#00CDF9',
     fontSize: 16,
     textDecorationLine: 'underline',
     fontFamily: 'poppins',
@@ -86,7 +86,7 @@ const loginStyles = StyleSheet.create({
     marginTop: 10,
   },
   resetPasswordText: {
-    color: 'blue',
+    color: '#FFB815',
     fontSize: 13,
     textDecorationLine: 'underline',
     fontFamily: 'poppins',

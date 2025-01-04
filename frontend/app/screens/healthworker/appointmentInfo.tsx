@@ -8,12 +8,14 @@ interface AppointmentData {
   profilePictureUrl?: string;
   patient_first_name?: string;
   patient_last_name?: string;
+  phone_number?: string;
   patient_id?: string;
   id?: string;
   patient_gender?: string;
   patient_date_of_birth?: string; // ISO date string
   appointment_start_time?: string; // ISO date string
   appointment_end_time?: string; // ISO date string
+  address?: string; // ISO date string
   appointment_reason?: string;
   appointment_note?: string;
   appointment_type?: string;
@@ -96,7 +98,7 @@ const AppointmentInfo: React.FC = () => {
   };
 
   const handleBeginConsultation = () => {
-    router.push('./consultation'); // Redirect to message page
+    router.push('./chats'); // Redirect to message page
   };
 
   return (
@@ -109,19 +111,33 @@ const AppointmentInfo: React.FC = () => {
       </View>
 
       {/* Patient Info Section */}
-      <View style={styles.doctorInfo}>
-        <Image
-          source={{ uri: appointmentData.profilePictureUrl || 'https://via.placeholder.com/150' }}
-          style={styles.doctorImage}
-        />
-        <View style={styles.doctorDetails}>
-          <Text style={styles.doctorName}>
-            {appointmentData.patient_first_name && appointmentData.patient_last_name
-              ? `${appointmentData.patient_first_name} ${appointmentData.patient_last_name}`
-              : 'Name'}
-          </Text>
-        </View>
-      </View>
+
+<View style={styles.doctorInfo}>
+  <Image
+    source={{ uri: appointmentData.profilePictureUrl || 'https://img.icons8.com/?size=100&id=11730&format=png&color=000000' }}
+    style={styles.doctorImage}
+  />
+  <View style={styles.doctorDetails}>
+    <Text style={styles.doctorName}>
+      {appointmentData.patient_first_name && appointmentData.patient_last_name
+        ? `${appointmentData.patient_first_name} ${appointmentData.patient_last_name}`
+        : 'Name'}
+    </Text>
+  </View>
+
+  {/* Conditionally render the online button if conditions are met */}
+{(appointmentData.appointment_type === 'online' && (appointmentData.appointment_status === 'confirmed' || appointmentData.appointment_status === 'completed')) && (
+    <TouchableOpacity style={styles.onlineButton}
+    onPress={() => router.push("./chats")}
+    >
+      <Image
+        source={{ uri: 'https://img.icons8.com/?size=100&id=85701&format=png&color=000000' }}
+        style={styles.onlineButtonIcon}
+      />
+    </TouchableOpacity>
+  )}
+</View>
+
 
       {/* Appointment Details Section */}
       <View style={styles.appointmentDetails}>
@@ -147,6 +163,8 @@ const AppointmentInfo: React.FC = () => {
 
         <Text style={styles.sectionTitle}>Gender:</Text>
         <Text style={styles.sectionContent}>{appointmentData.patient_gender || 'Not specified'}</Text>
+        <Text style={styles.sectionTitle}>Phone Number:</Text>
+        <Text style={styles.sectionContent}>{appointmentData.phone_number || 'Not specified'}</Text>
 
         <Text style={styles.sectionTitle}>Age:</Text>
         <Text style={styles.sectionContent}>{calculateAge(appointmentData.patient_date_of_birth)}</Text>
@@ -226,6 +244,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#00cdf9',
     marginRight: 50,
+  },
+  onlineButton: {
+    marginLeft: 10, // Space between the name and the button
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 30, // Adjust the width to match the icon size
+    height: 30, // Adjust the height to match the icon size
+    borderRadius: 15, // Make it circular
+    backgroundColor: '#ffffff', // You can change the background color
+    borderWidth: 1,
+    borderColor: '#ddd', // Light border color for contrast
+  },
+  onlineButtonIcon: {
+    width: 20, // Icon size
+    height: 20, // Icon size
   },
   doctorInfo: {
     flexDirection: 'row',

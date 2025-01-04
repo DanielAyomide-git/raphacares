@@ -38,6 +38,7 @@ type Appointment = {
   appointment_end_time: string;
   appointment_created: string;
   appointment_type: string;
+  address: string;
   health_center_id: string;
   medical_practitioner: {
     specialization: string;
@@ -202,6 +203,7 @@ export default function PatientDashboard() {
               appointment_note: appointment.appointment_note,
               medical_practitioner: practitioner,
               appointment_created: appointment.created_at,
+              address: appointment.address,
               health_center: appointment.health_center || [], // Save health_centers
               health_center_id: appointment.health_center_id , // Save health_centers
 
@@ -370,9 +372,10 @@ export default function PatientDashboard() {
               "appointment_note",
               appointment.appointment_note || "No notes provided"
             );
+           
             await AsyncStorage.setItem(
-              "appointment_status",
-              appointment.appointment_status
+              "address",
+              appointment.address || "No address provided"
             );
             await AsyncStorage.setItem(
               "appointment_type",
@@ -381,7 +384,11 @@ export default function PatientDashboard() {
             await AsyncStorage.setItem("appointment_id", appointment.id);
             await AsyncStorage.setItem(
               "health_center_id",
-              appointment.health_center_id
+              appointment.health_center_id || "No health center provided"
+            );
+            await AsyncStorage.setItem(
+              "appointment_status",
+              appointment.appointment_status || "No health center provided"
             );
       
             // Save health_centers (if present)

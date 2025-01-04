@@ -18,7 +18,6 @@ import { API_BASE_URL } from "../../api/config";
 import { StyleSheet } from "react-native";
 import { useRouter } from 'expo-router'; // Import the router hook
 
-
 // Define types (same as before)
 interface DecodedToken {
   profile_id: string;
@@ -44,10 +43,9 @@ interface Appointment {
   patient_id: string;
   medical_practitioner_id: string;
   created_at: string;
+  address: string;
   patient?: Patient | null;
   health_centers?: Array<object>; // Define health_centers as an optional array
-
-
 }
 
 interface Patient {
@@ -74,7 +72,10 @@ export default function Dashboard(): JSX.Element {
   const [error, setError] = useState<string | null>(null);
   const [visibleAppointments, setVisibleAppointments] = useState<Appointment[]>([]); // Track visible appointments
   const [showMore, setShowMore] = useState<boolean>(false); // Track show more/less state
+  const [searchQuery, setSearchQuery] = useState<string>(""); // State to track search query
   const router = useRouter();
+  const scrollViewRef = useRef<ScrollView>(null); // Ref for ScrollView
+
   
 
   const slideAnim = useRef(new Animated.Value(500)).current;
@@ -182,6 +183,7 @@ export default function Dashboard(): JSX.Element {
     }
   };
 
+  
   const toggleShowMore = () => {
     if (showMore) {
       setVisibleAppointments(appointments.slice(0, 3)); // Show only 3 appointments if 'Show More' is clicked
@@ -189,6 +191,17 @@ export default function Dashboard(): JSX.Element {
       setVisibleAppointments(appointments); // Show all appointments if 'Show Less' is clicked
     }
     setShowMore(!showMore);
+  };
+
+  const handleSearch = (text: string) => {
+    setSearchQuery(text);
+    const filteredAppointments = appointments.filter(
+      (appointment) =>
+        appointment.patient?.first_name.toLowerCase().includes(text.toLowerCase()) ||
+        appointment.patient?.last_name.toLowerCase().includes(text.toLowerCase()) ||
+        appointment.appointment_reason.toLowerCase().includes(text.toLowerCase())
+    );
+    setVisibleAppointments(filteredAppointments);
   };
 
   if (loading) {
@@ -231,14 +244,17 @@ export default function Dashboard(): JSX.Element {
             />
           </View>
 
+
+
           {/* Search Bar */}
           <View style={styles.searchContainer}>
             <TextInput
               style={styles.searchInput}
-              placeholder="Search for Clients/Appointments"
-              placeholderTextColor="#B0B0B0"
+              placeholder="Search appointments..."
+              value={searchQuery}
+              onChangeText={handleSearch}
             />
-            <Ionicons name="search" size={20} color="#B0B0B0" style={styles.searchIcon} />
+            <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
           </View>
 
           {/* Appointments Section */}
@@ -270,9 +286,11 @@ export default function Dashboard(): JSX.Element {
                           appointment_start_time: item.appointment_start_time || "",
                           appointment_end_time: item.appointment_end_time || "",
                           appointment_note: item.appointment_note || "",
+                          phone_number: item.patient?.phone_number || "",
                           id: item.id || "",
                           health_center_id: item.health_center_id || "",
                           health_center: item.health_centers || null, // Include health_center
+                          address: item.address || null, // Include health_center
                           medical_practitioner_id: item.medical_practitioner_id || ""
                         };
             
@@ -338,6 +356,54 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     paddingTop: 40,
     paddingHorizontal: 20,
+  },
+  navigationButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+    paddingHorizontal: 30,
+  },
+  navButton: {
+    backgroundColor: "#FFB815",
+    padding: 10,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    width: 100,
+  },
+  disabledButton: {
+    backgroundColor: "#E0E0E0",
+  },
+  navButtonText: {
+    fontFamily: "Poppins-Bold",
+    fontSize: 14,
+    color: "white",
+  },
+  consultationScrollView: {
+    alignItems: "center",
+    paddingHorizontal: 10,
+  },
+  consultationContainer: {
+    marginVertical: 20,
+  },
+  consultationCard: {
+    width: 300, // Fixed width for each card
+    height: 100,
+    backgroundColor: "#FFB815",
+    borderRadius: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    elevation: 5,
+  },
+  consultationText: {
+    fontFamily: "Poppins-Bold",
+    fontSize: 18,
+    color: "white",
   },
   loaderContainer: {
     flex: 1,

@@ -9,7 +9,6 @@ export default function AppointmentInfo() {
   const router = useRouter();
 
   const [appointmentData, setAppointmentData] = useState<any>({});
-
   useEffect(() => {
     const fetchAppointmentData = async () => {
       try {
@@ -21,16 +20,44 @@ export default function AppointmentInfo() {
         const fullName = await AsyncStorage.getItem('patient_name');
         const gender = await AsyncStorage.getItem('gender');
         const health_center_id = await AsyncStorage.getItem('health_center_id');
+        const address = await AsyncStorage.getItem('address'); // This holds the address data for home service
         const appointmentNote = await AsyncStorage.getItem('appointment_note');
         const id = await AsyncStorage.getItem('appointment_id');
         const appointmentStatus = await AsyncStorage.getItem('appointment_status');
         const appointmentType = await AsyncStorage.getItem('appointment_type');
-        const healthCenters = await AsyncStorage.getItem('health_center');
+        const healthCenters = await AsyncStorage.getItem('health_center'); // This holds the health center data for physical appointments
         const profilePictureUrl = await AsyncStorage.getItem('practitioner_profile_picture_url');
         const practitionerName = await AsyncStorage.getItem('practitioner_name');
-
-
-        
+  
+        let addressData = {}; // Define addressData variable to store address info
+        let healthCenterData = {}; // Define healthCenterData variable to store health center info
+  
+        // Parse Health Center Data if appointmentType is 'physical'
+        if (appointmentType === 'physical' && healthCenters && healthCenters.includes('[HealthCenter]')) {
+          const cleanHealthCenters = healthCenters.replace(/\\'/g, "'"); // Fix extra escape characters
+          const healthCenterMatch = cleanHealthCenters.match(/'name': '(.*?)', 'address': '(.*?)', 'state': '(.*?)'/);
+          if (healthCenterMatch && healthCenterMatch.length >= 4) {
+            healthCenterData = {
+              name: healthCenterMatch[1], // Health center name
+              address: healthCenterMatch[2], // Address of health center
+              state: healthCenterMatch[3], // State of health center
+            };
+          }
+        }
+  
+        // Parse Address Data if appointmentType is 'home_service'
+        if (appointmentType === 'home_service' && address && address.includes('[Address]')) {
+          const cleanAddress = address.replace(/\\'/g, "'"); // Fix extra escape characters
+          const addressMatch = cleanAddress.match(/'state': '(.*?)', 'city': '(.*?)', 'street': '(.*?)'/);
+          if (addressMatch && addressMatch.length >= 4) {
+            addressData = {
+              state: addressMatch[1],
+              city: addressMatch[2], // City
+              street: addressMatch[3], // Street
+            };
+          }
+        }
+  
         // Log fetched data for debugging
         console.log("Fetched Appointment Data:", {
           practitionerType,
@@ -47,33 +74,39 @@ export default function AppointmentInfo() {
           healthCenters,
           health_center_id,
           id,
+          address,
         });
-
+  
         setAppointmentData({
-          practitionerType,
-          practitionerName,
-          specialization,
-          appointmentStartTime,
-          appointmentReason,
-          appointmentType,
-          fullName,
-          gender,
-          health_center_id,
-
-          appointmentNote,
-          profilePictureUrl,
-          appointmentStatus,
-          healthCenters,
-          id
+          practitionerType: practitionerType || '', // Fallback to an empty string if null
+          practitionerName: practitionerName || 'Name', // Fallback to 'Name' if null
+          specialization: specialization || 'Specialization', // Fallback to 'Specialization' if null
+          appointmentStartTime: appointmentStartTime || '', // Fallback to empty string if null
+          appointmentReason: appointmentReason || 'Not specified', // Fallback to 'Not specified' if null
+          fullName: fullName || 'Not specified', // Fallback to 'Not specified' if null
+          gender: gender || 'Not specified', // Fallback to 'Not specified' if null
+          health_center_id: health_center_id || '', // Fallback to empty string if null
+          appointmentNote: appointmentNote || 'No additional notes provided.', // Fallback to 'No additional notes provided.' if null
+          profilePictureUrl: profilePictureUrl || "https://img.icons8.com/?size=100&id=11730&format=png&color=000000", // Fallback to a default image URL
+          appointmentStatus: appointmentStatus || 'N/A', // Fallback to 'N/A' if null
+          appointmentType: appointmentType || '', // Fallback to empty string if null
+          healthCenters: healthCenters || '', // Fallback to empty string if null
+          id: id || '', // Fallback to empty string if null
+          addressData: addressData, // addressData will be already defined or empty
+          healthCenterData: healthCenterData, // healthCenterData will be defined or empty
         });
+        console.log("Appointment Data After Setting State:", addressData);
+  
       } catch (error) {
         console.error("Error fetching appointment data:", error);
       }
     };
-
+  
     fetchAppointmentData();
   }, []);
-
+  
+  
+  
   return (
     <ScrollView style={styles.container}>
       {/* Header Section */}
@@ -165,16 +198,35 @@ export default function AppointmentInfo() {
         <Text style={styles.sectionContent}>
           {appointmentData.appointmentType || ''}
         </Text>
+   {/* Address Section */}
+{appointmentData.appointmentType === 'physical' ? (
+  <View style={styles.section}>
+    <Text style={styles.sectionTitle}>Health Center Name:</Text>
+    <Text style={styles.sectionContent}>{appointmentData.healthCenterData.name || 'Not specified'}</Text>
 
-        <Text style={styles.sectionTitle}>Health Center:</Text>
-        <Text style={styles.sectionContent}>
-        {appointmentData.healthCenters || ''}
+    <Text style={styles.sectionTitle}>Address:</Text>
+    <Text style={styles.sectionContent}>{appointmentData.healthCenterData.address || 'Not specified'}</Text>
+
+    <Text style={styles.sectionTitle}>State:</Text>
+    <Text style={styles.sectionContent}>{appointmentData.healthCenterData.state || 'Not specified'}</Text>
+  </View>
+) : appointmentData.appointmentType === 'home_service' ? (
+  <View style={styles.section}>
+    <Text style={styles.sectionTitle}>City:</Text>
+    <Text style={styles.sectionContent}>{appointmentData.addressData.city || 'Not specified'}</Text>
+
+    <Text style={styles.sectionTitle}>Street:</Text>
+    <Text style={styles.sectionContent}>{appointmentData.addressData.street || 'Not specified'}</Text>
+  </View>
+) : null}
+
       
-        </Text>
+      
         </View>
 
     </ScrollView>
   );
+
 };
 
 // Styles for the component

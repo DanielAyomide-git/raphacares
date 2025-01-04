@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import * as Font from "expo-font";
-import indexStyles from "./styles";
+import { StyleSheet } from "react-native";
 
 const App = () => {
   const [isSplashVisible, setIsSplashVisible] = useState(true);
@@ -23,10 +23,10 @@ const App = () => {
 
   // Array of background images
   const backgroundImages = [
-    require("./assets/indexbg.jpeg"),
-    require("./assets/drugs.jpg"),
-    require("./assets/dpatient.jpeg"),
-    require("./assets/consult.jpg"),
+    require("./assets/1.png"),
+    require("./assets/3.png"),
+    require("./assets/1.svg"),
+    require("./assets/4.png"),
   ];
 
   // Preload custom fonts
@@ -92,21 +92,24 @@ const App = () => {
 
   return (
     <View style={indexStyles.container}>
-      <Animated.View
-        style={[
-          indexStyles.animatedBackground,
-          { transform: [{ translateX: translateXAnim }] },
-        ]}
-      >
-        <ImageBackground
-          source={backgroundImages[currentImageIndex]}
-          style={indexStyles.background}
+      {/* Card for animated background */}
+      <View style={indexStyles.card}>
+        <Animated.View
+          style={[
+            indexStyles.animatedBackground,
+            { transform: [{ translateX: translateXAnim }] },
+          ]}
         >
-          </ImageBackground>
-      </Animated.View>
-
-      <View style={indexStyles.questionContainer}>
-        <Text style={indexStyles.questionText}>Are you a </Text>
+          <ImageBackground
+            source={backgroundImages[currentImageIndex]}
+            style={indexStyles.background}
+          ></ImageBackground>
+       
+       </Animated.View>
+       </View>
+      {/* Question container as a card */}
+      <View style={indexStyles.questionCard}>
+        <Text style={indexStyles.questionTexta}>Are you a </Text>
         <Text style={indexStyles.questionText}>health worker?</Text>
         <View style={indexStyles.buttonRow}>
           <TouchableOpacity
@@ -123,8 +126,120 @@ const App = () => {
           </TouchableOpacity>
         </View>
       </View>
+     
+         
     </View>
   );
 };
+
+const indexStyles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent",
+  },
+  splashContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent",
+  },
+  logo: {
+    width: 200,
+    height: 200,
+    resizeMode: "contain",
+  },
+  container: {
+    flex: 1,
+    padding: 20,
+    alignItems: "center",
+    backgroundColor: "white",
+
+  },
+  // Card for the animated background
+  card: {
+    width: "100%",
+    height: "70%",
+    borderRadius: 18,
+    marginBottom: 0,
+    marginTop:50
+
+   
+  },
+  animatedBackground: {
+    position: "absolute",
+    width: "100%",
+    height: "50%",
+    marginTop:50
+ 
+  },
+  background: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  // Question card with shadow
+  questionCard: {
+    backgroundColor: "transparent",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 15,
+    shadowColor: "transparent",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5, // For Android shadow
+    alignItems: "center",
+    width: "90%",
+    marginBottom: 5,
+    marginTop:0
+  },
+  questionTexta: {
+    fontSize: 18,
+    fontFamily: "poppins-Semibold",
+    color: "#333",
+  },
+  questionText: {
+    fontSize: 18,
+    fontFamily: "poppins-Semibold",
+    color: "#333",
+    marginBottom: 10,
+  },
+  buttonRow: {
+    flexDirection: "column",
+    justifyContent: "space-between",
+    width: "60%",
+    marginTop: 15,
+    
+  },
+  buttonYes: {
+    backgroundColor: "#FFB815",
+    paddingVertical: 10,
+    paddingHorizontal: 50, // Reduced horizontal padding
+    borderRadius: 40,
+    marginBottom: 8,
+    fontFamily: "poppins",
+  },
+  buttonNo: {
+    backgroundColor: "#00CDF9",
+    paddingVertical: 10,
+    paddingHorizontal: 50, // Reduced horizontal padding
+    borderRadius: 40,
+    fontFamily: "poppins",
+    marginBottom: 8,
+
+
+  },
+  buttonText: {
+    fontSize: 16,
+    fontFamily: "poppins",
+    color: "white",
+    textAlign: "center",
+  },
+  
+});
 
 export default App;

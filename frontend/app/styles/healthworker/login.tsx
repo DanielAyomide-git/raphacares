@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
   title: {
     fontFamily: "Poppins-Bold",
     fontSize: 24,
-    color: "white",
+    color: "#FFB815",
     marginBottom: 30,
     textAlign: "center",
   },
@@ -71,7 +71,7 @@ export const styles = StyleSheet.create({
     width: "80%",
     paddingHorizontal: 0,
     paddingVertical: 10,
-    backgroundColor: "white",
+    backgroundColor: "#ffd77a",
     borderRadius: 25,
     marginBottom: 20,
     textAlign: "center",
@@ -107,7 +107,7 @@ export const styles = StyleSheet.create({
     marginTop: 30,
   },
   registerText: {
-    color: "black",
+    color: "#ffd77a",
     fontSize: 16,
     fontWeight: "regular",
     textDecorationLine: "underline",
