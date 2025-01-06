@@ -11,6 +11,9 @@ export default function RootLayout() {
       <Stack.Screen name="screens/healthworker/resetPassword" options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/otp" options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/healthCenters" options={{ headerShown: false }} />
+      <Stack.Screen name="screens/healthworker/consultations" options={{ headerShown: false }} />
+      <Stack.Screen name="screens/healthworker/addConsultations" options={{ headerShown: false }} />
+      <Stack.Screen name="screens/healthworker/updateConsultation"options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/chats" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/otp" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/services" options={{ headerShown: false }} />
@@ -18,6 +21,7 @@ export default function RootLayout() {
       <Stack.Screen name="screens/patient/appointmentDetails" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/addReview" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/chatScreen" options={{ headerShown: false }} />
+      <Stack.Screen name="screens/patient/consultations" options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/appointmentInfo" options={{ headerShown: false }} />
       <Stack.Screen name="screens/healthworker/chatScreen" options={{ headerShown: false }} />
       <Stack.Screen name="screens/patient/payment" options={{ headerShown: false }} />

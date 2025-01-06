@@ -310,7 +310,7 @@ export default function BioPage() {
         <Ionicons name="chevron-forward" size={18} color="black" />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
+      <TouchableOpacity style={styles.helpContainer} onPress={handleLogout}>
   <Ionicons name="log-out-outline" size={24} color="black" />
   <Text style={styles.menuText}>Logout</Text>
   <Ionicons name="chevron-forward" size={18} color="black" />
@@ -327,6 +327,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9FAFB', // Light gray background for the page
     paddingHorizontal: 20,
     paddingTop: 30,
+    marginTop:30
   },
   loaderContainer: {
     flex: 1,
@@ -441,7 +442,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 15,
     padding: 15,
-    marginBottom: 15,
+    marginBottom: 35,
     shadowColor: '#FFB815',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -472,6 +473,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: '#1F2937',
+    marginBottom: 10,
     marginLeft: 10,
   },
   errorText: {

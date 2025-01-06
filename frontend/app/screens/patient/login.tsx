@@ -111,7 +111,7 @@ export default function LoginPage() {
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
-            placeholderTextColor="#c9cacd"
+            placeholderTextColor="white"
           />
 
           <TextInput
@@ -120,7 +120,7 @@ export default function LoginPage() {
             secureTextEntry
             value={password}
             onChangeText={setPassword}
-            placeholderTextColor="#c9cacd"
+            placeholderTextColor="white"
           />
 
           <TouchableOpacity onPress={handleLogin} style={loginStyles.signInButton}>

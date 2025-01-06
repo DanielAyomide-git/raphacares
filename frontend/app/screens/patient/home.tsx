@@ -127,9 +127,17 @@ export default function PatientDashboard() {
         setGender(data.data.gender || "N/A");
 
         // Save patient data to AsyncStorage
+        const patientAddress = [
+          data.data.address || "",
+          data.data.city || "",
+          data.data.state || "",
+        ]
+          .filter((part) => part) // Remove empty parts
+          .join(", "); // Join non-empty parts with a comma and space
         await AsyncStorage.setItem("patient_name", fullName);
         await AsyncStorage.setItem("date_of_birth", data.data.date_of_birth || "N/A");
         await AsyncStorage.setItem("gender", data.data.gender || "N/A");
+        await AsyncStorage.setItem("patient_address", patientAddress || "Please update your address");
 
         // Fetch appointments for the patient
         fetchAppointments(patientId, token);
@@ -307,7 +315,7 @@ export default function PatientDashboard() {
       <TouchableOpacity
         onPress={() => {
           if (service.name === " Online Consultation") {
-            router.push("./consultation");
+            // router.push("./onlineConsultation");
           } else {
             router.push("./services"); 
           }
@@ -334,6 +342,7 @@ export default function PatientDashboard() {
         style={styles.appointmentCard}
         onPress={async () => {
           try {
+          
             // Save patient details
             await AsyncStorage.setItem("patient_name", patientName);
             await AsyncStorage.setItem("date_of_birth", dob);

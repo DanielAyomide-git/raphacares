@@ -43,8 +43,8 @@ interface Appointment {
   patient_id: string;
   medical_practitioner_id: string;
   created_at: string;
-  address: string;
   patient?: Patient | null;
+  consultation?: string | null;
   health_centers?: Array<object>; // Define health_centers as an optional array
 }
 
@@ -55,6 +55,8 @@ interface Patient {
   gender: string;
   date_of_birth: string;
   first_name: string;
+  address: string;
+  city: string;
   last_name: string;
   state: string;
 }
@@ -85,7 +87,6 @@ export default function Dashboard(): JSX.Element {
       await Font.loadAsync({
         Poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
         "Poppins-Bold": require("../../assets/fonts/Poppins-Bold.ttf"),
-        "Poppins-Semibold": require("../../assets/fonts/Poppins-SemiBold.ttf"),
       });
       setFontsLoaded(true);
     };
@@ -134,7 +135,7 @@ export default function Dashboard(): JSX.Element {
 
   const fetchAppointments = async (profileId: string, token: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/appointments?get_health_centers=true`, {
+      const response = await fetch(`${API_BASE_URL}/appointments?get_consultation=true`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -222,8 +223,11 @@ export default function Dashboard(): JSX.Element {
 
   return (
     <Animated.View style={[styles.container, { transform: [{ translateY: slideAnim }] }]}>
-      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        <View style={styles.dashboardContainer}>
+    <FlatList
+      data={visibleAppointments}
+      keyExtractor={(item) => item.id}
+      ListHeaderComponent={
+        <View>
           {/* Header */}
           <View style={styles.header}>
             <View>
@@ -243,9 +247,7 @@ export default function Dashboard(): JSX.Element {
               accessibilityLabel={`${userType}'s avatar`}
             />
           </View>
-
-
-
+  
           {/* Search Bar */}
           <View style={styles.searchContainer}>
             <TextInput
@@ -256,96 +258,87 @@ export default function Dashboard(): JSX.Element {
             />
             <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
           </View>
-
-          {/* Appointments Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>All Appointments</Text>
-            
-            {/* Check if there are no appointments */}
-            {appointments.length === 0 ? (
-              <Text style={styles.noAppointmentsText}>No appointments</Text>
-            ) : (
-              <FlatList
-              data={visibleAppointments}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.card}
-                  onPress={async () => {
-                    if (item) {
-                      try {
-                        const appointmentData = {
-                          patient_first_name: item.patient?.first_name || "",
-                          patient_last_name: item.patient?.last_name || "",
-                          patient_gender: item.patient?.gender || "",
-                          patient_date_of_birth: item.patient?.date_of_birth || "",
-                          appointment_reason: item.appointment_reason || "",
-                          appointment_status: item.appointment_status || "",
-                          patient_id: item.patient_id || "",
-                          appointment_type: item.appointment_type || "",
-                          appointment_start_time: item.appointment_start_time || "",
-                          appointment_end_time: item.appointment_end_time || "",
-                          appointment_note: item.appointment_note || "",
-                          phone_number: item.patient?.phone_number || "",
-                          id: item.id || "",
-                          health_center_id: item.health_center_id || "",
-                          health_center: item.health_centers || null, // Include health_center
-                          address: item.address || null, // Include health_center
-                          medical_practitioner_id: item.medical_practitioner_id || ""
-                        };
-            
-                        // Log the data to the console
-                        console.log("appointmentData:", appointmentData);
-            
-                        // Save the entire item object as `appointmentData` in AsyncStorage
-                        await AsyncStorage.setItem("appointmentData", JSON.stringify(appointmentData));
-            
-                        // Navigate to the details screen
-                        router.push("./appointmentInfo");
-                      } catch (error) {
-                        console.error("Failed to save appointment details to AsyncStorage", error);
-                      }
-                    }
-                  }}
-                >
-                  <Image
-                    source={
-                      item.patient?.profile_picture_url
-                        ? { uri: item.patient.profile_picture_url }
-                        : require("../../assets/dp.png")
-                    }
-                    style={styles.cardAvatar}
-                  />
-                  <View style={styles.cardTextContainer}>
-                    <Text style={styles.cardName}>
-                      {item.patient?.first_name} {item.patient?.last_name}
-                    </Text>
-                    <Text style={styles.appointmentTime}>
-                      {new Date(item.appointment_start_time).toLocaleTimeString()} -{" "}
-                      {new Date(item.appointment_end_time).toLocaleTimeString()}
-                    </Text>
-                    <Text style={styles.appointmentDate}>
-                      {new Date(item.appointment_start_time).toDateString()}
-                    </Text>
-                    <Text style={styles.cardReason}>Reason: {item.appointment_reason}</Text>
-                    <Text style={styles.cardStatus}>Status: {item.appointment_status}</Text>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
-            
-            )}
-
-            <TouchableOpacity style={styles.showMoreButton} onPress={toggleShowMore}>
-              <Text style={styles.showMoreText}>
-                {showMore ? "Show Less" : "Show More"}
-              </Text>
-            </TouchableOpacity>
-          </View>
+  
+          {/* Appointments Section Title */}
+          <Text style={styles.sectionTitle}>All Appointments</Text>
         </View>
-      </ScrollView>
-    </Animated.View>
-  );
+      }
+      renderItem={({ item }) => (
+        <TouchableOpacity
+          style={styles.card}
+          onPress={async () => {
+            try {
+              const patientAddress = [
+                item.patient?.address || "",
+                item.patient?.city || "",
+                item.patient?.state || "",
+              ]
+                .filter((part) => part)
+                .join(", ");
+              
+              const appointmentData = {
+                patient_first_name: item.patient?.first_name || "",
+                patient_last_name: item.patient?.last_name || "",
+                patient_gender: item.patient?.gender || "",
+                patient_date_of_birth: item.patient?.date_of_birth || "",
+                appointment_reason: item.appointment_reason || "",
+                appointment_status: item.appointment_status || "",
+                patient_id: item.patient_id || "",
+                appointment_type: item.appointment_type || "",
+                appointment_start_time: item.appointment_start_time || "",
+                appointment_end_time: item.appointment_end_time || "",
+                appointment_note: item.appointment_note || "",
+                phone_number: item.patient?.phone_number || "",
+                consultation: item.consultation || "",
+                id: item.id || "",
+                health_center_id: item.health_center_id || "",
+                health_center: item.health_centers || null,
+                medical_practitioner_id: item.medical_practitioner_id || "",
+                patient_address: patientAddress,
+              };
+              
+              await AsyncStorage.setItem("appointmentData", JSON.stringify(appointmentData));
+              router.push("./appointmentInfo");
+            } catch (error) {
+              console.error("Failed to save appointment details to AsyncStorage", error);
+            }
+          }}
+        >
+          <Image
+            source={
+              item.patient?.profile_picture_url
+                ? { uri: item.patient.profile_picture_url }
+                : require("../../assets/dp.png")
+            }
+            style={styles.cardAvatar}
+          />
+          <View style={styles.cardTextContainer}>
+            <Text style={styles.cardName}>
+              {item.patient?.first_name} {item.patient?.last_name}
+            </Text>
+            <Text style={styles.appointmentTime}>
+              {new Date(item.appointment_start_time).toLocaleTimeString()} -{" "}
+              {new Date(item.appointment_end_time).toLocaleTimeString()}
+            </Text>
+            <Text style={styles.appointmentDate}>
+              {new Date(item.appointment_start_time).toDateString()}
+            </Text>
+            <Text style={styles.cardReason}>Reason: {item.appointment_reason}</Text>
+            <Text style={styles.cardStatus}>Status: {item.appointment_status}</Text>
+          </View>
+        </TouchableOpacity>
+      )}
+      ListFooterComponent={
+        <TouchableOpacity style={styles.showMoreButton} onPress={toggleShowMore}>
+          <Text style={styles.showMoreText}>
+            {showMore ? "Show Less" : "Show More"}
+          </Text>
+        </TouchableOpacity>
+      }
+      contentContainerStyle={styles.scrollViewContainer}
+    />
+  </Animated.View>
+    );
 }
 
 
@@ -355,6 +348,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
     paddingTop: 40,
+    marginTop: 20,
     paddingHorizontal: 20,
   },
   navigationButtons: {
@@ -466,7 +460,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   doctorText: {
-    fontFamily: "Poppins-SemiBold",
+    fontFamily: "Poppins-Bold",
     color: "#FFB815",
     marginLeft: 2,
     marginBottom: 20,
@@ -499,7 +493,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sectionTitle: {
-    fontFamily: "Poppins-SemiBold",
+    fontFamily: "Poppins-Bold",
     color: "#FFB815",
     fontSize: 16,
     marginBottom: 10,

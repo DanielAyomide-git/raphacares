@@ -25,7 +25,7 @@ const App = () => {
   const backgroundImages = [
     require("./assets/1.png"),
     require("./assets/3.png"),
-    require("./assets/1.svg"),
+    require("./assets/2.png"),
     require("./assets/4.png"),
   ];
 
@@ -171,7 +171,7 @@ const indexStyles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     height: "50%",
-    marginTop:50
+    marginTop:150
  
   },
   background: {

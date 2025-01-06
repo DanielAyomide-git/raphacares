@@ -274,11 +274,11 @@ export default function BioPage() {
         <Text style={styles.helpText}>Help and Feedback</Text>
         <Ionicons name="chevron-forward" size={18} color="black" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.menuItem} >
+      {/* <TouchableOpacity style={styles.menuItem} >
         <Ionicons name="book-outline" size={24} color="black" />
         <Text style={styles.menuText}>Medical Record</Text>
         <Ionicons name="chevron-forward" size={18} color="black" />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
        <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
        <Ionicons name="log-out-outline" size={24} color="black" />
@@ -412,6 +412,17 @@ const styles = StyleSheet.create({
   editButton: {
     flexDirection: 'row',
     marginTop: 30,
+    backgroundColor: '#00CDF9',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    shadowColor: '#FFB815',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   errorText: {
     fontSize: 16,

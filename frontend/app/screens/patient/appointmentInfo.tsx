@@ -3,109 +3,109 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'rea
 import { useNavigation } from '@react-navigation/native'; // Import navigation hook
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
+import { API_BASE_URL } from "../../api/config";
+
+
+
+interface HealthCenterData {
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  postal_code: string;
+}
+
+
 
 export default function AppointmentInfo() {
   const navigation = useNavigation(); // Initialize navigation hook
   const router = useRouter();
 
   const [appointmentData, setAppointmentData] = useState<any>({});
-  useEffect(() => {
-    const fetchAppointmentData = async () => {
-      try {
-        // Fetch saved appointment details from AsyncStorage
-        const practitionerType = await AsyncStorage.getItem('practitioner_type');
-        const specialization = await AsyncStorage.getItem('specialization');
-        const appointmentStartTime = await AsyncStorage.getItem('appointment_start_time');
-        const appointmentReason = await AsyncStorage.getItem('appointment_reason');
-        const fullName = await AsyncStorage.getItem('patient_name');
-        const gender = await AsyncStorage.getItem('gender');
-        const health_center_id = await AsyncStorage.getItem('health_center_id');
-        const address = await AsyncStorage.getItem('address'); // This holds the address data for home service
-        const appointmentNote = await AsyncStorage.getItem('appointment_note');
-        const id = await AsyncStorage.getItem('appointment_id');
-        const appointmentStatus = await AsyncStorage.getItem('appointment_status');
-        const appointmentType = await AsyncStorage.getItem('appointment_type');
-        const healthCenters = await AsyncStorage.getItem('health_center'); // This holds the health center data for physical appointments
-        const profilePictureUrl = await AsyncStorage.getItem('practitioner_profile_picture_url');
-        const practitionerName = await AsyncStorage.getItem('practitioner_name');
+    const [healthCenterData, setHealthCenterData] = useState<HealthCenterData | null>(null);
   
-        let addressData = {}; // Define addressData variable to store address info
-        let healthCenterData = {}; // Define healthCenterData variable to store health center info
-  
-        // Parse Health Center Data if appointmentType is 'physical'
-        if (appointmentType === 'physical' && healthCenters && healthCenters.includes('[HealthCenter]')) {
-          const cleanHealthCenters = healthCenters.replace(/\\'/g, "'"); // Fix extra escape characters
-          const healthCenterMatch = cleanHealthCenters.match(/'name': '(.*?)', 'address': '(.*?)', 'state': '(.*?)'/);
-          if (healthCenterMatch && healthCenterMatch.length >= 4) {
-            healthCenterData = {
-              name: healthCenterMatch[1], // Health center name
-              address: healthCenterMatch[2], // Address of health center
-              state: healthCenterMatch[3], // State of health center
-            };
+    useEffect(() => {
+      const fetchAppointmentData = async () => {
+        try {
+          // Fetch appointment details from AsyncStorage
+          const practitionerType = await AsyncStorage.getItem('practitioner_type');
+          const specialization = await AsyncStorage.getItem('specialization');
+          const appointmentStartTime = await AsyncStorage.getItem('appointment_start_time');
+          const appointmentReason = await AsyncStorage.getItem('appointment_reason');
+          const fullName = await AsyncStorage.getItem('patient_name');
+          const gender = await AsyncStorage.getItem('gender');
+          const patientAddress = await AsyncStorage.getItem('patient_address');
+          const health_center_id = await AsyncStorage.getItem('health_center_id');
+          const appointmentNote = await AsyncStorage.getItem('appointment_note');
+          const id = await AsyncStorage.getItem('appointment_id');
+          const appointmentStatus = await AsyncStorage.getItem('appointment_status');
+          const appointmentType = await AsyncStorage.getItem('appointment_type');
+          const profilePictureUrl = await AsyncStorage.getItem('practitioner_profile_picture_url');
+          const practitionerName = await AsyncStorage.getItem('practitioner_name');
+    
+          // Set the appointment data
+          const appointment = {
+            practitionerType: practitionerType || '',
+            practitionerName: practitionerName || 'Name',
+            specialization: specialization || 'Specialization',
+            appointmentStartTime: appointmentStartTime || '',
+            appointmentReason: appointmentReason || 'Not specified',
+            fullName: fullName || 'Not specified',
+            gender: gender || 'Not specified',
+            health_center_id: health_center_id || '',
+            appointmentNote: appointmentNote || 'No additional notes provided.',
+            profilePictureUrl:
+              profilePictureUrl || 'https://img.icons8.com/?size=100&id=11730&format=png&color=000000',
+            appointmentStatus: appointmentStatus || 'N/A',
+            appointmentType: appointmentType || '',
+            patientAddress: patientAddress || 'Please update your address',
+            id: id
+          };
+    
+          setAppointmentData(appointment);
+    
+          // Fetch health center data if the appointment type is physical
+          if (appointmentType === 'physical' && health_center_id) {
+            fetchHealthCenterData(health_center_id);
           }
+        } catch (error) {
+          console.error('Error fetching appointment data:', error);
         }
-  
-        // Parse Address Data if appointmentType is 'home_service'
-        if (appointmentType === 'home_service' && address && address.includes('[Address]')) {
-          const cleanAddress = address.replace(/\\'/g, "'"); // Fix extra escape characters
-          const addressMatch = cleanAddress.match(/'state': '(.*?)', 'city': '(.*?)', 'street': '(.*?)'/);
-          if (addressMatch && addressMatch.length >= 4) {
-            addressData = {
-              state: addressMatch[1],
-              city: addressMatch[2], // City
-              street: addressMatch[3], // Street
-            };
+      };
+    
+      const fetchHealthCenterData = async (healthCenterId: string) => {
+        try {
+          const response = await fetch(`${API_BASE_URL}/health_centers/${healthCenterId}`);
+          const result = await response.json();
+    
+          if (response.ok && result.status === 'success') {
+            setHealthCenterData(result.data);
+          } else {
+            console.error('Error fetching health center data:', result.message);
           }
+        } catch (error) {
+          console.error('Error fetching health center data:', error);
         }
-  
-        // Log fetched data for debugging
-        console.log("Fetched Appointment Data:", {
-          practitionerType,
-          practitionerName,
-          specialization,
-          appointmentStartTime,
-          appointmentReason,
-          fullName,
-          gender,
-          appointmentNote,
-          profilePictureUrl,
-          appointmentStatus,
-          appointmentType,
-          healthCenters,
-          health_center_id,
-          id,
-          address,
-        });
-  
-        setAppointmentData({
-          practitionerType: practitionerType || '', // Fallback to an empty string if null
-          practitionerName: practitionerName || 'Name', // Fallback to 'Name' if null
-          specialization: specialization || 'Specialization', // Fallback to 'Specialization' if null
-          appointmentStartTime: appointmentStartTime || '', // Fallback to empty string if null
-          appointmentReason: appointmentReason || 'Not specified', // Fallback to 'Not specified' if null
-          fullName: fullName || 'Not specified', // Fallback to 'Not specified' if null
-          gender: gender || 'Not specified', // Fallback to 'Not specified' if null
-          health_center_id: health_center_id || '', // Fallback to empty string if null
-          appointmentNote: appointmentNote || 'No additional notes provided.', // Fallback to 'No additional notes provided.' if null
-          profilePictureUrl: profilePictureUrl || "https://img.icons8.com/?size=100&id=11730&format=png&color=000000", // Fallback to a default image URL
-          appointmentStatus: appointmentStatus || 'N/A', // Fallback to 'N/A' if null
-          appointmentType: appointmentType || '', // Fallback to empty string if null
-          healthCenters: healthCenters || '', // Fallback to empty string if null
-          id: id || '', // Fallback to empty string if null
-          addressData: addressData, // addressData will be already defined or empty
-          healthCenterData: healthCenterData, // healthCenterData will be defined or empty
-        });
-        console.log("Appointment Data After Setting State:", addressData);
-  
-      } catch (error) {
-        console.error("Error fetching appointment data:", error);
+      };
+    
+      fetchAppointmentData();
+    }, []);
+    
+
+    const handleBeginConsultation = async () => {
+      if (appointmentData.id) {
+        try {
+          await AsyncStorage.setItem('id', appointmentData.id);
+          console.log('Appointment ID saved to AsyncStorage:', appointmentData.id);
+          router.push('./consultations'); // Redirect to consultations page
+        } catch (error) {
+          console.error('Error saving consultation ID to AsyncStorage:', error);
+        }
+      } else {
+        console.error('No appointment ID found to save.');
       }
     };
-  
-    fetchAppointmentData();
-  }, []);
-  
-  
+    
   
   return (
     <ScrollView style={styles.container}>
@@ -201,28 +201,44 @@ export default function AppointmentInfo() {
    {/* Address Section */}
 {appointmentData.appointmentType === 'physical' ? (
   <View style={styles.section}>
-    <Text style={styles.sectionTitle}>Health Center Name:</Text>
-    <Text style={styles.sectionContent}>{appointmentData.healthCenterData.name || 'Not specified'}</Text>
-
-    <Text style={styles.sectionTitle}>Address:</Text>
-    <Text style={styles.sectionContent}>{appointmentData.healthCenterData.address || 'Not specified'}</Text>
-
-    <Text style={styles.sectionTitle}>State:</Text>
-    <Text style={styles.sectionContent}>{appointmentData.healthCenterData.state || 'Not specified'}</Text>
+  <>
+                  <Text style={styles.sectionTitle}>Health Center:</Text>
+                  {healthCenterData ? (
+                    <>
+                      <Text style={styles.sectionContent}>Name: {healthCenterData.name}</Text>
+                      <Text style={styles.sectionContent}>Address: {healthCenterData.address}</Text>
+                      <Text style={styles.sectionContent}>City: {healthCenterData.city}</Text>
+                      <Text style={styles.sectionContent}>State: {healthCenterData.state}</Text>
+                      <Text style={styles.sectionContent}>Postal Code: {healthCenterData.postal_code}</Text>
+                    </>
+                  ) : (
+                    <Text style={styles.sectionContent}>
+                      Health center not available.You will be contacted by the doctor
+                    </Text>
+                  )}
+                </>  
   </View>
 ) : appointmentData.appointmentType === 'home_service' ? (
   <View style={styles.section}>
-    <Text style={styles.sectionTitle}>City:</Text>
-    <Text style={styles.sectionContent}>{appointmentData.addressData.city || 'Not specified'}</Text>
+    <Text style={styles.sectionTitle}>Address:</Text>
+    <Text style={styles.sectionContent}>{appointmentData.patientAddress|| 'Please update your address'}</Text>
 
-    <Text style={styles.sectionTitle}>Street:</Text>
-    <Text style={styles.sectionContent}>{appointmentData.addressData.street || 'Not specified'}</Text>
+    
   </View>
 ) : null}
 
       
-      
+{appointmentData.appointmentStatus === "completed" && (
+  <TouchableOpacity
+    style={styles.viewConsultationButton}
+    onPress={handleBeginConsultation}  >
+    <Text style={styles.viewConsultationText}>View Consultation</Text>
+  </TouchableOpacity>
+)}
+
         </View>
+
+
 
     </ScrollView>
   );
@@ -249,6 +265,19 @@ const styles = StyleSheet.create({
     marginRight: 50,
 
   },
+  viewConsultationButton: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: '#00CDF9',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  viewConsultationText: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  
   headerTitle: {
     fontSize: 24,
     color: '#00CDF9',

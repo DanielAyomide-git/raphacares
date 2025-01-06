@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
     padding: 10,
   },
   title: {
-    fontFamily: "Poppins-Bold",
+    fontFamily: "poppins-bold",
     fontSize: 24,
     color: "#FFB815",
     marginBottom: 30,
@@ -39,7 +39,7 @@ export const styles = StyleSheet.create({
     textAlign: "center",
   },
   pickerLabel: {
-    fontFamily: "Poppins",
+    fontFamily: "poppins",
     color: "#706d6d",
     fontSize: 16,
     marginBottom: 5,
@@ -57,12 +57,12 @@ export const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 25,
     textAlign: "center",
-    fontFamily: "Poppins",
+    fontFamily: "poppins",
     color: "black",
   },
   errorText: {
     color: 'red', // Red color for errors
-    fontFamily: 'Poppins', // Use the same font as the other text
+    fontFamily: 'poppins', // Use the same font as the other text
     fontSize: 14, // Font size for the error message
     marginTop: 10, // Add some space above the error message
     textAlign: 'center', // Center the error message
@@ -76,7 +76,7 @@ export const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: "center",
     fontSize: 16,
-    fontFamily: "Poppins",
+    fontFamily: "poppins",
     borderBlockColor:"grey"
   },
   row: {
