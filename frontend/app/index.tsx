@@ -110,7 +110,7 @@ const App = () => {
       {/* Question container as a card */}
       <View style={indexStyles.questionCard}>
         <Text style={indexStyles.questionTexta}>Are you a </Text>
-        <Text style={indexStyles.questionText}>health worker?</Text>
+        <Text style={indexStyles.questionText}>health service provider?</Text>
         <View style={indexStyles.buttonRow}>
           <TouchableOpacity
             style={indexStyles.buttonYes}

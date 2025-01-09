@@ -1,18 +1,26 @@
-import React from "react";
-import Sidebar from "./components/Sidebar";
-import Topbar from "./components/Topbar";
-import DashboardContent from "./components/DashboardContent";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Sidebar from './components/Sidebar';
+import LoginPage from './components/LoginPage';
+import Analytics from './components/Analytics';
+import ServiceProviders from './components/ServiceProviders';
+import Patients from './components/Patients';
+import AdminProfile from './components/AdminProfile';
 
-const App = () => {
+function App() {
   return (
-    <div style={{ display: "flex" }}>
-      <Sidebar />
-      <div style={{ flex: 1 }}>
-        <Topbar />
-        <DashboardContent />
-      </div>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/dashboard" element={<Sidebar />}>
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="service-providers" element={<ServiceProviders />} />
+          <Route path="patients" element={<Patients />} />
+          <Route path="admin-profile" element={<AdminProfile />} />
+        </Route>
+      </Routes>
+    </Router>
   );
-};
+}
 
 export default App;
